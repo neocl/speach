@@ -42,18 +42,11 @@ from speach import elan
 # Test ELAN reader function in speach
 eaf = elan.open_eaf('./test/data/test.eaf')
 
-# accessing metadata
-print(f"Author: {eaf.author} | Date: {eaf.date} | Format: {eaf.fileformat} | Version: {eaf.version}")
-print(f"Media file: {eaf.media_file}")
-print(f"Time units: {eaf.time_units}")
-print(f"Media URL: {eaf.media_url} | MIME type: {eaf.mime_type}")
-print(f"Media relative URL: {eaf.relative_media_url}")
-
 # accessing tiers & annotations
-for tier in eaf.tiers():
+for tier in eaf:
     print(f"{tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")
-    for ann in tier.annotations:
-        print(f"{ann.ID.rjust(4, ' ')}. [{ann.from_ts.ts} -- {ann.to_ts.ts}] {ann.value}")
+    for ann in tier:
+        print(f"{ann.ID.rjust(4, ' ')}. [{ann.from_ts} -- {ann.to_ts}] {ann.text}")
 ```
 
 ## Text corpus
