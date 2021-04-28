@@ -3,7 +3,8 @@
 Web VTT APIs
 ============
 
-.. automodule:: speach.vtt
+Speach supports Web VTT - The Web Video Text Tracks Format.
+Read more about it at: https://www.w3.org/2013/07/webvtt.html
 
 APIs
 ----
