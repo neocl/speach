@@ -1,0 +1,17 @@
+# TTLIG
+Language: Japanese
+Language code: jpn
+Lines: orth tokens translit gloss translat
+Author: Le Tuan Anh
+Date: May 26 2018
+
+# ----------------------------------------
+# TTLIG file with explicit format
+# ----------------------------------------
+猫が好きです。
+{猫/ねこ} が {好/す}き です 。
+neko ga suki desu .
+cat SUBM likeable COP .
+I like cats.
+
+#---- [End] ----#

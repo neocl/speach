@@ -1,0 +1,18 @@
+# TTLIG
+Language: Japanese
+Language code: jpn
+Lines: __auto__
+Author: Le Tuan Anh
+Date: May 26 2018
+
+# ----------------------------------------
+# auto label gloss lines (first line is text, last line is translation)
+# the next lines are in this order tokens, transliteration, transcription, morphophonemic transliteration, morphgloss
+# ----------------------------------------
+猫が好きです。
+{猫/ねこ} が {好/す}き です 。
+neko ga suki desu .
+cat SUBM likeable COP .
+I like cats.
+
+#---- [End] ----#
