@@ -4,9 +4,7 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/letuananh/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/letuananh/speach/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/letuananh/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/letuananh/speach/context:python)
 
-Speach (formerly [speach](https://pypi.org/project/speach/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF)
-
-Main functions are:
+Speach (formerly [speach](https://pypi.org/project/speach/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF, etc.)
 
 Main functions are:
 
