@@ -1,0 +1,23 @@
+# TTLIG
+Language: Japanese
+Language code: jpn
+Lines: __manual__
+Author: Le Tuan Anh
+Date: May 26 2018
+
+#----------------------------
+ident: 01a_01
+text: 猫が好きです。
+tokens: {猫/ねこ} が {好/す}き です 。
+translit: neko ga suki desu .
+gloss: cat SUBM likeable COP .
+translat: I like cats.
+
+
+# other sentence
+ident: 01a_02
+text: 雨が降る。
+tokens: {雨/あめ} が {降/ふ}る 。
+translat: It rains.
+
+#---- [End] ----#

@@ -1,0 +1,17 @@
+# TTLIG
+Language: Vietnamese
+Language code: vie
+Lines: orth translit gloss translat
+Author: Le Tuan Anh
+Date: May 25 2018
+
+#----------------------------
+Đây  là một ví dụ.
+Đây  là một ví_dụ.
+This be one example.
+`This is an example.'
+
+#---- [End] ----#
+# more comment
+
+

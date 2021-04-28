@@ -1,0 +1,3 @@
+chirptext >= 0.1a21
+puchikarui
+Sphinx
