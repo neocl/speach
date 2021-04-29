@@ -28,13 +28,7 @@ pip install speach
 
 ## ELAN support
 
-speach library contains a command line tool for converting EAF files into CSV.
-
-```bash
-python -m speach eaf2csv input_elan_file.eaf -o output_file_name.csv
-```
-
-For more complex analyses, speach Python scripts can be used to extract metadata and annotations from ELAN transcripts, for example:
+Speach can be used to extract annotations as well as metadata from ELAN transcripts, for example:
 
 ``` python
 from speach import elan
@@ -42,44 +36,18 @@ from speach import elan
 # Test ELAN reader function in speach
 eaf = elan.open_eaf('./test/data/test.eaf')
 
-# accessing metadata
-print(f"Author: {eaf.author} | Date: {eaf.date} | Format: {eaf.fileformat} | Version: {eaf.version}")
-print(f"Media file: {eaf.media_file}")
-print(f"Time units: {eaf.time_units}")
-print(f"Media URL: {eaf.media_url} | MIME type: {eaf.mime_type}")
-print(f"Media relative URL: {eaf.relative_media_url}")
-
 # accessing tiers & annotations
-for tier in eaf.tiers():
+for tier in eaf:
     print(f"{tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")
-    for ann in tier.annotations:
-        print(f"{ann.ID.rjust(4, ' ')}. [{ann.from_ts.ts} -- {ann.to_ts.ts}] {ann.value}")
+    for ann in tier:
+        print(f"{ann.ID.rjust(4, ' ')}. [{ann.from_ts} :: {ann.to_ts}] {ann.text}")
 ```
 
-## Text corpus
+Speach also provides command line tools for processing EAF files.
 
-```python
->>> from speach import ttl
->>> doc = ttl.Document('mydoc')
->>> sent = doc.new_sent("I am a sentence.")
->>> sent
-#1: I am a sentence.
->>> sent.ID
-1
->>> sent.text
-'I am a sentence.'
->>> sent.import_tokens(["I", "am", "a", "sentence", "."])
->>> >>> sent.tokens
-[`I`<0:1>, `am`<2:4>, `a`<5:6>, `sentence`<7:15>, `.`<15:16>]
->>> doc.write_ttl()
+```bash
+# this command converts an eaf file into csv
+python -m speach eaf2csv input_elan_file.eaf -o output_file_name.csv
 ```
 
-The script above will generate this corpus
-
-```
--rw-rw-r--.  1 tuananh tuananh       0  3月 29 13:10 mydoc_concepts.txt
--rw-rw-r--.  1 tuananh tuananh       0  3月 29 13:10 mydoc_links.txt
--rw-rw-r--.  1 tuananh tuananh      20  3月 29 13:10 mydoc_sents.txt
--rw-rw-r--.  1 tuananh tuananh       0  3月 29 13:10 mydoc_tags.txt
--rw-rw-r--.  1 tuananh tuananh      58  3月 29 13:10 mydoc_tokens.txt
-```
+Read [Speach documentation](https://speach.readthedocs.io/) for more information.
