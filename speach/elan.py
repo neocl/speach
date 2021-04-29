@@ -244,7 +244,7 @@ class ELANTier(DataObject):
     @property
     def type_ref(self):
         return self.__type_ref
-    
+
     def _set_type_ref(self, type_ref_object):
         """ [Internal function] Update type_ref object of this Tier """
         self.__type_ref = type_ref_object
@@ -326,7 +326,7 @@ class ELANTier(DataObject):
 
     def _add_annotation_xml(self, annotation_node) -> ELANAnnotation:
         """ [Internal function] Create an annotation from a node
-        
+
         General users should not use this function.
         """
         alignable = annotation_node.find('ALIGNABLE_ANNOTATION')
@@ -343,7 +343,7 @@ class ELANTier(DataObject):
 class ELANCVEntry(DataObject):
 
     """ A controlled vocabulary entry """
-    
+
     def __init__(self, ID, lang_ref, value, description=None, **kwargs):
         super().__init__(**kwargs)
         self.ID = ID
@@ -425,7 +425,7 @@ class ELANDoc(DataObject):
 
     """ This class represents an ELAN file (\*.eaf)
     """
-    
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.properties = OrderedDict()
@@ -490,19 +490,19 @@ class ELANDoc(DataObject):
     def __getitem__(self, tierID):
         """ Find a tier object using tierID """
         return self.__tiers_map[tierID]
-    
+
     def __iter__(self):
         """ Iterate through all tiers in this ELAN file """
         return iter(self.__tiers_map.values())
 
     def tiers(self) -> TierTuple:
-        """ Collect all existing Tier in this ELAN file 
+        """ Collect all existing Tier in this ELAN file
         """
         return tuple(self.__tiers_map.values())
 
     def _update_info_xml(self, node):
-        """ [Internal function] Update ELAN file metadata from an XML node 
-        
+        """ [Internal function] Update ELAN file metadata from an XML node
+
         General users should not use this function.
         """
         self.author = node.get('AUTHOR')
@@ -511,7 +511,7 @@ class ELANDoc(DataObject):
         self.version = node.get('VERSION')
 
     def _update_header_xml(self, node):
-        """ [Internal function] Read ELAN doc information from a HEADER XML node 
+        """ [Internal function] Read ELAN doc information from a HEADER XML node
 
         General users should not use this function.
         """
@@ -579,8 +579,8 @@ class ELANDoc(DataObject):
         self.__vocabs.append(ELANVocab.from_xml(elem))
 
     def to_csv_rows(self) -> CSVTable:
-        """ Convert this ELANDoc into a CSV-friendly structure (i.e. list of list of strings) 
-        
+        """ Convert this ELANDoc into a CSV-friendly structure (i.e. list of list of strings)
+
         :return: A list of list of strings
         :rtype: CSVTable
         """
