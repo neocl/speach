@@ -20,7 +20,7 @@ Main functions are:
 
 ## Installation
 
-Speach is availble on [PyPI](https://pypi.org/project/speach/).
+`speach` is available on [PyPI](https://pypi.org/project/speach/).
 
 ```bash
 pip install speach

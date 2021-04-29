@@ -39,16 +39,11 @@ with open('requirements.txt', 'r') as infile:
 setup(
     name='speach',
     version=pkg_info['__version__'],
-    url=pkg_info['__url__'],
-    project_urls={
-        "Bug Tracker": "https://github.com/neocl/speach/issues",
-        "Source Code": "https://github.com/neocl/speach/"
-    },
-    keywords="nlp",
-    license=pkg_info['__license__'],
-    author=pkg_info['__author__'],
     tests_require=requirements + ['coverage'],
     install_requires=requirements,
+    python_requires=">=3.6",
+    license=pkg_info['__license__'],
+    author=pkg_info['__author__'],
     author_email=pkg_info['__email__'],
     description=pkg_info['__description__'],
     long_description=long_description,
@@ -57,6 +52,12 @@ setup(
               'speach.data'],
     package_data={'speach': ['data/*.sql', 'data/*.gz']},
     include_package_data=True,
+    url=pkg_info['__url__'],
+    project_urls={
+        "Bug Tracker": "https://github.com/neocl/speach/issues",
+        "Source Code": "https://github.com/neocl/speach/"
+    },
+    keywords=["nlp", "annotation", "text", "corpus", "linguistics", "ELAN", "transcription"],
     platforms='any',
     test_suite='test',
     # Reference: https://pypi.python.org/pypi?%3Aaction=list_classifiers
