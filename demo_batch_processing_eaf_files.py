@@ -12,10 +12,10 @@ for child_file in transcript_folder.iterdir():
         for tier in eaf.roots:
             if tier.type_ref == 'Utterance':
                 print(f"  | {tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")
-                for ann in tier.annotations:
-                    if 'BABYNAME' in ann.value:
+                for ann in tier:
+                    if 'BABYNAME' in ann.text:
                         c += 1
-                        print(f"  | -- {tier.ID} --> {tier.participant}: {ann.value}")
+                        print(f"  | -- {tier.ID} --> {tier.participant}: {ann.text}")
         print(c)
         csv_data.append((child_file.name, c))
 
