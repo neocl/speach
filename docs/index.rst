@@ -61,8 +61,8 @@ More information:
 Useful Links
 ------------
 
-- pyInkscape documentation: https://speach.readthedocs.io/
-- pyInkscape on PyPI: https://pypi.org/project/speach/
+- Speach documentation: https://speach.readthedocs.io/
+- Speach on PyPI: https://pypi.org/project/speach/
 - Soure code: https://github.com/neocl/speach/
 
 Indices and tables
