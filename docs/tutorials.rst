@@ -1,7 +1,12 @@
-Getting Started
-===============
+.. _tutorial:
 
-Introduction to speach
+Tutorials
+=========
+
+.. note::
+   this section is under construction. Please see :ref:`recipes` section for now.
+
+Tutorials for getting started with speach
 
 Installation
 ------------
@@ -11,4 +16,3 @@ speach is available on PyPI and can be installed using `pip`.
 .. code-block:: bash
 
    pip install --user speach
-

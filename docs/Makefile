@@ -14,7 +14,7 @@ help:
 
 
 serve:
-	python -m http.server 7000 --bind 127.0.0.1 --directory ${BUILDDIR}/dirhtml
+	python -m http.server 7001 --bind 127.0.0.1 --directory ${BUILDDIR}/dirhtml
 
 .PHONY: help Makefile
 
