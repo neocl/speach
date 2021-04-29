@@ -18,6 +18,7 @@ import xml.etree.ElementTree as etree
 from chirptext import DataObject
 from chirptext import chio
 
+from .__version__ import __issue__
 from .vtt import sec2ts, ts2sec
 
 
@@ -638,8 +639,10 @@ class ELANDoc(DataObject):
                 _doc._add_constraint_xml(elem)
             elif elem.tag == 'CONTROLLED_VOCABULARY':
                 _doc._add_vocab_xml(elem)
+            elif elem.tag == 'LANGUAGE':
+                logging.getLogger(__name__).info("LANGUAGE tag is not yet supported in this version")
             else:
-                logging.getLogger(__name__).warning(f"Ignored element type -- {elem.tag}")
+                logging.getLogger(__name__).warning(f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
         # linking parts together
         # linguistic_types -> vocabs
         for lingtype in _doc.linguistic_types:
