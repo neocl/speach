@@ -126,6 +126,15 @@ class TestELAN(unittest.TestCase):
         eaf = read_eaf()
         self.assertTrue(eaf.to_xml_bin())
 
+    def test_ref_ann(self):
+        eaf = read_eaf()
+        ann = eaf['Person1 (Language)'][0]
+        self.assertIsNotNone(ann.ref)
+        self.assertEqual(ann.from_ts, 1040)
+        self.assertEqual(ann.to_ts, 2330)
+        self.assertEqual(ann.from_ts.sec, 1.04)
+        self.assertEqual(ann.to_ts.sec, 2.33)
+
 
 # -------------------------------------------------------------------------------
 # MAIN

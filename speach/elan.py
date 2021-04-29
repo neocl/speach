@@ -52,6 +52,7 @@ class TimeSlot():
 
     @property
     def sec(self):
+        """ Get TimeSlot value in seconds instead of milliseconds """
         return self.value / 1000 if self.value is not None else None
 
     def __lt__(self, other):
@@ -83,6 +84,9 @@ class TimeSlot():
 
     def __hash__(self):
         return id(self)
+
+    def __repr__(self):
+        return f"TimeSlot(value={repr(self.value)})"
 
     def __str__(self):
         val = self.ts
@@ -165,6 +169,14 @@ class ELANRefAnnotation(ELANAnnotation):
     @property
     def ref(self):
         return self.__ref
+
+    @property
+    def from_ts(self):
+        return self.__ref.from_ts if self.__ref is not None else None
+
+    @property
+    def to_ts(self):
+        return self.__ref.to_ts if self.__ref is not None else None
 
     def resolve(self, elan_doc):
         _ref_ann = elan_doc.annotation(self.__ref_id)
