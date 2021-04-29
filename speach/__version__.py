@@ -11,6 +11,7 @@ __credits__ = []
 __license__ = "MIT License"
 __description__ = "a Python library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF)"
 __url__ = "https://github.com/neocl/speach/"
+__issue__ = "https://github.com/neocl/speach/issues/"
 __maintainer__ = "Le Tuan Anh"
 __version_major__ = "0.1"  # follow PEP-0440
 __version__ = "{}a4".format(__version_major__)
