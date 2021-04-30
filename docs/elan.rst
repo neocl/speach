@@ -11,7 +11,7 @@ Open an ELAN file
 -----------------
 
     >>> from speach import elan
-    >>> eaf = elan.open_eaf('./data/test.eaf')
+    >>> eaf = elan.read_eaf('./data/test.eaf')
     >>> eaf
     <speach.elan.ELANDoc object at 0x7f67790593d0>
 
@@ -50,7 +50,7 @@ If you want to loop through the root tiers only, you can use the :code:`roots` l
 
 .. code-block:: python
 
-    eaf = elan.open_eaf('./data/test_nested.eaf')
+    eaf = elan.read_eaf('./data/test_nested.eaf')
     # accessing nested tiers
     for tier in eaf.roots:
         print(f"{tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")

@@ -35,7 +35,7 @@ Speach can extract annotations and metadata from ELAN transcripts directly, for 
 from speach import elan
 
 # Test ELAN reader function in speach
-eaf = elan.open_eaf('./test/data/test.eaf')
+eaf = elan.read_eaf('./test/data/test.eaf')
 
 # accessing tiers & annotations
 for tier in eaf:
