@@ -14,5 +14,6 @@ Contents
    :maxdepth: 2
 
    api_elan
+   api_media
    api_ttl
    api_vtt

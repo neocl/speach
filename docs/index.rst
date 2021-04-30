@@ -3,18 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to speach's documentation!
+Speach - Documenting Natural languages
 ======================================
 
-Speach (formerly `texttaglib <https://github.com/letuananh/texttaglib>`_) is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF, etc.)
+Welcome to speach's documentation!
+Speach, formerly `texttaglib <https://github.com/letuananh/texttaglib>`_, is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF, etc.)
 
-Main functions are:
+Main functions:
 
-- Text corpus management library
+- Text corpus management
 - Manipuling `ELAN <https://archive.mpi.nl/tla/elan/download>`_ transcription files directly in ELAN Annotation Format (eaf)
-- TTLIG - A human-friendly intelinear gloss format for linguistic documentation
+- TIG - A human-friendly intelinear gloss format for linguistic documentation
 - Multiple storage formats (text files, JSON files, SQLite databases)
 
+:ref:`Contributors <contributors>` are welcome!.
+If you want to help developing ``speach``, please visit :ref:`contributing` page.
+  
 Installation
 ------------
 
@@ -57,6 +61,9 @@ More information:
    tutorials
    recipes
    api
+   contributing
+   conduct
+   updates
            
 Useful Links
 ------------
@@ -65,6 +72,19 @@ Useful Links
 - Speach on PyPI: https://pypi.org/project/speach/
 - Soure code: https://github.com/neocl/speach/
 
+Release Notes
+-------------
+
+Release notes is available :ref:`here <updates>`.
+
+.. _contributors:
+
+Contributors
+------------
+
+- `Le Tuan Anh <https://github.com/letuananh>`__ (Maintainer)
+- `Victoria Chua <https://github.com/vicchuayh>`__
+  
 Indices and tables
 ==================
 
