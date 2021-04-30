@@ -79,6 +79,12 @@ def _ffmpeg(*args, ffmpeg_path=None, capture_output=False, text=None, check=Fals
 # ------------------------------------------------------------------------------
 
 def version(ffmpeg_path=None):
+    """ Determine using ffmpeg version 
+
+    >>> from speach import media
+    >>> media.version()
+    '4.2.4-1ubuntu0.1'
+    """
     output = _ffmpeg("-version", capture_output=True, text=True, ffmpeg_path=ffmpeg_path)
     version_line = output.stdout.splitlines()[0] if output and output.stdout else ''
     parts = version_line.split()
@@ -89,6 +95,12 @@ def version(ffmpeg_path=None):
 
 
 def locate_ffmpeg():
+    """ locate the binary file of ffmpeg program (i.e. ffmpeg.exe) 
+
+    >>> from speach import media
+    >>> media.locate_ffmpeg()
+    '/usr/bin/ffmpeg'
+    """
     return _FFMPEG_PATH
 
 
@@ -101,6 +113,7 @@ def cut(*args, **kwargs):
 
 
 def convert(infile, outfile, *args, ffmpeg_path=None):
+    """ Convert an audio/video file into another format """
     if not infile:
         raise ValueError("Input file was not specified")
     elif not outfile:

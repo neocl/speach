@@ -62,6 +62,7 @@ More information:
    recipes
    api
    contributing
+   conduct
    updates
            
 Useful Links
