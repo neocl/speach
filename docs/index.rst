@@ -68,9 +68,9 @@ More information:
 Useful Links
 ------------
 
-- Speach documentation: https://speach.readthedocs.io/
-- Speach on PyPI: https://pypi.org/project/speach/
 - Soure code: https://github.com/neocl/speach/
+- Speach on PyPI: https://pypi.org/project/speach/
+- Speach documentation: https://speach.readthedocs.io/
 
 Release Notes
 -------------
