@@ -1,7 +1,9 @@
+.. _tut_media:
+
 Media processing tutorial
 ==========================
 
-Media module can be used to process audio and video files (converting, merging, cutting, et cetera).
+:mod:`Media module <speach.media>` can be used to process audio and video files (converting, merging, cutting, et cetera).
 ``speach.media`` use ffmpeg underneath.
 
 Installing ffmpeg
@@ -19,3 +21,8 @@ Sample code
    print(media.version())
    print(media.locate_ffmpeg())
    media.convert("infile.mp3", "outfile.wav")
+
+Others
+------
+
+For in-depth information and a complete API reference, please refer to :mod:`speach.media` API page.
