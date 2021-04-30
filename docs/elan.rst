@@ -1,7 +1,11 @@
+.. _tut_elan:
+
 ELAN Recipes
 ============
 
 Common snippets for processing ELAN transcriptions with ``speach``.
+
+For in-depth API reference, see :ref:`api_elan` page.
 
 Open an ELAN file
 -----------------
@@ -54,7 +58,18 @@ If you want to loop through the root tiers only, you can use the :code:`roots` l
             print(f"    | {child_tier.ID} | Participant: {child_tier.participant} | Type: {child_tier.type_ref}")
             for ann in child_tier.annotations:
                 print(f"    |- {ann.ID.rjust(4, ' ')}. [{ann.from_ts} -- {ann.to_ts}] {ann.text}")
-         
+
+Cutting annotations to separate audio files
+-------------------------------------------
+
+Annotations can be cut and stored into separate audio files using :func:`speach.elan.ELANDoc.cut` method.
+
+.. code-block:: python
+
+   eaf = elan.read_eaf(ELAN_DIR / "test.eaf")
+   for idx, ann in enumerate(eaf["Person1 (Utterance)"], start=1):
+       eaf.cut(ann, ELAN_DIR / f"test_person1_{idx}.ogg")
+                
 Converting ELAN files to CSV
 ----------------------------
 
