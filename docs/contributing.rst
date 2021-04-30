@@ -58,7 +58,7 @@ Updating Documentation
 
    .. code:: bash
 
-      cd speach/docs
+      cd docs
       # compile the docs
       make dirhtml
       # serve the docs using Python3 built-in development server
@@ -68,6 +68,9 @@ Updating Documentation
       # if you use earlier Python 3, you may use
       cd _build/dirhtml
       python3 -m http.server 7000
+
+      # if you use Windows, you may use
+      python -m http.server 7000 --directory _build/dirhtml
 
 #. Now the docs should be ready to view at http://localhost:7000 . You can visit that URL on your browser to view the docs.
 
