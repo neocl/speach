@@ -1,5 +1,5 @@
-Media processing
-================
+Media processing tutorial
+==========================
 
 Media module can be used to process audio and video files (converting, merging, cutting, et cetera).
 ``speach.media`` use ffmpeg underneath.
