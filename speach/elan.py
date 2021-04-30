@@ -674,6 +674,14 @@ class ELANDoc(DataObject):
 
     @classmethod
     def read_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
+        """ Read an EAF file 
+
+        >>> from speach import elan
+        >>> eaf = elan.read_eaf("myfile.eaf")
+
+        :param eaf_path: Path to existing EAF file
+        :type eaf_path: str or Path-like object
+        """
         eaf_path = str(eaf_path)
         if eaf_path.startswith("~"):
             eaf_path = os.path.expanduser(eaf_path)
