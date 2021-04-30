@@ -12,6 +12,7 @@ Main functions are:
 - Manipuling [ELAN](https://archive.mpi.nl/tla/elan/download>) transcription files directly in ELAN Annotation Format (eaf)
 - TIG - A human-friendly intelinear gloss format for linguistic documentation
 - Multiple storage formats (text, CSV, JSON, SQLite databases)
+- Cutting, converting, and merging audio/video files
 
 ## Useful Links
 
@@ -26,9 +27,9 @@ Main functions are:
 pip install speach
 ```
 
-## ELAN support
+## Sample codes
 
-Speach can be used to extract annotations as well as metadata from ELAN transcripts, for example:
+Speach can extract annotations and metadata from ELAN transcripts directly, for example:
 
 ``` python
 from speach import elan
@@ -48,6 +49,14 @@ Speach also provides command line tools for processing EAF files.
 ```bash
 # this command converts an eaf file into csv
 python -m speach eaf2csv input_elan_file.eaf -o output_file_name.csv
+```
+
+Processing media files
+
+```python
+>>> from speach import media
+>>> media.convert("~/Documents/test.wav", "~/Documents/test.ogg")
+>>> media.cut(ELAN_DIR / "test.wav", ELAN_DIR / "test_10-15.ogg", from_ts="00:00:10", to_ts="00:00:15")
 ```
 
 Read [Speach documentation](https://speach.readthedocs.io/) for more information.
