@@ -1,7 +1,7 @@
 from speach import elan
 
 # read an ELAN file
-eaf = elan.open_eaf('./test/data/test.eaf')
+eaf = elan.read_eaf('./test/data/test.eaf')
 
 # accessing metadata
 print("Accessing EAF Metadata")
