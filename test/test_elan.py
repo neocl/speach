@@ -31,7 +31,7 @@ TEST_EAF = TEST_DATA / 'test.eaf'
 # -------------------------------------------------------------------------------
 
 def read_eaf():
-    return elan.open_eaf(TEST_EAF)
+    return elan.read_eaf(TEST_EAF)
 
 
 class TestELAN(unittest.TestCase):

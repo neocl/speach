@@ -8,7 +8,7 @@ ELAN module - manipulating ELAN transcript files (\*.eaf, \*.pfsx)
 # :copyright: (c) 2018 Le Tuan Anh <tuananh.ke@gmail.com>
 # :license: MIT, see LICENSE for more details.
 
-
+import os
 import logging
 from collections import OrderedDict
 from collections import defaultdict as dd
@@ -20,6 +20,7 @@ from chirptext import chio
 
 from .__version__ import __issue__
 from .vtt import sec2ts, ts2sec
+from .media import cut
 
 
 # ----------------------------------------------------------------------
@@ -241,6 +242,11 @@ class ELANTier(DataObject):
         self.__xml_node = xml_node
 
     @property
+    def name(self):
+        """ An alias to tier's ID """
+        return self.ID
+        
+    @property
     def annotations(self):
         return self.__annotations
 
@@ -449,9 +455,26 @@ class ELANDoc(DataObject):
         self.__constraints = []
         self.__vocabs = []
         self.__roots = []
+        self.path = None
         self.__xml_root = None
         self.__xml_header_node = None
         self.__xml_time_order_node = None
+
+    def media_path(self):
+        """ Try to determine the best path to source media file """
+        mpath = self.relative_media_url
+        if os.path.isfile(mpath):
+            return mpath
+        # try to join with eaf path if possible
+        if self.path:
+            mpath = os.path.join(os.path.dirname(self.path), mpath)
+            if os.path.isfile(mpath):
+                return mpath
+        # otherwise use media_url
+        mpath = self.media_url
+        if mpath.startswith("file://"):
+            mpath = mpath[7:]
+        return mpath
 
     def annotation(self, ID):
         """ Get annotation by ID """
@@ -625,10 +648,47 @@ class ELANDoc(DataObject):
                                    short_empty_elements=short_empty_elements)
         chio.write_file(path, _content, encoding=encoding)
 
+    def cut(self, section, outfile, media_file=None):
+        """ Cut the source media with timestamps defined in section object 
+
+        For example, the following code cut all annotations in tier "Tier 1" into appopriate audio files
+
+        >>> for idx, ann in enumerate(eaf["Tier 1"], start=1):
+        >>>     eaf.cut(ann, f"tier1_ann{idx}.wav")
+
+        :param section: Any object with ``from_ts`` and ``to_ts`` attributes which return TimeSlot objects
+        :param outfile: Path to output media file, must not exist or a FileExistsError will be raised
+        :param media_file: Use to specify source media file. This will override the value specified in source EAF file
+        :raises: FileExistsError, ValueError
+        """
+        if section is None:
+            raise ValueError("Annotation object cannot be empty")
+        elif not section.from_ts or not section.to_ts:
+            raise ValueError("Annotation object must be time-alignable")
+        elif media_file is None:
+            media_file = self.media_path()
+        # verify that media_file exists
+        if not os.path.isfile(media_file):
+            raise FileNotFoundError(f"Source media file ({media_file}) could not be found")
+        cut(media_file, outfile, from_ts=section.from_ts, to_ts=section.to_ts)
+
     @classmethod
-    def open_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
+    def read_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
+        """ Read an EAF file 
+
+        >>> from speach import elan
+        >>> eaf = elan.read_eaf("myfile.eaf")
+
+        :param eaf_path: Path to existing EAF file
+        :type eaf_path: str or Path-like object
+        """
+        eaf_path = str(eaf_path)
+        if eaf_path.startswith("~"):
+            eaf_path = os.path.expanduser(eaf_path)
         with chio.open(eaf_path, encoding=encoding, *args, **kwargs) as eaf_stream:
-            return cls.parse_eaf_stream(eaf_stream)
+            _doc = cls.parse_eaf_stream(eaf_stream)
+            _doc.path = eaf_path
+            return _doc
 
     @classmethod
     def parse_eaf_stream(cls, eaf_stream):
@@ -679,5 +739,6 @@ class ELANDoc(DataObject):
         return _doc
 
 
-open_eaf = ELANDoc.open_eaf
+open_eaf = ELANDoc.read_eaf
+read_eaf = ELANDoc.read_eaf
 parse_eaf_stream = ELANDoc.parse_eaf_stream

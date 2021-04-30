@@ -38,7 +38,7 @@ Speach can be used to extract annotations as well as metadata from ELAN transcri
     from speach import elan
 
     # Test ELAN reader function in speach
-    eaf = elan.open_eaf('./test/data/test.eaf')
+    eaf = elan.read_eaf('./test/data/test.eaf')
 
     # accessing tiers & annotations
     for tier in eaf:
@@ -68,9 +68,9 @@ More information:
 Useful Links
 ------------
 
-- Speach documentation: https://speach.readthedocs.io/
-- Speach on PyPI: https://pypi.org/project/speach/
 - Soure code: https://github.com/neocl/speach/
+- Speach on PyPI: https://pypi.org/project/speach/
+- Speach documentation: https://speach.readthedocs.io/
 
 Release Notes
 -------------
