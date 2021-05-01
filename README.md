@@ -9,7 +9,7 @@ Speach (formerly [texttaglib](https://github.com/letuananh/texttaglib/)), is a P
 Main functions are:
 
 - Text corpus management
-- Manipuling [ELAN](https://archive.mpi.nl/tla/elan/download>) transcription files directly in ELAN Annotation Format (eaf)
+- Manipulating [ELAN](https://archive.mpi.nl/tla/elan/download>) transcription files directly in ELAN Annotation Format (eaf)
 - TIG - A human-friendly intelinear gloss format for linguistic documentation
 - Multiple storage formats (text, CSV, JSON, SQLite databases)
 - Cutting, converting, and merging audio/video files
