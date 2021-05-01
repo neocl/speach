@@ -36,9 +36,19 @@ WIN_EXE_POTENTIAL_PATHS = [
     os.path.expanduser("~\\local\\ffmpeg\\bin\\ffmpeg.exe"),
 ]
 
+OTHER_POTENTIAL_PATHS = [
+    "/usr/bin/ffmpeg",
+    "/usr/local/bin/ffmpeg",
+    "~/local/ffmpeg",
+    "~/local/ffmpeg/ffmpeg",
+    "~/ffmpeg",
+    "~/ffmpeg/ffmpeg",
+    "~/bin/ffmpeg"
+]
 
+
+_FFMPEG_PATH = None
 if platform.system() == "Windows":
-    _FFMPEG_PATH = None
     for _potential_path in WIN_EXE_POTENTIAL_PATHS:
         if Path(_potential_path).is_file():
             _FFMPEG_PATH = _potential_path
@@ -46,7 +56,11 @@ if platform.system() == "Windows":
         # use any inkscape.exe in PATH as backup solution
         _FFMPEG_PATH = "ffmpeg.exe"
 else:
-    _FFMPEG_PATH = "/usr/bin/ffmpeg"
+    for _potential_path in OTHER_POTENTIAL_PATHS:
+        if Path(_potential_path).is_file():
+            _FFMPEG_PATH = _potential_path
+    if not _FFMPEG_PATH:
+        _FFMPEG_PATH = "ffmpeg"
 
 
 # ------------------------------------------------------------------------------
@@ -147,7 +161,7 @@ def concat(text, outfile, dir=None, *args, **kwargs):
         return _ffmpeg("-f", "concat",
                        "-segment_time_metadata", 1,
                        "-i", concat_file.name,
-                       "-af", "asetnsamples=32,aselect=concatdec_select",
+                       *args,
                        outfile, **kwargs)
 
 
@@ -182,11 +196,11 @@ def cut(infile, outfile, from_ts=None, to_ts=None, use_concat=False, *args, **kw
     if not use_concat:
         # use -ss
         if from_ts is None or str(from_ts) in ["0", "00:00:00", "00:00:00.000"]:
-            _ffmpeg("-i", infile, "-to", to_ts, outfile)
+            _ffmpeg("-i", infile, "-to", to_ts, *args, outfile)
         elif to_ts is not None:
-            _ffmpeg("-i", infile, "-ss", from_ts, "-to", to_ts, outfile)
+            _ffmpeg("-i", infile, "-ss", from_ts, "-to", to_ts, *args, outfile)
         else:
-            _ffmpeg("-i", infile, "-ss", from_ts, outfile)
+            _ffmpeg("-i", infile, "-ss", from_ts, *args, outfile)
     else:
         concat_text = "\n".join([f"file '{infile}'",
                                  f"inpoint {from_ts}",
@@ -204,5 +218,4 @@ def convert(infile, outfile, *args, ffmpeg_path=None):
     >>> media.convert("~/Music/test.wav", "~/Music/output.ogg")
     """
     infile, outfile = _validate_args(infile, outfile)
-    args = ["-i", str(infile), str(outfile)]
-    _ffmpeg(*args, ffmpeg_path=ffmpeg_path)
+    _ffmpeg("-i", str(infile), *args, str(outfile), ffmpeg_path=ffmpeg_path)
