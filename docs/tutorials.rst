@@ -23,5 +23,7 @@ Module tutorials
 .. toctree::
    :maxdepth: 2
 
-   elan
-   media
+   tut_media
+   
+
+See :ref:`recipes` for code samples.
