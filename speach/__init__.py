@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-'''
+"""
 speach - a Python library for managing, annotating, and converting natural language corpuses
 using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF)
-'''
+"""
 
 # This code is a part of speach library: https://github.com/neocl/speach/
 # :copyright: (c) 2018 Le Tuan Anh <tuananh.ke@gmail.com>
