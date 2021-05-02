@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-'''
+"""
 TTL Interlinear Gloss (TIG) format support
 
 More information: https://en.wikipedia.org/wiki/Interlinear_gloss
@@ -11,7 +11,7 @@ An interlinear text will commonly consist of some or all of the following, usual
     a morphophonemic transliteration,
     a word-by-word or morpheme-by-morpheme gloss, where morphemes within a word are separated by hyphens or other punctuation,
     a free translation, which may be placed in a separate paragraph or on the facing page if the structures of the languages are too different for it to follow the text line by line.
-'''
+"""
 # This code is a part of speach library: https://github.com/neocl/speach/
 # :copyright: (c) 2018 Le Tuan Anh <tuananh.ke@gmail.com>
 # :license: MIT, see LICENSE for more details.
@@ -29,15 +29,6 @@ from chirptext.deko import is_kana, parse
 from chirptext import ttl
 
 
-
-# ----------------------------------------------------------------------
-# Configuration
-# ----------------------------------------------------------------------
-
-def getLogger():
-    return logging.getLogger(__name__)
-
-
 # ----------------------------------------------------------------------
 # Models
 # ----------------------------------------------------------------------
@@ -48,8 +39,10 @@ def getLogger():
 #     a conventional transliteration into the Latin alphabet,
 #     a phonetic transcription,
 #     a morphophonemic transliteration,
-#     a word-by-word or morpheme-by-morpheme gloss, where morphemes within a word are separated by hyphens or other punctuation,
-#     a free translation, which may be placed in a separate paragraph or on the facing page if the structures of the languages are too different for it to follow the text line by line.
+#     a word-by-word or morpheme-by-morpheme gloss, where morphemes within
+#     a word are separated by hyphens or other punctuation,
+#     a free translation, which may be placed in a separate paragraph or on the facing page
+#     if the structures of the languages are too different for it to follow the text line by line.
 class IGRow(DataObject):
     def __init__(self, text='', transliteration='', transcription='', morphtrans='', morphgloss='', wordgloss='', translation='', **kwargs):
         """
@@ -79,35 +72,35 @@ class IGRow(DataObject):
             if self.morphtrans:
                 _morphtokens = tokenize(self.morphtrans)
                 if len(_morphtokens) != len(ttl_sent):
-                    getLogger().warning("Morphophonemic transliteration line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
+                    logging.getLogger(__name__).warning("Morphophonemic transliteration line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _morphtokens):
                         t.new_tag(m, tagtype='mtrans')
             if self.pos:
                 _postokens = tokenize(self.pos)
                 if len(_postokens) != len(ttl_sent):
-                    getLogger().warning("Part-of-speech line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
+                    logging.getLogger(__name__).warning("Part-of-speech line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _postokens):
                         t.pos = m
             if self.lemma:
                 _lemmas = tokenize(self.lemma)
                 if len(_lemmas) != len(ttl_sent):
-                    getLogger().warning("Lemma line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
+                    logging.getLogger(__name__).warning("Lemma line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _lemmas):
                         t.lemma = m
             if self.morphgloss:
                 _glosstokens = tokenize(self.morphgloss)
                 if len(_glosstokens) != len(ttl_sent):
-                    getLogger().warning("morpheme-by-morpheme gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
+                    logging.getLogger(__name__).warning("morpheme-by-morpheme gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
                         t.new_tag(m, tagtype='mgloss')
             if self.wordgloss:
                 _glosstokens = tokenize(self.wordgloss)
                 if len(_glosstokens) != len(ttl_sent):
-                    getLogger().warning("word-by-word gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
+                    logging.getLogger(__name__).warning("word-by-word gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
                         t.new_tag(m, tagtype='wgloss')
@@ -132,12 +125,12 @@ class IGRow(DataObject):
             if tags:
                 lengths.append(make_expex_gloss(self.concept, glosses, tags.pop(0)))
             else:
-                getLogger().warning("There are too many gloss lines in sentence {}. {}".format(sent_ident, self.text))
+                logging.getLogger(__name__).warning("There are too many gloss lines in sentence {}. {}".format(sent_ident, self.text))
         # ensure that number of tokens are the same
         if len(lengths) > 1:
             for line_len in lengths[1:]:
                 if line_len != lengths[0]:
-                    getLogger().warning("Inconsistent tokens and morphgloss for sentence {}. {} ({} v.s {})".format(sent_ident, self.text, line_len, lengths[0]))
+                    logging.getLogger(__name__).warning("Inconsistent tokens and morphgloss for sentence {}. {} ({} v.s {})".format(sent_ident, self.text, line_len, lengths[0]))
                     break
         lines.extend(glosses)
         lines.append('\\glft \lit{{{}}}//'.format(escape_latex(self.text)))
@@ -259,7 +252,7 @@ class TTLIG(object):
                 _tag = line[:tag_idx].strip()
                 _val = line[tag_idx + 1:].lstrip().rstrip('\r\n')
                 if _tag.lower() not in TTLIG.KNOWN_LABELS:
-                    getLogger().warning("Unknown tag was used ({}): {}".format(_tag, _val))
+                    logging.getLogger(__name__).warning("Unknown tag was used ({}): {}".format(_tag, _val))
                 line_dict[_tag] = _val
             return IGRow(**line_dict)
         else:
@@ -272,7 +265,7 @@ class TTLIG(object):
         line_tags = self.row_format()
         for tag in line_tags:
             if tag.lower() not in TTLIG.KNOWN_LABELS + TTLIG.SPECIAL_LABELS:
-                getLogger().warning("Unknown label in header: {}".format(tag))
+                logging.getLogger(__name__).warning("Unknown label in header: {}".format(tag))
         for row in IGStreamReader._iter_stream(stream):
             yield self._parse_row(row, line_tags)
 
@@ -297,7 +290,7 @@ class IGStreamReader(object):
                 key = m.group('key').strip()
                 value = m.group('value')
                 if key in meta:
-                    getLogger().warning("Key {} is duplicated in the header".format(key))
+                    logging.getLogger(__name__).warning("Key {} is duplicated in the header".format(key))
                 meta[key] = value
             else:
                 # this line is weird
@@ -497,7 +490,7 @@ class TTLTokensParser(object):
                 if not chars.peep():
                     raise ValueError("Escape char ({}) cannot be the last character".format(self.escapechar))
                 elif chars.peep() and chars.peep().value not in (self.escapechar, self.delimiter):
-                    getLogger().warning("Escape char ({}) should not be used for normal character ({}). This can be a potential bug in the data.".format(self.escapechar, chars.peep().value))
+                    logging.getLogger(__name__).warning("Escape char ({}) should not be used for normal character ({}). This can be a potential bug in the data.".format(self.escapechar, chars.peep().value))
                 is_escaping = True
             elif c == self.delimiter:
                 # flush
