@@ -52,7 +52,8 @@ class TestMedia(unittest.TestCase):
                     'bitrate': '64 kb/s'}
 
     def test_convert(self):
-        TEST_WAV.unlink(True)
+        if TEST_WAV.is_file():
+            TEST_WAV.unlink()
         media.convert(TEST_OGG, TEST_WAV, "-loglevel", "error")
         self.assertTrue(TEST_WAV.is_file())
 

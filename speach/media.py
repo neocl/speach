@@ -81,12 +81,18 @@ def _ffmpeg(*args, ffmpeg_path=None, capture_output=False, text=None, check=Fals
                               text=text, check=check)
     else:
         if capture_output:
-            output = subprocess.run([ffmpeg_path, *(str(x) for x in args)],
+            procinfo = subprocess.run([ffmpeg_path, *(str(x) for x in args)],
                                     stdout=subprocess.PIPE,
-                                    stderr=subprocess.DEVNULL, check=check)
+                                    stderr=subprocess.PIPE, check=check)
         else:
-            output = subprocess.run([ffmpeg_path, *(str(x) for x in args)], check=check)
-        return output.decoding(encoding='utf-8') if text else output
+            procinfo = subprocess.run([ffmpeg_path, *(str(x) for x in args)], check=check)
+        # Python < 3.7 does not support kwarg text
+        if text:
+            if procinfo.stdout:
+                procinfo.stdout = procinfo.stdout.decode(encoding='utf-8')
+            if procinfo.stderr:
+                procinfo.stderr = procinfo.stderr.decode(encoding='utf-8')
+        return procinfo
 
 
 def _norm_path(p):
