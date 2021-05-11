@@ -126,7 +126,10 @@ def version(ffmpeg_path=None):
     >>> media.version()
     '4.2.4-1ubuntu0.1'
     """
-    output = _ffmpeg("-version", capture_output=True, text=True, ffmpeg_path=ffmpeg_path)
+    try:
+        output = _ffmpeg("-version", capture_output=True, text=True, ffmpeg_path=ffmpeg_path, check=False)
+    except FileNotFoundError:
+        return None
     version_line = output.stdout.splitlines()[0] if output and output.stdout else ''
     parts = version_line.split()
     if parts and len(parts) > 3 and parts[0] == 'ffmpeg' and parts[1] == 'version':
@@ -219,3 +222,25 @@ def convert(infile, outfile, *args, ffmpeg_path=None):
     """
     infile, outfile = _validate_args(infile, outfile)
     _ffmpeg("-i", str(infile), *args, str(outfile), ffmpeg_path=ffmpeg_path)
+
+
+def metadata(infile, *args, ffmpeg_path=None):
+    """ Read metadata of a given media file
+    """
+    _proc = _ffmpeg("-i", str(infile), capture_output=True, text=True, ffmpeg_path=ffmpeg_path)
+    # ffmpeg output metadata to stderr instead of stdout
+    lines = _proc.stderr.splitlines()
+    meta = {}
+    for l in lines:
+        if l.startswith("    title"):
+            meta["title"] = l.split(":", maxsplit=1)[1].strip()
+        elif l.startswith("    artist"):
+            meta["artist"] = l.split(":", maxsplit=1)[1].strip()
+        elif l.startswith("    album"):
+            meta["album"] = l.split(":", maxsplit=1)[1].strip()
+        elif l.startswith("  Duration:"):
+            parts = l.split(",")
+            for p in parts:
+                k, v = p.split(":", maxsplit=1)
+                meta[k.strip()] = v.strip()
+    return meta
