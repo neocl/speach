@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ANNOTATION_DOCUMENT AUTHOR="Le Tuan Anh &lt;tuananh.ke@gmail.com>"
-    DATE="2021-05-11T12:48:32+08:00" FORMAT="3.0" VERSION="3.0"
+    DATE="2021-05-11T16:48:26+08:00" FORMAT="3.0" VERSION="3.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
     <LICENSE LICENSE_URL="https://creativecommons.org/licenses/by/4.0/"/>
     <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
@@ -676,25 +676,12 @@
     <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association"/>
     <CONSTRAINT
         DESCRIPTION="Time alignable annotations within the parent annotation's time interval, gaps are allowed" STEREOTYPE="Included_In"/>
-    <CONTROLLED_VOCABULARY CV_ID="MarkerType">
-        <DESCRIPTION LANG_REF="und"/>
-        <CV_ENTRY_ML CVE_ID="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
-            <CVE_VALUE LANG_REF="und">Narration</CVE_VALUE>
-        </CV_ENTRY_ML>
-        <CV_ENTRY_ML CVE_ID="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
-            <CVE_VALUE LANG_REF="und">Dialogue</CVE_VALUE>
-        </CV_ENTRY_ML>
-        <CV_ENTRY_ML CVE_ID="cveid_81b19643-b1db-48a1-968a-cde668abed90">
-            <CVE_VALUE LANG_REF="und">Meta</CVE_VALUE>
-        </CV_ENTRY_ML>
-        <CV_ENTRY_ML CVE_ID="cveid_af5a8341-c87b-4901-9e56-1badfe2ca80e">
-            <CVE_VALUE LANG_REF="und">Title</CVE_VALUE>
-        </CV_ENTRY_ML>
-    </CONTROLLED_VOCABULARY>
     <CONTROLLED_VOCABULARY CV_ID="Languages">
         <DESCRIPTION LANG_REF="und"/>
         <CV_ENTRY_ML CVE_ID="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
             <CVE_VALUE LANG_REF="und">English</CVE_VALUE>
         </CV_ENTRY_ML>
     </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="MarkerType" EXT_REF="er1"/>
+    <EXTERNAL_REF EXT_REF_ID="er1" TYPE="ecv" VALUE="file:/home/tuananh/Documents/ELAN/fables_cv.ecv"/>
 </ANNOTATION_DOCUMENT>
