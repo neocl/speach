@@ -14,6 +14,7 @@ from collections import OrderedDict
 from collections import defaultdict as dd
 from typing import List, Tuple
 import xml.etree.ElementTree as etree
+import warnings
 
 from chirptext import DataObject
 from chirptext import chio
@@ -108,7 +109,7 @@ class TimeSlot():
         return TimeSlot(ID=ID, value=value)
 
 
-class ELANAnnotation(DataObject):
+class Annotation(DataObject):
     """ An ELAN abstract annotation (for both alignable and non-alignable annotations)
     """
 
@@ -130,7 +131,7 @@ class ELANAnnotation(DataObject):
         return str(self.value)
 
 
-class ELANTimeAnnotation(ELANAnnotation):
+class TimeAnnotation(Annotation):
     """ An ELAN time-alignable annotation
     """
     def __init__(self, ID, from_ts, to_ts, value, xml_node=None, **kwargs):
@@ -156,7 +157,7 @@ class ELANTimeAnnotation(ELANAnnotation):
         return str(self.value)
 
 
-class ELANRefAnnotation(ELANAnnotation):
+class RefAnnotation(Annotation):
     """ An ELAN ref annotation (not time alignable)
     """
 
@@ -215,7 +216,7 @@ class LinguisticType(DataObject):
         return self.ID
 
 
-class ELANTier(DataObject):
+class Tier(DataObject):
     """ Represents an ELAN annotation tier """
 
     NONE = "None"
@@ -325,7 +326,7 @@ class ELANTier(DataObject):
             raise ValueError("ALIGNABLE_ANNOTATION node must contain an ANNOTATION_VALUE node")
         else:
             value = value_node.text if value_node.text else ''
-            anno = ELANTimeAnnotation(ann_id, from_ts, to_ts, value, cve_ref=cve_ref, xml_node=alignable)
+            anno = TimeAnnotation(ann_id, from_ts, to_ts, value, cve_ref=cve_ref, xml_node=alignable)
             self.annotations.append(anno)
             return anno
 
@@ -339,11 +340,11 @@ class ELANTier(DataObject):
             raise ValueError("REF_ANNOTATION node must contain an ANNOTATION_VALUE node")
         else:
             value = value_node.text if value_node.text else ''
-            anno = ELANRefAnnotation(ann_id, ref, previous, value, cve_ref=cve_ref, xml_node=ref_node)
+            anno = RefAnnotation(ann_id, ref, previous, value, cve_ref=cve_ref, xml_node=ref_node)
             self.annotations.append(anno)
             return anno
 
-    def _add_annotation_xml(self, annotation_node) -> ELANAnnotation:
+    def _add_annotation_xml(self, annotation_node) -> Annotation:
         """ [Internal function] Create an annotation from a node
 
         General users should not use this function.
@@ -359,7 +360,7 @@ class ELANTier(DataObject):
                 raise ValueError("ANNOTATION node must not be empty")
 
 
-class ELANCVEntry(DataObject):
+class CVEntry(DataObject):
 
     """ A controlled vocabulary entry """
 
@@ -377,7 +378,7 @@ class ELANCVEntry(DataObject):
         return self.value
 
 
-class ELANVocab(DataObject):
+class ControlledVocab(DataObject):
     """ ELAN Controlled Vocabulary """
     def __init__(self, ID, description, lang_ref, entries=None, **kwargs):
         super().__init__(**kwargs)
@@ -419,12 +420,12 @@ class ELANVocab(DataObject):
                 entry_lang_ref = entry_value_node.get('LANG_REF')
                 entry_value = entry_value_node.text
                 entry_description = entry_value_node.get('DESCRIPTION')
-                cv_entry = ELANCVEntry(entryID, entry_lang_ref, entry_value, description=entry_description)
+                cv_entry = CVEntry(entryID, entry_lang_ref, entry_value, description=entry_description)
                 entries.append(cv_entry)
-        return ELANVocab(CVID, description, lang_ref, entries=entries)
+        return ControlledVocab(CVID, description, lang_ref, entries=entries)
 
 
-class ELANContraint(DataObject):
+class Constraint(DataObject):
     """ ELAN Tier Constraints """
 
     def __init__(self, xml_node=None):
@@ -540,7 +541,7 @@ class ExternalRef(DataObject):
         return ExternalRef(xml_node=xml_node, **kwargs)    
 
 
-class ELANDoc(DataObject):
+class Doc(DataObject):
 
     """ This class represents an ELAN file (\*.eaf)
     """
@@ -599,17 +600,17 @@ class ELANDoc(DataObject):
         return tuple(self.__languages)
 
     @property
-    def roots(self) -> Tuple[ELANTier]:
+    def roots(self) -> Tuple[Tier]:
         """ All root-level tiers in this ELAN doc """
         return tuple(self.__roots)
 
     @property
-    def vocabs(self) -> Tuple[ELANVocab]:
+    def vocabs(self) -> Tuple[ControlledVocab]:
         """ A tuple of all existing controlled vocabulary objects in this ELAN file """
         return tuple(self.__vocabs)
 
     @property
-    def constraints(self) -> Tuple[ELANContraint]:
+    def constraints(self) -> Tuple[Constraint]:
         """ A tuple of all existing constraints in this ELAN file """
         return tuple(self.__constraints)
 
@@ -649,7 +650,7 @@ class ELANDoc(DataObject):
         """ Iterate through all tiers in this ELAN file """
         return iter(self.__tiers_map.values())
 
-    def tiers(self) -> Tuple[ELANTier]:
+    def tiers(self) -> Tuple[Tier]:
         """ Collect all existing Tier in this ELAN file
         """
         return tuple(self.__tiers_map.values())
@@ -682,8 +683,8 @@ class ELANDoc(DataObject):
         for prop_node in node.findall('PROPERTY'):
             self.properties[prop_node.get('NAME')] = prop_node.text
 
-    def _add_tier_xml(self, tier_node) -> ELANTier:
-        """ [Internal function] Parse a TIER XML node, create an ELANTier object and link it to this ELANDoc
+    def _add_tier_xml(self, tier_node) -> Tier:
+        """ [Internal function] Parse a TIER XML node, create an ELANTier object and link it to this ELAN Doc
 
         General users should not use this function.
         """
@@ -692,7 +693,7 @@ class ELANDoc(DataObject):
         tier_id = tier_node.get('TIER_ID')
         parent_ref = tier_node.get('PARENT_REF')
         default_locale = tier_node.get('DEFAULT_LOCALE')
-        tier = ELANTier(type_ref, participant, tier_id, doc=self, default_locale=default_locale, parent_ref=parent_ref, xml_node=tier_node)
+        tier = Tier(type_ref, participant, tier_id, doc=self, default_locale=default_locale, parent_ref=parent_ref, xml_node=tier_node)
         # add child annotations
         for elem in tier_node:
             tier._add_annotation_xml(elem)
@@ -704,7 +705,7 @@ class ELANDoc(DataObject):
         return tier
 
     def _add_timeslot_xml(self, timeslot_node):
-        """ [Internal function] Parse a TimeSlot XML node and link it to current ELANDoc
+        """ [Internal function] Parse a TimeSlot XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
@@ -712,49 +713,49 @@ class ELANDoc(DataObject):
         self.time_order[timeslot.ID] = timeslot
 
     def _add_linguistic_type_xml(self, elem):
-        """ [Internal function] Parse a LinguisticType XML node and link it to current ELANDoc
+        """ [Internal function] Parse a LinguisticType XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
         self.__linguistic_types.append(LinguisticType(elem))
 
     def _add_constraint_xml(self, elem):
-        """ [Internal function] Parse a CONSTRAINT XML node and link it to current ELANDoc
+        """ [Internal function] Parse a CONSTRAINT XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
-        self.__constraints.append(ELANContraint(elem))
+        self.__constraints.append(Constraint(elem))
 
     def _add_vocab_xml(self, elem):
-        """ [Internal function] Parse a CONTROLLED_VOCABULARY XML node and link it to current ELANDoc
+        """ [Internal function] Parse a CONTROLLED_VOCABULARY XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
-        self.__vocabs.append(ELANVocab.from_xml(elem))
+        self.__vocabs.append(ControlledVocab.from_xml(elem))
 
     def _add_license_xml(self, elem):
-        """ [Internal function] Parse a LICENSE XML node and link it to current ELANDoc
+        """ [Internal function] Parse a LICENSE XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
         self.__licenses.append(License.from_xml(elem))
 
     def _add_external_ref(self, elem):
-        """ [Internal function] Parse an EXTERNAL_REF XML node and link it to current ELANDoc
+        """ [Internal function] Parse an EXTERNAL_REF XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
         self.__external_refs.append(ExternalRef.from_xml(elem))
 
     def _add_language_xml(self, elem):
-        """ [Internal function] Parse a LANGUAGE XML node and link it to current ELANDoc
+        """ [Internal function] Parse a LANGUAGE XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
         self.__languages.append(Language.from_xml(elem))
 
     def to_csv_rows(self) -> CSVTable:
-        """ Convert this ELANDoc into a CSV-friendly structure (i.e. list of list of strings)
+        """ Convert this ELAN Doc into a CSV-friendly structure (i.e. list of list of strings)
 
         :return: A list of list of strings
         :rtype: CSVTable
@@ -780,7 +781,7 @@ class ELANDoc(DataObject):
 
     def save(self, path, encoding='utf-8', xml_declaration=None,
              default_namespace=None, short_empty_elements=True, *args, **kwargs):
-        """ Write ELANDoc to an EAF file """
+        """ Write ELAN Doc to an EAF file """
         _content = self.to_xml_bin(encoding=encoding,
                                    xml_declaration=xml_declaration,
                                    default_namespace=default_namespace,
@@ -832,7 +833,7 @@ class ELANDoc(DataObject):
     @classmethod
     def parse_eaf_stream(cls, eaf_stream):
         _root = etree.fromstring(eaf_stream.read())
-        _doc = ELANDoc()
+        _doc = Doc()
         _doc.__xml_root = _root
         _doc._update_info_xml(_root)
         for elem in _root:
@@ -882,9 +883,11 @@ class ELANDoc(DataObject):
         return _doc
 
 
-read_eaf = ELANDoc.read_eaf
-parse_eaf_stream = ELANDoc.parse_eaf_stream
+read_eaf = Doc.read_eaf
+parse_eaf_stream = Doc.parse_eaf_stream
 
 
 def open_eaf(*args, **kwargs):
-    ELANDoc.read_eaf(*args, **kwargs)
+    warnings.warn("elan.open_eaf() is deprecated and will be removed in near future. Use elan.read_eaf() instead.",
+                  DeprecationWarning, stacklevel=2)
+    Doc.read_eaf(*args, **kwargs)
