@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CV_RESOURCE AUTHOR="" DATE="2021-05-11T16:48:01+08:00" VERSION="0.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.8.xsd">
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00130975-001"
+        LANG_ID="und" LANG_LABEL="undetermined (und)"/>
+    <CONTROLLED_VOCABULARY CV_ID="MarkerType">
+        <DESCRIPTION LANG_REF="und"/>
+        <CV_ENTRY_ML CVE_ID="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="und">Narration</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="und">Dialogue</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_81b19643-b1db-48a1-968a-cde668abed90">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="und">Meta</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_af5a8341-c87b-4901-9e56-1badfe2ca80e">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="und">Title</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</CV_RESOURCE>

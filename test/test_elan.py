@@ -24,6 +24,8 @@ from speach import elan
 TEST_DIR = Path(os.path.abspath(os.path.realpath(__file__))).parent
 TEST_DATA = TEST_DIR / 'data'
 TEST_EAF = TEST_DATA / 'test.eaf'
+TEST_TSV = TEST_DATA / 'test.eaf.tsv'
+TEST_EAF2 = TEST_DIR / '../test_data/fables_01_03_aesop_64kb.eaf'
 
 
 # -------------------------------------------------------------------------------
@@ -78,7 +80,7 @@ class TestELAN(unittest.TestCase):
     def test_eaf_to_csv(self):
         eaf = read_eaf()
         actual = eaf.to_csv_rows()
-        expected = [tuple(row) for row in chio.read_tsv("./test/data/test.eaf.csv")]
+        expected = [tuple(row) for row in chio.read_tsv(TEST_TSV)]
         self.assertEqual(expected, actual)
 
     def test_write_elan(self):
@@ -94,6 +96,18 @@ class TestELAN(unittest.TestCase):
         self.assertEqual(ann.from_ts.sec, 1.04)
         self.assertEqual(ann.to_ts.sec, 2.33)
 
+    def test_elan_sample2(self):
+        eaf = elan.read_eaf(TEST_EAF2)
+        # test languages
+        self.assertTrue(eaf.languages)
+        self.assertEqual(eaf.languages[0].lang_def, "http://cdb.iso.org/lg/CDB-00130975-001")
+        # test licenses
+        self.assertTrue(eaf.licenses)
+        self.assertEqual(eaf.licenses[0].url, "https://creativecommons.org/licenses/by/4.0/")
+        # test external resource
+        self.assertTrue(eaf.external_refs)
+        self.assertEqual(eaf.external_refs[0].value, "file:/home/tuananh/Documents/ELAN/fables_cv.ecv")
+        
 
 # -------------------------------------------------------------------------------
 # MAIN
