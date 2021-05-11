@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences version="1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/Prefs_v1.1.xsd">
+    <pref key="FrameSize">
+        <Object class="java.awt.Dimension">1657,829</Object>
+    </pref>
+    <pref key="MultiTierViewer.TierSortingMode">
+        <Int>1</Int>
+    </pref>
+    <pref key="LayoutManager.SelectedTabIndex">
+        <Int>4</Int>
+    </pref>
+    <pref key="LayoutManager.VisibleMultiTierViewer">
+        <String>mpi.eudico.client.annotator.viewer.TimeLineViewer</String>
+    </pref>
+    <pref key="LayoutManager.ControlPanelWidth">
+        <Int>177</Int>
+    </pref>
+    <pref key="TextViewer.TierName">
+        <String>Story</String>
+    </pref>
+    <pref key="MultiTierViewer.ActiveTierName">
+        <String>StoryChunk</String>
+    </pref>
+    <pref key="SelectionEndTime">
+        <Long>19520</Long>
+    </pref>
+    <pref key="SignalViewer.ZoomLevel">
+        <Float>41.0</Float>
+    </pref>
+    <pref key="LayoutManager.CurrentMode">
+        <Int>1</Int>
+    </pref>
+    <prefGroup key="CommentViewer.Columns">
+        <pref key="Sender">
+            <Int>0</Int>
+        </pref>
+        <pref key="Comment">
+            <Int>100</Int>
+        </pref>
+        <pref key="Creation Date">
+            <Int>100</Int>
+        </pref>
+        <pref key="Tier">
+            <Int>100</Int>
+        </pref>
+        <pref key="Modification Date">
+            <Int>99</Int>
+        </pref>
+        <pref key="Recipient">
+            <Int>0</Int>
+        </pref>
+        <pref key="Start Time">
+            <Int>99</Int>
+        </pref>
+        <pref key="Initials">
+            <Int>99</Int>
+        </pref>
+        <pref key="End Time">
+            <Int>99</Int>
+        </pref>
+        <pref key="Thread">
+            <Int>99</Int>
+        </pref>
+    </prefGroup>
+    <prefList key="CommentViewer.Columns.Order">
+        <String>Start Time</String>
+        <String>End Time</String>
+        <String>Tier</String>
+        <String>Initials</String>
+        <String>Comment</String>
+        <String>Thread</String>
+        <String>Sender</String>
+        <String>Recipient</String>
+        <String>Creation Date</String>
+        <String>Modification Date</String>
+    </prefList>
+    <pref key="ActiveRecognizerName">
+        <String>AAM-LR Phone level audio segmentation</String>
+    </pref>
+    <pref key="FrameLocation">
+        <Object class="java.awt.Point">222,228</Object>
+    </pref>
+    <pref key="TimeLineViewer.ZoomLevel">
+        <Float>41.0</Float>
+    </pref>
+    <pref key="SelectionBeginTime">
+        <Long>16260</Long>
+    </pref>
+    <prefGroup key="AAM-LR Phone level audio segmentation">
+        <pref key="base_url">
+            <String>http://lux17.mpi.nl/aamlr/</String>
+        </pref>
+        <pref key="source_audio">
+            <String>/home/tuananh/Documents/ELAN/fables_01_03_aesop_64kb.wav</String>
+        </pref>
+    </prefGroup>
+    <prefList key="MultiTierViewer.HiddenTiers"/>
+    <pref key="TimeScaleBeginTime">
+        <Long>0</Long>
+    </pref>
+    <pref key="MediaTime">
+        <Long>-1</Long>
+    </pref>
+    <prefGroup key="TierColors">
+        <pref key="SectionMarker">
+            <Object class="java.awt.Color">0,160,160</Object>
+        </pref>
+        <pref key="Story">
+            <Object class="java.awt.Color">0,0,160</Object>
+        </pref>
+    </prefGroup>
+    <prefList key="MultiTierViewer.TierOrder">
+        <String>Story</String>
+        <String>StoryChunk</String>
+        <String>StoryChunkLanguage</String>
+        <String>StoryChunkType</String>
+        <String>SectionMarker</String>
+    </prefList>
+    <pref key="LayoutManager.SplitPaneDividerLocation">
+        <Int>189</Int>
+    </pref>
+    <prefList key="CommentViewer.Columns.Hidden">
+        <String>Sender</String>
+        <String>Recipient</String>
+    </prefList>
+</preferences>
