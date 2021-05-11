@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="Le Tuan Anh &lt;tuananh.ke@gmail.com>"
+    DATE="2021-05-11T12:48:32+08:00" FORMAT="3.0" VERSION="3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
+    <LICENSE LICENSE_URL="https://creativecommons.org/licenses/by/4.0/"/>
+    <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
+        <MEDIA_DESCRIPTOR
+            MEDIA_URL="file:///home/tuananh/Documents/ELAN/fables_01_03_aesop_64kb.wav"
+            MIME_TYPE="audio/x-wav" RELATIVE_MEDIA_URL="./fables_01_03_aesop_64kb.wav"/>
+        <PROPERTY NAME="URN">urn:nl-mpi-tools-elan-eaf:2d820b01-3e0a-419a-85e6-aac56dd2bb25</PROPERTY>
+        <PROPERTY NAME="lastUsedAnnotationId">97</PROPERTY>
+    </HEADER>
+    <TIME_ORDER>
+        <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="454"/>
+        <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="610"/>
+        <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="610"/>
+        <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="2710"/>
+        <TIME_SLOT TIME_SLOT_ID="ts5" TIME_VALUE="2710"/>
+        <TIME_SLOT TIME_SLOT_ID="ts6" TIME_VALUE="3300"/>
+        <TIME_SLOT TIME_SLOT_ID="ts7" TIME_VALUE="3300"/>
+        <TIME_SLOT TIME_SLOT_ID="ts8" TIME_VALUE="6360"/>
+        <TIME_SLOT TIME_SLOT_ID="ts9" TIME_VALUE="6360"/>
+        <TIME_SLOT TIME_SLOT_ID="ts10" TIME_VALUE="6730"/>
+        <TIME_SLOT TIME_SLOT_ID="ts11" TIME_VALUE="6735"/>
+        <TIME_SLOT TIME_SLOT_ID="ts12" TIME_VALUE="9355"/>
+        <TIME_SLOT TIME_SLOT_ID="ts13" TIME_VALUE="9456"/>
+        <TIME_SLOT TIME_SLOT_ID="ts14" TIME_VALUE="12156"/>
+        <TIME_SLOT TIME_SLOT_ID="ts15" TIME_VALUE="12270"/>
+        <TIME_SLOT TIME_SLOT_ID="ts16" TIME_VALUE="13275"/>
+        <TIME_SLOT TIME_SLOT_ID="ts17" TIME_VALUE="13275"/>
+        <TIME_SLOT TIME_SLOT_ID="ts18" TIME_VALUE="15895"/>
+        <TIME_SLOT TIME_SLOT_ID="ts19" TIME_VALUE="15895"/>
+        <TIME_SLOT TIME_SLOT_ID="ts20" TIME_VALUE="16260"/>
+        <TIME_SLOT TIME_SLOT_ID="ts21" TIME_VALUE="16260"/>
+        <TIME_SLOT TIME_SLOT_ID="ts22" TIME_VALUE="19520"/>
+        <TIME_SLOT TIME_SLOT_ID="ts23" TIME_VALUE="19520"/>
+        <TIME_SLOT TIME_SLOT_ID="ts24" TIME_VALUE="21526"/>
+        <TIME_SLOT TIME_SLOT_ID="ts25" TIME_VALUE="21754"/>
+        <TIME_SLOT TIME_SLOT_ID="ts26" TIME_VALUE="21899"/>
+        <TIME_SLOT TIME_SLOT_ID="ts27" TIME_VALUE="21899"/>
+        <TIME_SLOT TIME_SLOT_ID="ts28" TIME_VALUE="23608"/>
+        <TIME_SLOT TIME_SLOT_ID="ts29" TIME_VALUE="23608"/>
+        <TIME_SLOT TIME_SLOT_ID="ts30" TIME_VALUE="23821"/>
+        <TIME_SLOT TIME_SLOT_ID="ts31" TIME_VALUE="23821"/>
+        <TIME_SLOT TIME_SLOT_ID="ts32" TIME_VALUE="26339"/>
+        <TIME_SLOT TIME_SLOT_ID="ts33" TIME_VALUE="26339"/>
+        <TIME_SLOT TIME_SLOT_ID="ts34" TIME_VALUE="26490"/>
+        <TIME_SLOT TIME_SLOT_ID="ts35" TIME_VALUE="27472"/>
+        <TIME_SLOT TIME_SLOT_ID="ts36" TIME_VALUE="27472"/>
+        <TIME_SLOT TIME_SLOT_ID="ts37" TIME_VALUE="30999"/>
+        <TIME_SLOT TIME_SLOT_ID="ts38" TIME_VALUE="30999"/>
+        <TIME_SLOT TIME_SLOT_ID="ts39" TIME_VALUE="31254"/>
+        <TIME_SLOT TIME_SLOT_ID="ts40" TIME_VALUE="31508"/>
+        <TIME_SLOT TIME_SLOT_ID="ts41" TIME_VALUE="34699"/>
+        <TIME_SLOT TIME_SLOT_ID="ts42" TIME_VALUE="35099"/>
+        <TIME_SLOT TIME_SLOT_ID="ts43" TIME_VALUE="36690"/>
+        <TIME_SLOT TIME_SLOT_ID="ts44" TIME_VALUE="36845"/>
+        <TIME_SLOT TIME_SLOT_ID="ts45" TIME_VALUE="42117"/>
+        <TIME_SLOT TIME_SLOT_ID="ts46" TIME_VALUE="42335"/>
+        <TIME_SLOT TIME_SLOT_ID="ts47" TIME_VALUE="42845"/>
+        <TIME_SLOT TIME_SLOT_ID="ts48" TIME_VALUE="43135"/>
+        <TIME_SLOT TIME_SLOT_ID="ts49" TIME_VALUE="45617"/>
+        <TIME_SLOT TIME_SLOT_ID="ts50" TIME_VALUE="45817"/>
+        <TIME_SLOT TIME_SLOT_ID="ts51" TIME_VALUE="49190"/>
+        <TIME_SLOT TIME_SLOT_ID="ts52" TIME_VALUE="49326"/>
+        <TIME_SLOT TIME_SLOT_ID="ts53" TIME_VALUE="49890"/>
+        <TIME_SLOT TIME_SLOT_ID="ts54" TIME_VALUE="49959"/>
+        <TIME_SLOT TIME_SLOT_ID="ts55" TIME_VALUE="51295"/>
+        <TIME_SLOT TIME_SLOT_ID="ts56" TIME_VALUE="51450"/>
+        <TIME_SLOT TIME_SLOT_ID="ts57" TIME_VALUE="53186"/>
+        <TIME_SLOT TIME_SLOT_ID="ts58" TIME_VALUE="53708"/>
+        <TIME_SLOT TIME_SLOT_ID="ts59" TIME_VALUE="56935"/>
+        <TIME_SLOT TIME_SLOT_ID="ts60" TIME_VALUE="57254"/>
+        <TIME_SLOT TIME_SLOT_ID="ts61" TIME_VALUE="57726"/>
+        <TIME_SLOT TIME_SLOT_ID="ts62" TIME_VALUE="57854"/>
+        <TIME_SLOT TIME_SLOT_ID="ts63" TIME_VALUE="59663"/>
+        <TIME_SLOT TIME_SLOT_ID="ts64" TIME_VALUE="59735"/>
+        <TIME_SLOT TIME_SLOT_ID="ts65" TIME_VALUE="64690"/>
+        <TIME_SLOT TIME_SLOT_ID="ts66" TIME_VALUE="65253"/>
+        <TIME_SLOT TIME_SLOT_ID="ts67" TIME_VALUE="66853"/>
+        <TIME_SLOT TIME_SLOT_ID="ts68" TIME_VALUE="67044"/>
+        <TIME_SLOT TIME_SLOT_ID="ts69" TIME_VALUE="67536"/>
+        <TIME_SLOT TIME_SLOT_ID="ts70" TIME_VALUE="67536"/>
+        <TIME_SLOT TIME_SLOT_ID="ts71" TIME_VALUE="71781"/>
+        <TIME_SLOT TIME_SLOT_ID="ts72" TIME_VALUE="71781"/>
+        <TIME_SLOT TIME_SLOT_ID="ts73" TIME_VALUE="72290"/>
+        <TIME_SLOT TIME_SLOT_ID="ts74" TIME_VALUE="72496"/>
+        <TIME_SLOT TIME_SLOT_ID="ts75" TIME_VALUE="73132"/>
+        <TIME_SLOT TIME_SLOT_ID="ts76" TIME_VALUE="73135"/>
+        <TIME_SLOT TIME_SLOT_ID="ts77" TIME_VALUE="73875"/>
+        <TIME_SLOT TIME_SLOT_ID="ts78" TIME_VALUE="74245"/>
+        <TIME_SLOT TIME_SLOT_ID="ts79" TIME_VALUE="76266"/>
+        <TIME_SLOT TIME_SLOT_ID="ts80" TIME_VALUE="76360"/>
+        <TIME_SLOT TIME_SLOT_ID="ts81" TIME_VALUE="79946"/>
+        <TIME_SLOT TIME_SLOT_ID="ts82" TIME_VALUE="79971"/>
+        <TIME_SLOT TIME_SLOT_ID="ts83" TIME_VALUE="82585"/>
+        <TIME_SLOT TIME_SLOT_ID="ts84" TIME_VALUE="82772"/>
+        <TIME_SLOT TIME_SLOT_ID="ts85" TIME_VALUE="84553"/>
+        <TIME_SLOT TIME_SLOT_ID="ts86" TIME_VALUE="84553"/>
+        <TIME_SLOT TIME_SLOT_ID="ts87" TIME_VALUE="91899"/>
+        <TIME_SLOT TIME_SLOT_ID="ts88" TIME_VALUE="91899"/>
+        <TIME_SLOT TIME_SLOT_ID="ts89" TIME_VALUE="92440"/>
+        <TIME_SLOT TIME_SLOT_ID="ts90" TIME_VALUE="94226"/>
+        <TIME_SLOT TIME_SLOT_ID="ts91" TIME_VALUE="94226"/>
+        <TIME_SLOT TIME_SLOT_ID="ts92" TIME_VALUE="97281"/>
+        <TIME_SLOT TIME_SLOT_ID="ts93" TIME_VALUE="97281"/>
+        <TIME_SLOT TIME_SLOT_ID="ts94" TIME_VALUE="97958"/>
+    </TIME_ORDER>
+    <TIER ANNOTATOR="leta" LINGUISTIC_TYPE_REF="Utterance"
+        PARTICIPANT="P001" TIER_ID="Story">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a1"
+                TIME_SLOT_REF1="ts2" TIME_SLOT_REF2="ts4">
+                <ANNOTATION_VALUE>This is a libriVox recording</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a2"
+                TIME_SLOT_REF1="ts6" TIME_SLOT_REF2="ts8">
+                <ANNOTATION_VALUE>all libriVox recordings are in the public domain</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a3"
+                TIME_SLOT_REF1="ts10" TIME_SLOT_REF2="ts15">
+                <ANNOTATION_VALUE>for more information or volunteer, please visit libriVox dot org</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a4"
+                TIME_SLOT_REF1="ts16" TIME_SLOT_REF2="ts18">
+                <ANNOTATION_VALUE>recording by Kristin LeMoine</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a5"
+                TIME_SLOT_REF1="ts20" TIME_SLOT_REF2="ts22">
+                <ANNOTATION_VALUE>green-k-r-i dot com</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a6"
+                TIME_SLOT_REF1="ts26" TIME_SLOT_REF2="ts28">
+                <ANNOTATION_VALUE>Aesop's fables</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a7"
+                TIME_SLOT_REF1="ts30" TIME_SLOT_REF2="ts32">
+                <ANNOTATION_VALUE>The Cat and the Mice</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a8"
+                TIME_SLOT_REF1="ts35" TIME_SLOT_REF2="ts37">
+                <ANNOTATION_VALUE>There was once a house that was overrun with Mice.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a9"
+                TIME_SLOT_REF1="ts39" TIME_SLOT_REF2="ts46">
+                <ANNOTATION_VALUE>A Cat heard of this, and said to herself, "That's the place for me," and off she went and took up her quarters in the house, and caught the Mice one by one and ate them.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a10"
+                TIME_SLOT_REF1="ts47" TIME_SLOT_REF2="ts52">
+                <ANNOTATION_VALUE>At last the Mice could stand it no longer, and they determined to take to their holes and stay there.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a11"
+                TIME_SLOT_REF1="ts53" TIME_SLOT_REF2="ts60">
+                <ANNOTATION_VALUE>"That's awkward," said the Cat to herself: "the only thing to do is to coax them out by a trick."</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a12"
+                TIME_SLOT_REF1="ts61" TIME_SLOT_REF2="ts68">
+                <ANNOTATION_VALUE>So she considered a while, and then climbed up the wall and let herself hang down by her hind legs from a peg, and pretended to be dead.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a13"
+                TIME_SLOT_REF1="ts69" TIME_SLOT_REF2="ts71">
+                <ANNOTATION_VALUE>By and by a Mouse peeped out and saw the Cat hanging there.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a14"
+                TIME_SLOT_REF1="ts73" TIME_SLOT_REF2="ts84">
+                <ANNOTATION_VALUE>"Aha!" it cried, "you're very clever, madam, no doubt: but you may turn yourself into a bag of meal hanging there, if you like, yet you won't catch us coming anywhere near you."</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a15"
+                TIME_SLOT_REF1="ts85" TIME_SLOT_REF2="ts87">
+                <ANNOTATION_VALUE>If you are wise you won't be deceived by the innocent airs of those whom you have once found to be dangerous.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a16"
+                TIME_SLOT_REF1="ts90" TIME_SLOT_REF2="ts92">
+                <ANNOTATION_VALUE>end of "the Cat and the Mice"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="leta" LINGUISTIC_TYPE_REF="Marker" TIER_ID="SectionMarker">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a17"
+                CVE_REF="cveid_81b19643-b1db-48a1-968a-cde668abed90"
+                TIME_SLOT_REF1="ts1" TIME_SLOT_REF2="ts24">
+                <ANNOTATION_VALUE>Meta</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a18"
+                CVE_REF="cveid_af5a8341-c87b-4901-9e56-1badfe2ca80e"
+                TIME_SLOT_REF1="ts25" TIME_SLOT_REF2="ts34">
+                <ANNOTATION_VALUE>Title</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a19"
+                CVE_REF="cveid_81b19643-b1db-48a1-968a-cde668abed90"
+                TIME_SLOT_REF1="ts89" TIME_SLOT_REF2="ts94">
+                <ANNOTATION_VALUE>Meta</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="leta" LINGUISTIC_TYPE_REF="Chunk"
+        PARENT_REF="Story" PARTICIPANT="KL" TIER_ID="StoryChunk">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a25"
+                TIME_SLOT_REF1="ts3" TIME_SLOT_REF2="ts5">
+                <ANNOTATION_VALUE>This is a libriVox recording</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a26"
+                TIME_SLOT_REF1="ts7" TIME_SLOT_REF2="ts9">
+                <ANNOTATION_VALUE>all libriVox recordings are in the public domain</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a27"
+                TIME_SLOT_REF1="ts11" TIME_SLOT_REF2="ts12">
+                <ANNOTATION_VALUE>for more information or volunteer</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a28"
+                TIME_SLOT_REF1="ts13" TIME_SLOT_REF2="ts14">
+                <ANNOTATION_VALUE>please visit libriVox dot org</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a29"
+                TIME_SLOT_REF1="ts17" TIME_SLOT_REF2="ts19">
+                <ANNOTATION_VALUE>recording by Kristin LeMoine</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a30"
+                TIME_SLOT_REF1="ts21" TIME_SLOT_REF2="ts23">
+                <ANNOTATION_VALUE>green-k-r-i dot com</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a31"
+                TIME_SLOT_REF1="ts27" TIME_SLOT_REF2="ts29">
+                <ANNOTATION_VALUE>Aesop's fables</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a32"
+                TIME_SLOT_REF1="ts31" TIME_SLOT_REF2="ts33">
+                <ANNOTATION_VALUE>The Cat and the Mice</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a33"
+                TIME_SLOT_REF1="ts36" TIME_SLOT_REF2="ts38">
+                <ANNOTATION_VALUE>There was once a house that was overrun with Mice.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a20"
+                TIME_SLOT_REF1="ts40" TIME_SLOT_REF2="ts41">
+                <ANNOTATION_VALUE>A Cat heard of this, and said to herself,</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a21"
+                TIME_SLOT_REF1="ts42" TIME_SLOT_REF2="ts43">
+                <ANNOTATION_VALUE>"That's the place for me,"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a22"
+                TIME_SLOT_REF1="ts44" TIME_SLOT_REF2="ts45">
+                <ANNOTATION_VALUE>and off she went and took up her quarters in the house, and caught the Mice one by one and ate them.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a23"
+                TIME_SLOT_REF1="ts48" TIME_SLOT_REF2="ts49">
+                <ANNOTATION_VALUE>At last the Mice could stand it no longer,</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a24"
+                TIME_SLOT_REF1="ts50" TIME_SLOT_REF2="ts51">
+                <ANNOTATION_VALUE>and they determined to take to their holes and stay there.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a34"
+                TIME_SLOT_REF1="ts54" TIME_SLOT_REF2="ts55">
+                <ANNOTATION_VALUE>"That's awkward,"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a35"
+                TIME_SLOT_REF1="ts56" TIME_SLOT_REF2="ts57">
+                <ANNOTATION_VALUE>said the Cat to herself:</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a36"
+                TIME_SLOT_REF1="ts58" TIME_SLOT_REF2="ts59">
+                <ANNOTATION_VALUE>"the only thing to do is to coax them out by a trick."</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a37"
+                TIME_SLOT_REF1="ts62" TIME_SLOT_REF2="ts63">
+                <ANNOTATION_VALUE>So she considered a while,</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a38"
+                TIME_SLOT_REF1="ts64" TIME_SLOT_REF2="ts65">
+                <ANNOTATION_VALUE>and then climbed up the wall and let herself hang down by her hind legs from a peg,</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a39"
+                TIME_SLOT_REF1="ts66" TIME_SLOT_REF2="ts67">
+                <ANNOTATION_VALUE>and pretended to be dead.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a40"
+                TIME_SLOT_REF1="ts70" TIME_SLOT_REF2="ts72">
+                <ANNOTATION_VALUE>By and by a Mouse peeped out and saw the Cat hanging there.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a41"
+                TIME_SLOT_REF1="ts74" TIME_SLOT_REF2="ts75">
+                <ANNOTATION_VALUE>"Aha!"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a42"
+                TIME_SLOT_REF1="ts76" TIME_SLOT_REF2="ts77">
+                <ANNOTATION_VALUE>it cried, </ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a43"
+                TIME_SLOT_REF1="ts78" TIME_SLOT_REF2="ts79">
+                <ANNOTATION_VALUE>"you're very clever, madam, no doubt:</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a44"
+                TIME_SLOT_REF1="ts80" TIME_SLOT_REF2="ts81">
+                <ANNOTATION_VALUE>but you may turn yourself into a bag of meal hanging there, if you like,</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a45"
+                TIME_SLOT_REF1="ts82" TIME_SLOT_REF2="ts83">
+                <ANNOTATION_VALUE>yet you won't catch us coming anywhere near you."</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a46"
+                TIME_SLOT_REF1="ts86" TIME_SLOT_REF2="ts88">
+                <ANNOTATION_VALUE>If you are wise you won't be deceived by the innocent airs of those whom you have once found to be dangerous.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a47"
+                TIME_SLOT_REF1="ts91" TIME_SLOT_REF2="ts93">
+                <ANNOTATION_VALUE>end of "the Cat and the Mice"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="leta" LINGUISTIC_TYPE_REF="ChunkLanguage"
+        PARENT_REF="StoryChunk" PARTICIPANT="KL" TIER_ID="StoryChunkLanguage">
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a48" ANNOTATION_REF="a25" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a49" ANNOTATION_REF="a26" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a50" ANNOTATION_REF="a27" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a51" ANNOTATION_REF="a28" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a52" ANNOTATION_REF="a29" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a53" ANNOTATION_REF="a30" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a54" ANNOTATION_REF="a31" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a55" ANNOTATION_REF="a32" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a56" ANNOTATION_REF="a33" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a57" ANNOTATION_REF="a20" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a58" ANNOTATION_REF="a21" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a59" ANNOTATION_REF="a22" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a60" ANNOTATION_REF="a23" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a61" ANNOTATION_REF="a24" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a62" ANNOTATION_REF="a34" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a63" ANNOTATION_REF="a35" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a64" ANNOTATION_REF="a36" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a65" ANNOTATION_REF="a37" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a66" ANNOTATION_REF="a38" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a67" ANNOTATION_REF="a39" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a68" ANNOTATION_REF="a40" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a69" ANNOTATION_REF="a41" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a70" ANNOTATION_REF="a42" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a71" ANNOTATION_REF="a43" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a72" ANNOTATION_REF="a44" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a73" ANNOTATION_REF="a45" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a74" ANNOTATION_REF="a46" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a75" ANNOTATION_REF="a47" CVE_REF="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+                <ANNOTATION_VALUE>English</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="leta" LINGUISTIC_TYPE_REF="ChunkType"
+        PARENT_REF="StoryChunk" PARTICIPANT="KL" TIER_ID="StoryChunkType">
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a76" ANNOTATION_REF="a31" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a77" ANNOTATION_REF="a32" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a78" ANNOTATION_REF="a33" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a79" ANNOTATION_REF="a20" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a80" ANNOTATION_REF="a21" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a81" ANNOTATION_REF="a22" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a82" ANNOTATION_REF="a23" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a83" ANNOTATION_REF="a24" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a84" ANNOTATION_REF="a34" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a85" ANNOTATION_REF="a35" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a86" ANNOTATION_REF="a36" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a87" ANNOTATION_REF="a37" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a88" ANNOTATION_REF="a38" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a89" ANNOTATION_REF="a39" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a90" ANNOTATION_REF="a40" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a91" ANNOTATION_REF="a41" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a92" ANNOTATION_REF="a42" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a93" ANNOTATION_REF="a43" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a94" ANNOTATION_REF="a44" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a95" ANNOTATION_REF="a45" CVE_REF="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+                <ANNOTATION_VALUE>Dialogue</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a96" ANNOTATION_REF="a46" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a97" ANNOTATION_REF="a47" CVE_REF="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+                <ANNOTATION_VALUE>Narration</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="Utterance" TIME_ALIGNABLE="true"/>
+    <LINGUISTIC_TYPE CONTROLLED_VOCABULARY_REF="MarkerType"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Marker" TIME_ALIGNABLE="true"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
+        CONTROLLED_VOCABULARY_REF="Languages" GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="ChunkLanguage" TIME_ALIGNABLE="false"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
+        CONTROLLED_VOCABULARY_REF="MarkerType"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="ChunkType" TIME_ALIGNABLE="false"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Included_In"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Chunk" TIME_ALIGNABLE="true"/>
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00130975-001"
+        LANG_ID="und" LANG_LABEL="undetermined (und)"/>
+    <CONSTRAINT
+        DESCRIPTION="Time subdivision of parent annotation's time interval, no time gaps allowed within this interval" STEREOTYPE="Time_Subdivision"/>
+    <CONSTRAINT
+        DESCRIPTION="Symbolic subdivision of a parent annotation. Annotations refering to the same parent are ordered" STEREOTYPE="Symbolic_Subdivision"/>
+    <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association"/>
+    <CONSTRAINT
+        DESCRIPTION="Time alignable annotations within the parent annotation's time interval, gaps are allowed" STEREOTYPE="Included_In"/>
+    <CONTROLLED_VOCABULARY CV_ID="MarkerType">
+        <DESCRIPTION LANG_REF="und"/>
+        <CV_ENTRY_ML CVE_ID="cveid_ab0c94c7-cac2-4df3-a83e-81671aec9aaa">
+            <CVE_VALUE LANG_REF="und">Narration</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_0654a78a-74c6-4c47-8bd2-9117ad26d15d">
+            <CVE_VALUE LANG_REF="und">Dialogue</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_81b19643-b1db-48a1-968a-cde668abed90">
+            <CVE_VALUE LANG_REF="und">Meta</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_af5a8341-c87b-4901-9e56-1badfe2ca80e">
+            <CVE_VALUE LANG_REF="und">Title</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="Languages">
+        <DESCRIPTION LANG_REF="und"/>
+        <CV_ENTRY_ML CVE_ID="cveid_5c3f1d1c-0cf8-4f16-a4fe-80e96ca471d7">
+            <CVE_VALUE LANG_REF="und">English</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</ANNOTATION_DOCUMENT>
