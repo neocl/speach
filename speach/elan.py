@@ -429,15 +429,115 @@ class ELANContraint(DataObject):
 
     def __init__(self, xml_node=None):
         super().__init__()
+        self.__xml_node = xml_node
         if xml_node is not None:
             self.description = xml_node.get('DESCRIPTION')
             self.stereotype = xml_node.get('STEREOTYPE')
 
 
-TierTuple = Tuple[ELANTier]
-LinguisticTypeTuple= Tuple[LinguisticType]
-ConstraintTuple = Tuple[ELANContraint]
-VocabTuple = Tuple[ELANVocab]
+class Language(DataObject):
+    """ Language information """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ID = xml_node.get('LANG_ID', default="")
+            self.__lang_def = xml_node.get('LANG_DEF', default="")
+            self.__label = xml_node.get('LANG_LABEL', default="")
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def lang_def(self):
+        """ URL of the language """
+        return self.__lang_def
+
+    @property
+    def label(self):
+        """ Label of the language """
+        return self.__label
+
+    def __repr__(self):
+        return f"{self.lang_def}#{self.label}"
+
+    def __str__(self):
+        return self.lang_def
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return Language(xml_node=xml_node, **kwargs)
+
+
+class License(DataObject):
+    """ License information """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__url = xml_node.get('LICENSE_URL', default="")
+
+    @property
+    def url(self):
+        return self.__url
+
+    def __repr__(self):
+        if not self.url:
+            return "License()"
+        else:
+            return f"License(url={repr(self.url)})"
+
+    def __str__(self):
+        return self.url
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return License(xml_node=xml_node, **kwargs)
+
+
+class ExternalRef(DataObject):
+    """ An external resource (normally an external controlled vocabulary)
+
+    <EXTERNAL_REF EXT_REF_ID="er1" TYPE="ecv" VALUE="file:/home/tuananh/Documents/ELAN/fables_cv.ecv"/>
+    """
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ref_id = xml_node.get('EXT_REF_ID')
+            self.__type = xml_node.get('TYPE')
+            self.__value = xml_node.get('VALUE')
+
+    @property
+    def ref_id(self):
+        """ Reference ID of this external resource """
+        return self.__ref_id
+
+    @property
+    def type(self):
+        """ Type of external resource 
+        
+        - ecv: External controlled vocabulary
+        """
+        return self.__type
+
+    @property
+    def value(self):
+        """ URL to external resource """
+        return self.__value
+
+    def __repr__(self):
+        return f"{self.type}/{self.ref_id}/{self.value}"
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return ExternalRef(xml_node=xml_node, **kwargs)    
 
 
 class ELANDoc(DataObject):
@@ -455,6 +555,9 @@ class ELANDoc(DataObject):
         self.__constraints = []
         self.__vocabs = []
         self.__roots = []
+        self.__licenses = []
+        self.__external_refs = []
+        self.__languages = []
         self.path = None
         self.__xml_root = None
         self.__xml_header_node = None
@@ -481,22 +584,37 @@ class ELANDoc(DataObject):
         return self.__ann_map.get(ID, None)
 
     @property
-    def roots(self) -> TierTuple:
+    def licenses(self) -> Tuple[License]:
+        """ Get all licenses """
+        return tuple(self.__licenses)
+
+    @property
+    def external_refs(self) -> Tuple[ExternalRef]:
+        """ Get all external references """
+        return tuple(self.__external_refs)
+
+    @property
+    def languages(self) -> Tuple[Language]:
+        """ Get all languages """
+        return tuple(self.__languages)
+
+    @property
+    def roots(self) -> Tuple[ELANTier]:
         """ All root-level tiers in this ELAN doc """
         return tuple(self.__roots)
 
     @property
-    def vocabs(self) -> VocabTuple:
+    def vocabs(self) -> Tuple[ELANVocab]:
         """ A tuple of all existing controlled vocabulary objects in this ELAN file """
         return tuple(self.__vocabs)
 
     @property
-    def constraints(self) -> ConstraintTuple:
+    def constraints(self) -> Tuple[ELANContraint]:
         """ A tuple of all existing constraints in this ELAN file """
         return tuple(self.__constraints)
 
     @property
-    def linguistic_types(self) -> LinguisticTypeTuple:
+    def linguistic_types(self) -> Tuple[LinguisticType]:
         """ A tuple of all existing linguistic types in this ELAN file """
         return tuple(self.__linguistic_types)
 
@@ -531,7 +649,7 @@ class ELANDoc(DataObject):
         """ Iterate through all tiers in this ELAN file """
         return iter(self.__tiers_map.values())
 
-    def tiers(self) -> TierTuple:
+    def tiers(self) -> Tuple[ELANTier]:
         """ Collect all existing Tier in this ELAN file
         """
         return tuple(self.__tiers_map.values())
@@ -613,6 +731,27 @@ class ELANDoc(DataObject):
         General users should not use this function.
         """
         self.__vocabs.append(ELANVocab.from_xml(elem))
+
+    def _add_license_xml(self, elem):
+        """ [Internal function] Parse a LICENSE XML node and link it to current ELANDoc
+
+        General users should not use this function.
+        """
+        self.__licenses.append(License.from_xml(elem))
+
+    def _add_external_ref(self, elem):
+        """ [Internal function] Parse an EXTERNAL_REF XML node and link it to current ELANDoc
+
+        General users should not use this function.
+        """
+        self.__external_refs.append(ExternalRef.from_xml(elem))
+
+    def _add_language_xml(self, elem):
+        """ [Internal function] Parse a LANGUAGE XML node and link it to current ELANDoc
+
+        General users should not use this function.
+        """
+        self.__languages.append(Language.from_xml(elem))
 
     def to_csv_rows(self) -> CSVTable:
         """ Convert this ELANDoc into a CSV-friendly structure (i.e. list of list of strings)
@@ -711,8 +850,12 @@ class ELANDoc(DataObject):
                 _doc._add_constraint_xml(elem)
             elif elem.tag == 'CONTROLLED_VOCABULARY':
                 _doc._add_vocab_xml(elem)
+            elif elem.tag == 'LICENSE':
+                _doc._add_license_xml(elem)
+            elif elem.tag == "EXTERNAL_REF":
+                _doc._add_external_ref(elem)
             elif elem.tag == 'LANGUAGE':
-                logging.getLogger(__name__).info("LANGUAGE tag is not yet supported in this version")
+                _doc._add_language_xml(elem)
             else:
                 logging.getLogger(__name__).warning(f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
         # linking parts together
@@ -739,6 +882,9 @@ class ELANDoc(DataObject):
         return _doc
 
 
-open_eaf = ELANDoc.read_eaf
 read_eaf = ELANDoc.read_eaf
 parse_eaf_stream = ELANDoc.parse_eaf_stream
+
+
+def open_eaf(*args, **kwargs):
+    ELANDoc.read_eaf(*args, **kwargs)
