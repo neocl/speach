@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ColTimeList xmlns="http://mpi.nl/tools/coltime"
+    xmlns:NS1="http://www.w3.org/2001/XMLSchema-instance" NS1:schemaLocation="http://mpi.nl/tools/coltime http://www.mpi.nl/tools/coltime/schema.xsd">
+    <ColTime ColTimeMessageID="edd4480c-836c-4023-a81e-fdab908b83d7" URL="">
+        <Metadata>
+            <Initials/>
+            <ThreadID/>
+            <Sender/>
+            <Recipient/>
+            <CreationDate>2021-05-11T04:47:27.147Z</CreationDate>
+            <ModificationDate>2021-05-11T04:47:27.147Z</ModificationDate>
+            <Category>unknown</Category>
+            <Status>unknown</Status>
+        </Metadata>
+        <AnnotationFile URL="" type="EAF">urn:nl-mpi-tools-elan-eaf:2d820b01-3e0a-419a-85e6-aac56dd2bb25#t=9.456/12.156;tier=StoryChunk</AnnotationFile>
+        <Message>Audio source: https://librivox.org</Message>
+    </ColTime>
+    <ColTime ColTimeMessageID="55954df9-a985-4211-b2b6-bc58f2abe92f" URL="">
+        <Metadata>
+            <Initials/>
+            <ThreadID/>
+            <Sender/>
+            <Recipient/>
+            <CreationDate>2021-05-11T04:46:55.759Z</CreationDate>
+            <ModificationDate>2021-05-11T04:46:55.759Z</ModificationDate>
+            <Category>unknown</Category>
+            <Status>unknown</Status>
+        </Metadata>
+        <AnnotationFile URL="" type="EAF">urn:nl-mpi-tools-elan-eaf:2d820b01-3e0a-419a-85e6-aac56dd2bb25#t=16.260/19.520;tier=StoryChunk</AnnotationFile>
+        <Message>Reader's website: https://greenkri.com</Message>
+    </ColTime>
+</ColTimeList>
