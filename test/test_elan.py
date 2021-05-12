@@ -62,8 +62,8 @@ class TestELAN(unittest.TestCase):
         # test controlled vocab
         lang_vocab = eaf.get_vocab('Languages')
         actual = [repr(ve) for ve in lang_vocab]
-        expected = ["ELANCVEntry(ID='cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5', lang_ref='eng', value='en')",
-                    "ELANCVEntry(ID='cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', lang_ref='eng', value='jp')"]
+        expected = ["CVEntry(ID='cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5', lang_ref='eng', value='en')",
+                    "CVEntry(ID='cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', lang_ref='eng', value='jp')"]
         self.assertEqual(expected, actual)
         # non-existence vocab
         boo_vocab = eaf.get_vocab('boo')
@@ -85,7 +85,11 @@ class TestELAN(unittest.TestCase):
 
     def test_write_elan(self):
         eaf = read_eaf()
-        self.assertTrue(eaf.to_xml_bin())
+        xml_content = eaf.to_xml_str()
+        self.assertTrue(xml_content)
+        # parse the XML content back to EAF
+        eaf2 = elan.parse_string(xml_content)
+        self.assertEqual(eaf.to_csv_rows(), eaf2.to_csv_rows())
 
     def test_ref_ann(self):
         eaf = read_eaf()
@@ -107,7 +111,49 @@ class TestELAN(unittest.TestCase):
         # test external resource
         self.assertTrue(eaf.external_refs)
         self.assertEqual(eaf.external_refs[0].value, "file:/home/tuananh/Documents/ELAN/fables_cv.ecv")
-        
+
+
+class TestEditElan(unittest.TestCase):
+
+    def test_edit_elan(self):
+        eaf = read_eaf()
+        actual_pre = [(t.ID, t.participant, t.parent.ID if t.parent else None) for t in eaf]
+        expected_pre = [('Person1 (Utterance)', 'P001', None),
+                        ('marker', '', None),
+                        ('Person1 (Chunk)', 'P001', 'Person1 (Utterance)'),
+                        ('Person1 (ChunkLanguage)', 'P001', 'Person1 (Chunk)'),
+                        ('Person1 (Language)', 'P001', 'Person1 (Utterance)')]
+        self.assertEqual(expected_pre, actual_pre)
+        marker_annotations_pre = [(ann.value, ann.from_ts.value, ann.to_ts.value) for ann in eaf["marker"]]
+        expected_annotations_pre = [('convo start', 830, 5200),
+                                    ('convo body', 6890, 16260),
+                                    ('convo end', 16523, 17570)]
+        self.assertEqual(marker_annotations_pre, expected_annotations_pre)
+        # edit tier name
+        eaf["Person1 (Utterance)"].name = "Person1-Utterance"
+        # edit participant
+        for tier in eaf:
+            if tier.participant == "P001":
+                tier.participant = "P999"
+        eaf["marker"].participant = "leta"
+        # edit annotation value
+        for ann in eaf["marker"]:
+            if ann.text.startswith("convo "):
+                ann.text = ann.text.replace("convo ", ":convo:")
+        # serialize
+        eaf2 = elan.parse_string(eaf.to_xml_str())
+        actual = [(t.ID, t.participant, t.parent.ID if t.parent else None) for t in eaf2]
+        expected = [('Person1-Utterance', 'P999', None),
+                    ('marker', 'leta', None),
+                    ('Person1 (Chunk)', 'P999', 'Person1-Utterance'),
+                    ('Person1 (ChunkLanguage)', 'P999', 'Person1 (Chunk)'),
+                    ('Person1 (Language)', 'P999', 'Person1-Utterance')]
+        self.assertEqual(expected, actual)
+        marker_annotations = [(ann.value, ann.from_ts.value, ann.to_ts.value) for ann in eaf2["marker"]]
+        expected_annotations = [(':convo:start', 830, 5200), (':convo:body', 6890, 16260), (':convo:end', 16523, 17570)]
+        self.assertEqual(marker_annotations, expected_annotations)
+        self.assertEqual(eaf.to_csv_rows(), eaf2.to_csv_rows())
+
 
 # -------------------------------------------------------------------------------
 # MAIN
