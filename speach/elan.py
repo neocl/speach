@@ -9,6 +9,7 @@ ELAN module - manipulating ELAN transcript files (\*.eaf, \*.pfsx)
 # :license: MIT, see LICENSE for more details.
 
 import os
+from io import StringIO
 import logging
 from collections import OrderedDict
 from collections import defaultdict as dd
@@ -40,13 +41,24 @@ CSVRow = List[str]
 CSVTable = List[CSVRow]
 
 
-class TimeSlot():
-    def __init__(self, ID, value=None, xml_node=None, *args, **kwargs):
+class TimeSlot:
+
+    def __init__(self, xml_node=None, *args, **kwargs):
         """ An ELAN timestamp (with ID)
         """
-        self.ID = ID
-        self.value = value
         self.__xml_node = xml_node
+        self.__ID = xml_node.get('TIME_SLOT_ID')
+        _v = xml_node.get('TIME_VALUE')
+        self.__value = int(_v) if _v else None
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def value(self):
+        """ TimeSlot value (in milliseconds) """
+        return self.__value
 
     @property
     def ts(self):
@@ -95,15 +107,6 @@ class TimeSlot():
         return val if val else self.ID
 
     @staticmethod
-    def from_node(node):
-        slotID = node.get('TIME_SLOT_ID')
-        value = node.get('TIME_VALUE')
-        if value is not None:
-            return TimeSlot(slotID, int(node.get('TIME_VALUE')), xml_node=node)
-        else:
-            return TimeSlot(slotID, xml_node=node)
-
-    @staticmethod
     def from_ts(ts, ID=None):
         value = ts2sec(ts) * 1000
         return TimeSlot(ID=ID, value=value)
@@ -113,19 +116,42 @@ class Annotation(DataObject):
     """ An ELAN abstract annotation (for both alignable and non-alignable annotations)
     """
 
-    def __init__(self, ID, value, cve_ref=None, **kwargs):
+    def __init__(self, ID, value, cve_ref=None, xml_node=None, **kwargs):
         super().__init__(**kwargs)
-        self.ID = ID
-        self.value = value
-        self.cve_ref = cve_ref
+        self.__ID = ID
+        self.__value = value
+        self.__cve_ref = cve_ref
+        self.__xml_node = xml_node
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = value
+        if self.__xml_node is not None:
+            self.__xml_node.find("ANNOTATION_VALUE").text = str(value) if value else ''
+
+    @property
+    def cve_ref(self):
+        return self.__cve_ref
 
     @property
     def text(self):
         """ An alias to ELANAnnotation.value """
         return self.value
 
+    @text.setter
+    def text(self, value):
+        self.value = value
+
     def __repr__(self):
-        return f"ELANAnnotation(ID={repr(self.ID)},value={repr(self.value)})"
+        return f"Annotation(ID={repr(self.ID)},value={repr(self.value)})"
 
     def __str__(self):
         return str(self.value)
@@ -135,10 +161,17 @@ class TimeAnnotation(Annotation):
     """ An ELAN time-alignable annotation
     """
     def __init__(self, ID, from_ts, to_ts, value, xml_node=None, **kwargs):
-        super().__init__(ID, value, **kwargs)
-        self.from_ts = from_ts
-        self.to_ts = to_ts
-        self.__xml_node = xml_node
+        super().__init__(ID, value, xml_node=xml_node, **kwargs)
+        self.__from_ts = from_ts
+        self.__to_ts = to_ts
+
+    @property
+    def from_ts(self):
+        return self.__from_ts
+
+    @property
+    def to_ts(self):
+        return self.__to_ts
 
     @property
     def duration(self):
@@ -162,11 +195,10 @@ class RefAnnotation(Annotation):
     """
 
     def __init__(self, ID, ref_id, previous, value, xml_node=None, **kwargs):
-        super().__init__(ID, value, **kwargs)
+        super().__init__(ID, value, xml_node=xml_node, **kwargs)
         self.__ref = None
         self.__ref_id = ref_id  # ANNOTATION_REF
         self.previous = previous  # PREVIOUS_ANNOTATION
-        self.__xml_node = xml_node
 
     @property
     def ref(self):
@@ -225,28 +257,55 @@ class Tier(DataObject):
     INCL = "Included_In"
     SYM_ASSOC = "Symbolic_Association"
 
-    def __init__(self, type_ref_id, participant, ID, doc=None, default_locale=None, parent_ref=None, xml_node=None, **kwargs):
+    def __init__(self, doc=None, xml_node=None, **kwargs):
         """
         ELAN Tier Model which contains annotation objects
         """
         super().__init__(**kwargs)
         self.__type_ref = None
-        self.__type_ref_id = type_ref_id
-        self.participant = participant if participant else ''
-        self.ID = ID
-        self.default_locale = default_locale
-        self.parent_ref = parent_ref
-        self.parent = None
         self.doc = doc
         self.children = []
         self.__annotations = []
         self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__type_ref_id = xml_node.get('LINGUISTIC_TYPE_REF')
+            self.__participant = xml_node.get('PARTICIPANT', '')
+            self.__ID = xml_node.get('TIER_ID')
+            self.__parent_ref = xml_node.get('PARENT_REF') if xml_node.get('PARENT_REF') else None  # ID of parent tier
+            self.__default_locale = xml_node.get('DEFAULT_LOCALE')
+            # add child annotations
+            for elem in xml_node:
+                self._add_annotation_xml(elem)
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @ID.setter
+    def ID(self, value):
+        if value == self.ID:
+            return
+        elif not value:
+            raise ValueError("Tier ID cannot be empty")
+        else:
+            _oldID = self.ID
+            self.__ID = value
+            if self.doc is not None:
+                self.doc._reset_tier_map()
+            if self.__xml_node is not None:
+                self.__xml_node.set('TIER_ID', value)
+                for child in self.children:
+                    child.parent_ref = value
 
     @property
     def name(self):
         """ An alias to tier's ID """
         return self.ID
-        
+
+    @name.setter
+    def name(self, value):
+        self.ID = value
+
     @property
     def annotations(self):
         return self.__annotations
@@ -262,7 +321,38 @@ class Tier(DataObject):
         return self.__type_ref
 
     @property
+    def participant(self):
+        return self.__participant
+
+    @participant.setter
+    def participant(self, value):
+        if self.__xml_node:
+            self.__xml_node.set('PARTICIPANT', value)
+        self.__participant = value
+
+    @property
+    def parent(self):
+        return self.doc[self.__parent_ref] if self.__parent_ref and self.doc is not None else None
+
+    @property
+    def parent_ref(self):
+        """ ID of the parent tier. Return None if this is a root tier """
+        return self.__parent_ref
+
+    @parent_ref.setter
+    def parent_ref(self, value):
+        if self.__xml_node is not None:
+            self.__xml_node.set('PARENT_REF', value)
+        self.__parent_ref = value
+
+    @property
+    def type_ref_id(self):
+        """ ID of the tier type ref """
+        return self.__type_ref_id
+
+    @property
     def type_ref(self):
+        """ Tier type object """
         return self.__type_ref
 
     def _set_type_ref(self, type_ref_object):
@@ -364,15 +454,35 @@ class CVEntry(DataObject):
 
     """ A controlled vocabulary entry """
 
-    def __init__(self, ID, lang_ref, value, description=None, **kwargs):
+    def __init__(self, xml_node=None, **kwargs):
         super().__init__(**kwargs)
-        self.ID = ID
-        self.lang_ref = lang_ref
-        self.value = value
-        self.description = description
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ID = xml_node.get('CVE_ID')
+            self.__entry_value_node = xml_node.find('CVE_VALUE')
+            self.__lang_ref = self.__entry_value_node.get('LANG_REF')
+            self.__value = self.__entry_value_node.text
+            self.__description = self.__entry_value_node.get('DESCRIPTION')
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def lang_ref(self):
+        return self.__lang_ref
+
+    @property
+    def value(self):
+        return self.__value
+
+    @property
+    def description(self):
+        """ Description of this controlled vocabulary entry """
+        return self.__description
 
     def __repr__(self):
-        return f'ELANCVEntry(ID={repr(self.ID)}, lang_ref={repr(self.lang_ref)}, value={repr(self.value)})'
+        return f'CVEntry(ID={repr(self.ID)}, lang_ref={repr(self.lang_ref)}, value={repr(self.value)})'
 
     def __str__(self):
         return self.value
@@ -380,20 +490,33 @@ class CVEntry(DataObject):
 
 class ControlledVocab(DataObject):
     """ ELAN Controlled Vocabulary """
-    def __init__(self, ID, description, lang_ref, entries=None, **kwargs):
+    def __init__(self, xml_node=None, **kwargs):
         super().__init__(**kwargs)
-        self.ID = ID
-        self.description = description
-        self.lang_ref = lang_ref
-        self.entries = list(entries) if entries else []
-        self.entries_map = {e.ID: e for e in self.entries}
-        self.tiers = []
+        self.__entries = []
+        self.__entries_map = dict()
+        self.__tiers = []
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ID = xml_node.get('CV_ID')
+            self.__entries = []
+            for child in xml_node:
+                if child.tag == 'DESCRIPTION':
+                    self.__description_node = child
+                    self.__description = child.text
+                    self.__lang_ref = child.get('LANG_REF')
+                elif child.tag == 'CV_ENTRY_ML':
+                    cv_entry = CVEntry(child)
+                    self._add_child(cv_entry)
+
+    def _add_child(self, child):
+        self.__entries.append(child)
+        self.__entries_map[child.ID] = child
 
     def __getitem__(self, key):
-        return self.entries_map[key]
+        return self.__entries_map[key]
 
     def __iter__(self):
-        return iter(self.entries)
+        return iter(self.__entries)
 
     def __repr__(self):
         if self.description:
@@ -404,25 +527,21 @@ class ControlledVocab(DataObject):
     def __str__(self):
         return repr(self)
 
-    @staticmethod
-    def from_xml(node):
-        CVID = node.get('CV_ID')
-        description = ""
-        lang_ref = ""
-        entries = []
-        for child in node:
-            if child.tag == 'DESCRIPTION':
-                description = child.text
-                lang_ref = child.get('LANG_REF')
-            elif child.tag == 'CV_ENTRY_ML':
-                entryID = child.get('CVE_ID')
-                entry_value_node = child.find('CVE_VALUE')
-                entry_lang_ref = entry_value_node.get('LANG_REF')
-                entry_value = entry_value_node.text
-                entry_description = entry_value_node.get('DESCRIPTION')
-                cv_entry = CVEntry(entryID, entry_lang_ref, entry_value, description=entry_description)
-                entries.append(cv_entry)
-        return ControlledVocab(CVID, description, lang_ref, entries=entries)
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def lang_ref(self):
+        return self.__lang_ref
+
+    @property
+    def tiers(self):
+        return self.__tiers
 
 
 class Constraint(DataObject):
@@ -432,8 +551,22 @@ class Constraint(DataObject):
         super().__init__()
         self.__xml_node = xml_node
         if xml_node is not None:
-            self.description = xml_node.get('DESCRIPTION')
-            self.stereotype = xml_node.get('STEREOTYPE')
+            self.__description = xml_node.get('DESCRIPTION')
+            self.__stereotype = xml_node.get('STEREOTYPE')
+
+    @property
+    def description(self):
+        return self.__description
+
+    @property
+    def stereotype(self):
+        return self.__stereotype
+
+    def __repr__(self):
+        return f"(Constraint {repr(self.stereotype)})"
+
+    def __str__(self):
+        return self.stereotype
 
 
 class Language(DataObject):
@@ -550,12 +683,12 @@ class Doc(DataObject):
         super().__init__(**kwargs)
         self.properties = OrderedDict()
         self.time_order = OrderedDict()
-        self.__tiers_map = OrderedDict()  # internal - map tierIDs to tier objects
+        self.__tiers = []
+        self.__tier_map = OrderedDict()  # internal - map tierIDs to tier objects
         self.__ann_map = dict()
         self.__linguistic_types = []
         self.__constraints = []
         self.__vocabs = []
-        self.__roots = []
         self.__licenses = []
         self.__external_refs = []
         self.__languages = []
@@ -585,6 +718,12 @@ class Doc(DataObject):
         return self.__ann_map.get(ID, None)
 
     @property
+    def tier_map(self):
+        if self.__tier_map is None:
+            self.__tier_map = OrderedDict((t.ID, t) for t in self.__tiers)
+        return self.__tier_map
+
+    @property
     def licenses(self) -> Tuple[License]:
         """ Get all licenses """
         return tuple(self.__licenses)
@@ -602,7 +741,7 @@ class Doc(DataObject):
     @property
     def roots(self) -> Tuple[Tier]:
         """ All root-level tiers in this ELAN doc """
-        return tuple(self.__roots)
+        return tuple(t for t in self if not t.parent_ref)
 
     @property
     def vocabs(self) -> Tuple[ControlledVocab]:
@@ -644,16 +783,26 @@ class Doc(DataObject):
 
     def __getitem__(self, tierID):
         """ Find a tier object using tierID """
-        return self.__tiers_map[tierID]
+        return self.tier_map[tierID]
+
+    def __contains__(self, tierID):
+        return tierID in self.tier_map
 
     def __iter__(self):
         """ Iterate through all tiers in this ELAN file """
-        return iter(self.__tiers_map.values())
+        return iter(self.__tiers)
 
     def tiers(self) -> Tuple[Tier]:
         """ Collect all existing Tier in this ELAN file
         """
-        return tuple(self.__tiers_map.values())
+        return tuple(self.__tiers)
+
+    def _reset_tier_map(self):
+        """ [Internal] Update tier map
+
+        This function will be updated in the future once a better mapping mechanism has been decided
+        """
+        self.__tier_map = None
 
     def _update_info_xml(self, node):
         """ [Internal function] Update ELAN file metadata from an XML node
@@ -688,20 +837,11 @@ class Doc(DataObject):
 
         General users should not use this function.
         """
-        type_ref = tier_node.get('LINGUISTIC_TYPE_REF')
-        participant = tier_node.get('PARTICIPANT')
-        tier_id = tier_node.get('TIER_ID')
-        parent_ref = tier_node.get('PARENT_REF')
-        default_locale = tier_node.get('DEFAULT_LOCALE')
-        tier = Tier(type_ref, participant, tier_id, doc=self, default_locale=default_locale, parent_ref=parent_ref, xml_node=tier_node)
-        # add child annotations
-        for elem in tier_node:
-            tier._add_annotation_xml(elem)
-        if tier_id in self.__tiers_map:
-            raise ValueError("Duplicated tier ID ({})".format(tier_id))
-        self.__tiers_map[tier_id] = tier
-        if tier.parent_ref is None:
-            self.__roots.append(tier)
+        tier = Tier(self, tier_node)
+        if tier.ID in self:
+            raise ValueError(f"Duplicated tier ID ({tier.ID})")
+        self.__tiers.append(tier)
+        self.tier_map[tier.ID] = tier
         return tier
 
     def _add_timeslot_xml(self, timeslot_node):
@@ -709,7 +849,7 @@ class Doc(DataObject):
 
         General users should not use this function.
         """
-        timeslot = TimeSlot.from_node(timeslot_node)
+        timeslot = TimeSlot(timeslot_node)
         self.time_order[timeslot.ID] = timeslot
 
     def _add_linguistic_type_xml(self, elem):
@@ -731,7 +871,7 @@ class Doc(DataObject):
 
         General users should not use this function.
         """
-        self.__vocabs.append(ControlledVocab.from_xml(elem))
+        self.__vocabs.append(ControlledVocab(elem))
 
     def _add_license_xml(self, elem):
         """ [Internal function] Parse a LICENSE XML node and link it to current ELAN Doc
@@ -770,7 +910,7 @@ class Doc(DataObject):
         return rows
 
     def to_xml_bin(self, encoding='utf-8', default_namespace=None, short_empty_elements=True, *args, **kwargs):
-        """ Generate EAF content in XML format
+        """ Generate EAF content (bytes) in XML format
 
         :returns: EAF content
         :rtype: bytes
@@ -778,6 +918,10 @@ class Doc(DataObject):
         _content = etree.tostring(self.__xml_root, encoding=encoding, method="xml",
                                   short_empty_elements=short_empty_elements, *args, **kwargs)
         return _content
+
+    def to_xml_str(self, encoding='utf-8', *args, **kwargs):
+        """ Generate EAF content string in XML format """
+        return self.to_xml_bin(encoding=encoding, *args, **kwargs).decode(encoding)
 
     def save(self, path, encoding='utf-8', xml_declaration=None,
              default_namespace=None, short_empty_elements=True, *args, **kwargs):
@@ -831,7 +975,11 @@ class Doc(DataObject):
             return _doc
 
     @classmethod
-    def parse_eaf_stream(cls, eaf_stream):
+    def parse_string(cls, eaf_string, *args, **kwargs):
+        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
+
+    @classmethod
+    def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
         _root = etree.fromstring(eaf_stream.read())
         _doc = Doc()
         _doc.__xml_root = _root
@@ -874,7 +1022,6 @@ class Doc(DataObject):
             if lingtype.vocab:
                 lingtype.vocab.tiers.append(tier)  # vocab -> tiers
             if tier.parent_ref is not None:
-                tier.parent = _doc[tier.parent_ref]
                 _doc[tier.parent_ref].children.append(tier)
         # resolve ref_ann
         for ann in _doc.__ann_map.values():
@@ -885,6 +1032,7 @@ class Doc(DataObject):
 
 read_eaf = Doc.read_eaf
 parse_eaf_stream = Doc.parse_eaf_stream
+parse_string = Doc.parse_string
 
 
 def open_eaf(*args, **kwargs):
