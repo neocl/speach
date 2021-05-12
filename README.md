@@ -17,7 +17,7 @@ Main functions are:
 ## Useful Links
 
 - Speach documentation: https://speach.readthedocs.io/
-- Soure code: https://github.com/neocl/speach/
+- Source code: https://github.com/neocl/speach/
 
 ## Installation
 

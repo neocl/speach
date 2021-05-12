@@ -13,7 +13,7 @@ Open an ELAN file
     >>> from speach import elan
     >>> eaf = elan.read_eaf('./data/test.eaf')
     >>> eaf
-    <speach.elan.ELANDoc object at 0x7f67790593d0>
+    <speach.elan.Doc object at 0x7f67790593d0>
 
 Parse an existing text stream
 -----------------------------
@@ -23,16 +23,16 @@ If you have an input stream ready, you can parse its content with :code:`parse_e
 .. code-block:: python
 
     >>> from speach import elan
-    >>> with open('./data/test.eaf') as eaf_stream:
+    >>> with open('./data/test.eaf', encoding='utf-8') as eaf_stream:
     >>> ...  eaf = elan.parse_eaf_stream(eaf_stream)
     >>> ...
     >>> eaf
-    <speach.elan.ELANDoc object at 0x7f6778f7a9d0>
+    <speach.elan.Doc object at 0x7f6778f7a9d0>
 
 Accessing tiers & annotations
 -----------------------------
 
-You can loop through all tiers in an ``ELANDoc`` object (i.e. an eaf file)
+You can loop through all tiers in an ``Doc`` object (i.e. an eaf file)
 and all annotations in each tier using Python's ``for ... in ...`` loops.
 For example:
 
