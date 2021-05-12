@@ -10,11 +10,11 @@ For common code samples to processing ELAN, see :ref:`tut_elan` page.
 .. automodule:: speach.elan
    :members: read_eaf, parse_eaf_stream
 
-.. autoclass:: ELANDoc
+.. autoclass:: Doc
    :members:
    :member-order: groupwise
    :exclude-members: read_eaf, parse_eaf_stream
 
-.. autoclass:: ELANTier
+.. autoclass:: Tier
    :members:
    :member-order: groupwise
