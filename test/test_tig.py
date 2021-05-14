@@ -17,6 +17,7 @@ from collections import OrderedDict
 
 from chirptext import chio
 from chirptext import deko
+from chirptext import dekomecab
 
 from speach import ttl
 from speach import tig
@@ -34,6 +35,12 @@ JP_MANUAL = os.path.join(TEST_DIR, 'data', 'testig_jp_manual.txt')
 VN_EXPLICIT = os.path.join(TEST_DIR, 'data', 'testig_vi_explicit.txt')
 TRANSCRIPT_FILE = os.path.join(TEST_DIR, 'data', 'test_transcript.tab')
 TRANSCRIPT_EXPECTED_FILE = os.path.join(TEST_DIR, 'data', 'test_transcript.human.tab')
+
+_MECAB_VERSION = None
+try:
+    _MECAB_VERSION = dekomecab.version()
+except Exception:
+    pass
 
 
 def getLogger():
@@ -213,6 +220,7 @@ I have two cat-s.
         invalid_file = os.path.join(TEST_DIR, 'data', 'testig_invalid.txt')
         self.assertRaises(Exception, lambda: tig.read(invalid_file))
 
+    @unittest.skipIf(not _MECAB_VERSION, "Deko is not available, test_make_furi_token is skipped.")
     def test_make_furi_token(self):
         s = deko.parse('友達')
         # f = ttlig.mctoken_to_furi(s[0])
@@ -223,7 +231,8 @@ I have two cat-s.
         f = tig.RubyToken.from_furi(s[0].surface, s[0].reading_hira())
         self.assertEqual(f.to_code(), '0')
 
-    def test_parsing(self):
+    @unittest.skipIf(not _MECAB_VERSION, "Deko is not available, test_tig_parsing is skipped.")
+    def test_tig_parsing(self):
         igrow = tig.text_to_igrow('友達と巡り会った。')
         self.assertEqual(igrow.text, '友達と巡り会った。')
         self.assertEqual(igrow.tokens, '{友達/ともだち} と {巡/めぐ}り{会/あ}っ た 。')
