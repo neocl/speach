@@ -60,3 +60,10 @@ Processing media files
 ```
 
 Read [Speach documentation](https://speach.readthedocs.io/) for more information.
+
+## Contributors
+
+- [Le Tuan Anh](https://github.com/letuananh) (Maintainer)
+- [Victoria Chua](https://github.com/vicchuayh)
+
+Contributors are welcome! If you want to help developing speach, please visit [Contributing](https://speach.readthedocs.io/en/latest/contributing.html) page.
