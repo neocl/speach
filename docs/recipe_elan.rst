@@ -1,4 +1,4 @@
-.. _tut_elan:
+.. _recipe_elan:
 
 ELAN Recipes
 ============
@@ -13,26 +13,33 @@ Open an ELAN file
     >>> from speach import elan
     >>> eaf = elan.read_eaf('./data/test.eaf')
     >>> eaf
-    <speach.elan.ELANDoc object at 0x7f67790593d0>
+    <speach.elan.Doc object at 0x7f67790593d0>
+
+Save an ELAN transcription to a file
+------------------------------------
+
+After edited an :class:`speach.elan.Doc` object, its content can be saved to an EAF file like this
+
+   >>> eaf.save("test_edited.eaf")
 
 Parse an existing text stream
 -----------------------------
 
-If you have an input stream ready, you can parse its content with :code:`parse_eaf_stream()` method.
+If you have an input stream ready, you can parse its content with :meth:`speach.elan.parse_eaf_stream` method.
 
 .. code-block:: python
 
     >>> from speach import elan
-    >>> with open('./data/test.eaf') as eaf_stream:
+    >>> with open('./data/test.eaf', encoding='utf-8') as eaf_stream:
     >>> ...  eaf = elan.parse_eaf_stream(eaf_stream)
     >>> ...
     >>> eaf
-    <speach.elan.ELANDoc object at 0x7f6778f7a9d0>
+    <speach.elan.Doc object at 0x7f6778f7a9d0>
 
 Accessing tiers & annotations
 -----------------------------
 
-You can loop through all tiers in an ``ELANDoc`` object (i.e. an eaf file)
+You can loop through all tiers in an :class:`speach.elan.Doc` object (i.e. an eaf file)
 and all annotations in each tier using Python's ``for ... in ...`` loops.
 For example:
 
@@ -46,7 +53,7 @@ For example:
 Accessing nested tiers in ELAN
 ------------------------------
 
-If you want to loop through the root tiers only, you can use the :code:`roots` list of an ``ELANDoc``:
+If you want to loop through the root tiers only, you can use the :code:`roots` list of an :class:`speach.elan.Doc`:
 
 .. code-block:: python
 
@@ -58,6 +65,17 @@ If you want to loop through the root tiers only, you can use the :code:`roots` l
             print(f"    | {child_tier.ID} | Participant: {child_tier.participant} | Type: {child_tier.type_ref}")
             for ann in child_tier.annotations:
                 print(f"    |- {ann.ID.rjust(4, ' ')}. [{ann.from_ts} -- {ann.to_ts}] {ann.text}")
+
+Retrieving a tier by name
+-------------------------
+
+All tiers are indexed in :class:`speach.elan.Doc` and can be accessed using Python indexer operator.
+For example, the following code loop through all annotations in the tier ``Person1 (Utterance)`` and
+print out their text values:
+
+    >>> p1_tier = eaf["Person1 (Utterance)"]
+    >>> for ann in p1_tier:
+    >>>     print(ann.text)
 
 Cutting annotations to separate audio files
 -------------------------------------------

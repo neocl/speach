@@ -17,7 +17,7 @@ Main functions are:
 ## Useful Links
 
 - Speach documentation: https://speach.readthedocs.io/
-- Soure code: https://github.com/neocl/speach/
+- Source code: https://github.com/neocl/speach/
 
 ## Installation
 
@@ -56,7 +56,7 @@ Processing media files
 ```python
 >>> from speach import media
 >>> media.convert("~/Documents/test.wav", "~/Documents/test.ogg")
->>> media.cut(ELAN_DIR / "test.wav", ELAN_DIR / "test_10-15.ogg", from_ts="00:00:10", to_ts="00:00:15")
+>>> media.cut("test.wav", "test_10-15.ogg", from_ts="00:00:10", to_ts="00:00:15")
 ```
 
 Read [Speach documentation](https://speach.readthedocs.io/) for more information.
