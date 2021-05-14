@@ -43,12 +43,12 @@ CSVTable = List[CSVRow]
 
 class TimeSlot:
 
-    def __init__(self, xml_node=None, *args, **kwargs):
-        """ An ELAN timestamp (with ID)
+    def __init__(self, xml_node=None, ID=None, value=None, *args, **kwargs):
+        """ An ELAN timestamp
         """
         self.__xml_node = xml_node
-        self.__ID = xml_node.get('TIME_SLOT_ID')
-        _v = xml_node.get('TIME_VALUE')
+        self.__ID = xml_node.get('TIME_SLOT_ID') if xml_node is not None else ID
+        _v = xml_node.get('TIME_VALUE') if xml_node is not None else value
         self.__value = int(_v) if _v else None
 
     @property
@@ -61,12 +61,16 @@ class TimeSlot:
         return self.__value
 
     @property
-    def ts(self):
-        return sec2ts(self.sec) if self.value is not None else None
+    def ts(self) -> str:
+        """ Return timestamp of this annotation in vtt format (00:01:02.345)
+
+        :return: An empty string will be returned if TimeSlot value is None
+        """
+        return sec2ts(self.sec) if self.value is not None else ''
 
     @property
     def sec(self):
-        """ Get TimeSlot value in seconds instead of milliseconds """
+        """ Get TimeSlot value in seconds """
         return self.value / 1000 if self.value is not None else None
 
     def __lt__(self, other):
@@ -128,7 +132,17 @@ class Annotation(DataObject):
         return self.__ID
 
     @property
-    def value(self):
+    def value(self) -> str:
+        """ Annotated text value.
+
+        It is possible to change value of an annotation
+
+        >>> ann.value
+        'Old value'
+        >>> ann.value = "New value"
+        >>> ann.value
+        'New value'
+        """
         return self.__value
 
     @value.setter
@@ -166,15 +180,20 @@ class TimeAnnotation(Annotation):
         self.__to_ts = to_ts
 
     @property
-    def from_ts(self):
+    def from_ts(self) -> TimeSlot:
+        """ Start timestamp of this annotation
+        """
         return self.__from_ts
 
     @property
-    def to_ts(self):
+    def to_ts(self) -> TimeSlot:
+        """ End timestamp of this annotation
+        """
         return self.__to_ts
 
     @property
-    def duration(self):
+    def duration(self) -> float:
+        """ Duration of this annotation (in seconds) """
         return self.to_ts.sec - self.from_ts.sec
 
     def overlap(self, other):
@@ -288,7 +307,6 @@ class Tier(DataObject):
         elif not value:
             raise ValueError("Tier ID cannot be empty")
         else:
-            _oldID = self.ID
             self.__ID = value
             if self.doc is not None:
                 self.doc._reset_tier_map()
@@ -958,13 +976,16 @@ class Doc(DataObject):
 
     @classmethod
     def read_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
-        """ Read an EAF file 
+        """ Read an EAF file and return an elan.Doc object
 
         >>> from speach import elan
         >>> eaf = elan.read_eaf("myfile.eaf")
 
         :param eaf_path: Path to existing EAF file
         :type eaf_path: str or Path-like object
+        :param encoding: Encoding of the eaf stream, defaulted to UTF-8
+        :type encoding: str
+        :rtype: speach.elan.Doc
         """
         eaf_path = str(eaf_path)
         if eaf_path.startswith("~"):
@@ -975,11 +996,15 @@ class Doc(DataObject):
             return _doc
 
     @classmethod
-    def parse_string(cls, eaf_string, *args, **kwargs):
-        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
-
-    @classmethod
     def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
+        """ Parse an EAF input stream and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf = elan.parse_eaf_stream(eaf_stream)
+
+        :param eaf_stream: EAF text input stream
+        :rtype: speach.elan.Doc
+        """
         _root = etree.fromstring(eaf_stream.read())
         _doc = Doc()
         _doc.__xml_root = _root
@@ -1028,6 +1053,20 @@ class Doc(DataObject):
             if ann.ref_id:
                 ann.resolve(_doc)
         return _doc
+
+    @classmethod
+    def parse_string(cls, eaf_string, *args, **kwargs):
+        """ Parse EAF content in a string and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf_content = eaf_stream.read()
+        >>>    eaf = elan.parse_string(eaf_content)
+
+        :param eaf_string: EAF content stored in a string
+        :type eaf_string: str
+        :rtype: speach.elan.Doc
+        """
+        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
 
 
 read_eaf = Doc.read_eaf

@@ -11,6 +11,7 @@ set SOURCEDIR=.
 set BUILDDIR=_build
 
 if "%1" == "" goto help
+if "%1" == "serve" goto serve
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
@@ -30,6 +31,9 @@ goto end
 
 :help
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+
+:serve
+python -m http.server 7001 -d _build/dirhtml
 
 :end
 popd
