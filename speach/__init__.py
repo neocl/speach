@@ -15,8 +15,9 @@ from .__version__ import __credits__, __license__, __description__, __url__
 from .__version__ import __version_major__, __version_long__, __version__, __status__
 
 from chirptext import ttl
+from . import ttlig as tig  # expose ttlig as tig
 from .sqlite import TTLSQLite
 
 
-__all__ = ['ttl', 'TTLSQLite',
+__all__ = ['ttl', 'TTLSQLite', 'tig',
            "__version__", "__author__", "__description__", "__copyright__"]
