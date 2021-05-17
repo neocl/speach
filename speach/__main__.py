@@ -16,7 +16,7 @@ from chirptext import TextReport, FileHelper
 from chirptext import chio
 from chirptext.cli import CLIApp, setup_logging
 
-from speach import ttl, TTLSQLite, tig, orgmode
+from speach import ttl, TTLSQLite, ttlig, orgmode
 from speach.elan import parse_eaf_stream
 
 # ----------------------------------------------------------------------
@@ -78,7 +78,7 @@ def process_tig(cli, args):
         sc = 0
         ttl_writer = ttl.TxtWriter.from_path(args.output) if args.output else None
         with chio.open(args.ttlig) as infile:
-            for sent in tig.read_stream_iter(infile):
+            for sent in ttlig.read_stream_iter(infile):
                 sc += 1
                 if ttl_writer is not None:
                     ttl_sent = sent.to_ttl()
@@ -94,7 +94,7 @@ def process_tig(cli, args):
         output.print()
         output.print()
         with chio.open(args.ttlig) as infile:
-            for idx, sent in enumerate(tig.read_stream_iter(infile)):
+            for idx, sent in enumerate(ttlig.read_stream_iter(infile)):
                 sc += 1
                 output.print(sent.to_expex(default_ident=idx + 1))
                 output.print()
@@ -105,7 +105,7 @@ def process_tig(cli, args):
 
 
 def jp_line_proc(line, iglines):
-    igrow = tig.text_to_igrow(line.replace('\u3000', ' ').strip())
+    igrow = ttlig.text_to_igrow(line.replace('\u3000', ' ').strip())
     iglines.append(igrow.text)
     iglines.append(igrow.tokens)
     iglines.append("")
@@ -153,7 +153,7 @@ def make_text(sent, delimiter=' '):
         for tk in sent:
             furi = tk.find('furi', default=None)
             if furi:
-                frags.append(tig.make_ruby_html(furi.label))
+                frags.append(ttlig.make_ruby_html(furi.label))
             else:
                 frags.append(tk.text)
     html_text = delimiter.join(frags) if frags else sent.text
