@@ -16,7 +16,7 @@ Main functions:
 - TIG - A human-friendly intelinear gloss format for linguistic documentation
 - Multiple storage formats (text files, JSON files, SQLite databases)
 
-:ref:`Contributors <contributors>` are welcome!.
+:ref:`Contributors <contributors>` are welcome!
 If you want to help developing ``speach``, please visit :ref:`contributing` page.
   
 Installation

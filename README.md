@@ -4,15 +4,15 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/neocl/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/neocl/speach/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/neocl/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/neocl/speach/context:python)
 
-Speach (formerly [texttaglib](https://github.com/letuananh/texttaglib/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF, etc.)
+Speach (formerly [texttaglib](https://github.com/letuananh/texttaglib/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TTLIG, ISF, etc.)
 
 Main functions are:
 
-- Text corpus management
-- Manipulating [ELAN](https://archive.mpi.nl/tla/elan/download>) transcription files directly in ELAN Annotation Format (eaf)
-- TIG - A human-friendly intelinear gloss format for linguistic documentation
-- Multiple storage formats (text, CSV, JSON, SQLite databases)
+- Reading, editing, and writing ELAN transcriptions and related media files directly in [ELAN Annotation Format](https://archive.mpi.nl/tla/elan/download) (eaf)
 - Cutting, converting, and merging audio/video files
+- TTLIG (or TIG) - A human-friendly linguistic documentation format with intelinear gloss support
+- Text corpus management using texttaglib format
+- Multiple storage formats (text, CSV, JSON, SQLite databases)
 
 ## Useful Links
 
@@ -60,3 +60,10 @@ Processing media files
 ```
 
 Read [Speach documentation](https://speach.readthedocs.io/) for more information.
+
+## Contributors
+
+- [Le Tuan Anh](https://github.com/letuananh) (Maintainer)
+- [Victoria Chua](https://github.com/vicchuayh)
+
+Contributors are welcome! If you want to help developing speach, please visit [Contributing](https://speach.readthedocs.io/en/latest/contributing.html) page.

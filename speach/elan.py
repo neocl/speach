@@ -174,6 +174,7 @@ class Annotation(DataObject):
 class TimeAnnotation(Annotation):
     """ An ELAN time-alignable annotation
     """
+
     def __init__(self, ID, from_ts, to_ts, value, xml_node=None, **kwargs):
         super().__init__(ID, value, xml_node=xml_node, **kwargs)
         self.__from_ts = from_ts
@@ -344,8 +345,11 @@ class Tier(DataObject):
 
     @participant.setter
     def participant(self, value):
-        if self.__xml_node:
+        if self.__xml_node is not None:
             self.__xml_node.set('PARTICIPANT', value)
+        else:
+            logging.getLogger(__name__).warning(
+                f"Could not update participant, DOM node is missing for tier {self.name}")
         self.__participant = value
 
     @property
@@ -469,7 +473,6 @@ class Tier(DataObject):
 
 
 class CVEntry(DataObject):
-
     """ A controlled vocabulary entry """
 
     def __init__(self, xml_node=None, **kwargs):
@@ -508,6 +511,7 @@ class CVEntry(DataObject):
 
 class ControlledVocab(DataObject):
     """ ELAN Controlled Vocabulary """
+
     def __init__(self, xml_node=None, **kwargs):
         super().__init__(**kwargs)
         self.__entries = []
@@ -655,6 +659,7 @@ class ExternalRef(DataObject):
 
     <EXTERNAL_REF EXT_REF_ID="er1" TYPE="ecv" VALUE="file:/home/tuananh/Documents/ELAN/fables_cv.ecv"/>
     """
+
     def __init__(self, xml_node=None, **kwargs):
         super().__init__(**kwargs)
         self.__xml_node = xml_node
@@ -689,11 +694,10 @@ class ExternalRef(DataObject):
 
     @classmethod
     def from_xml(cls, xml_node, **kwargs):
-        return ExternalRef(xml_node=xml_node, **kwargs)    
+        return ExternalRef(xml_node=xml_node, **kwargs)
 
 
 class Doc(DataObject):
-
     """ This class represents an ELAN file (\*.eaf)
     """
 
@@ -1031,7 +1035,8 @@ class Doc(DataObject):
             elif elem.tag == 'LANGUAGE':
                 _doc._add_language_xml(elem)
             else:
-                logging.getLogger(__name__).warning(f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
+                logging.getLogger(__name__).warning(
+                    f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
         # linking parts together
         # linguistic_types -> vocabs
         for lingtype in _doc.linguistic_types:

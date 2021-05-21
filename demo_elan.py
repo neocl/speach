@@ -1,7 +1,7 @@
 from speach import elan
 
 # read an ELAN file
-eaf = elan.read_eaf('./test/data/test.eaf')
+eaf = elan.read_eaf('./test_data/fables_01_03_aesop_64kb.eaf')
 
 # accessing metadata
 print("Accessing EAF Metadata")
@@ -13,7 +13,7 @@ print(f"Media URL: {eaf.media_url} | MIME type: {eaf.mime_type}")
 print(f"Media relative URL: {eaf.relative_media_url}")
 
 # loop through all tiers in this eaf file
-print("\nLoop through all tiers")
+print("\nBasic ELAN demo: looping through all tiers and their annotations")
 print("-" * 60)
 for tier in eaf:
     print(f"{tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")
@@ -22,7 +22,7 @@ for tier in eaf:
         print(f"{ann.ID.rjust(4, ' ')}. [{ann.from_ts} :: {ann.to_ts}] {ann.text}")
 
 # loop through the root tiers only (i.e. ignored dependent tiers)
-print("\nLoop through root tiers only")
+print("\n\nDemo nested ELAN file: loop through root tiers only")
 print("-" * 60)
 for tier in eaf.roots:
     print(f"[+]-- {tier.ID} | Participant: {tier.participant} | Type: {tier.type_ref}")

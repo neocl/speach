@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ANNOTATION_DOCUMENT AUTHOR="Le Tuan Anh"
+    DATE="2021-05-20T21:50:00+08:00" FORMAT="3.0" VERSION="3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv3.0.xsd">
+    <HEADER MEDIA_FILE="" TIME_UNITS="milliseconds">
+        <MEDIA_DESCRIPTOR
+            MEDIA_URL="file:///home/tuananh/Documents/ELAN/test.wav" MIME_TYPE="audio/x-wav"/>
+        <PROPERTY NAME="URN">urn:nl-mpi-tools-elan-eaf:80ffa83c-9429-47f8-aaff-5defd3569d9d</PROPERTY>
+        <PROPERTY NAME="lastUsedAnnotationId">57</PROPERTY>
+    </HEADER>
+    <TIME_ORDER>
+        <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="830"/>
+        <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="1040"/>
+        <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="1040"/>
+        <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="2330"/>
+        <TIME_SLOT TIME_SLOT_ID="ts5" TIME_VALUE="2330"/>
+        <TIME_SLOT TIME_SLOT_ID="ts6" TIME_VALUE="3200"/>
+        <TIME_SLOT TIME_SLOT_ID="ts7" TIME_VALUE="3200"/>
+        <TIME_SLOT TIME_SLOT_ID="ts8" TIME_VALUE="5050"/>
+        <TIME_SLOT TIME_SLOT_ID="ts9" TIME_VALUE="5050"/>
+        <TIME_SLOT TIME_SLOT_ID="ts10" TIME_VALUE="5200"/>
+        <TIME_SLOT TIME_SLOT_ID="ts11" TIME_VALUE="5510"/>
+        <TIME_SLOT TIME_SLOT_ID="ts12" TIME_VALUE="5510"/>
+        <TIME_SLOT TIME_SLOT_ID="ts13" TIME_VALUE="6350"/>
+        <TIME_SLOT TIME_SLOT_ID="ts14" TIME_VALUE="6350"/>
+        <TIME_SLOT TIME_SLOT_ID="ts15" TIME_VALUE="6890"/>
+        <TIME_SLOT TIME_SLOT_ID="ts16" TIME_VALUE="7070"/>
+        <TIME_SLOT TIME_SLOT_ID="ts17" TIME_VALUE="7070"/>
+        <TIME_SLOT TIME_SLOT_ID="ts18" TIME_VALUE="9390"/>
+        <TIME_SLOT TIME_SLOT_ID="ts19" TIME_VALUE="9390"/>
+        <TIME_SLOT TIME_SLOT_ID="ts20" TIME_VALUE="9670"/>
+        <TIME_SLOT TIME_SLOT_ID="ts21" TIME_VALUE="9731"/>
+        <TIME_SLOT TIME_SLOT_ID="ts22" TIME_VALUE="10281"/>
+        <TIME_SLOT TIME_SLOT_ID="ts23" TIME_VALUE="10554"/>
+        <TIME_SLOT TIME_SLOT_ID="ts24" TIME_VALUE="11240"/>
+        <TIME_SLOT TIME_SLOT_ID="ts25" TIME_VALUE="11340"/>
+        <TIME_SLOT TIME_SLOT_ID="ts26" TIME_VALUE="11780"/>
+        <TIME_SLOT TIME_SLOT_ID="ts27" TIME_VALUE="11870"/>
+        <TIME_SLOT TIME_SLOT_ID="ts28" TIME_VALUE="12303"/>
+        <TIME_SLOT TIME_SLOT_ID="ts29" TIME_VALUE="12498"/>
+        <TIME_SLOT TIME_SLOT_ID="ts30" TIME_VALUE="13041"/>
+        <TIME_SLOT TIME_SLOT_ID="ts31" TIME_VALUE="13110"/>
+        <TIME_SLOT TIME_SLOT_ID="ts32" TIME_VALUE="13490"/>
+        <TIME_SLOT TIME_SLOT_ID="ts33" TIME_VALUE="13660"/>
+        <TIME_SLOT TIME_SLOT_ID="ts34" TIME_VALUE="13915"/>
+        <TIME_SLOT TIME_SLOT_ID="ts35" TIME_VALUE="13915"/>
+        <TIME_SLOT TIME_SLOT_ID="ts36" TIME_VALUE="14711"/>
+        <TIME_SLOT TIME_SLOT_ID="ts37" TIME_VALUE="14882"/>
+        <TIME_SLOT TIME_SLOT_ID="ts38" TIME_VALUE="15908"/>
+        <TIME_SLOT TIME_SLOT_ID="ts39" TIME_VALUE="16090"/>
+        <TIME_SLOT TIME_SLOT_ID="ts40" TIME_VALUE="16260"/>
+        <TIME_SLOT TIME_SLOT_ID="ts41" TIME_VALUE="16523"/>
+        <TIME_SLOT TIME_SLOT_ID="ts42" TIME_VALUE="16615"/>
+        <TIME_SLOT TIME_SLOT_ID="ts43" TIME_VALUE="16615"/>
+        <TIME_SLOT TIME_SLOT_ID="ts44" TIME_VALUE="17485"/>
+        <TIME_SLOT TIME_SLOT_ID="ts45" TIME_VALUE="17485"/>
+        <TIME_SLOT TIME_SLOT_ID="ts46" TIME_VALUE="17570"/>
+    </TIME_ORDER>
+    <TIER LINGUISTIC_TYPE_REF="Utterance" PARTICIPANT="P001" TIER_ID="Person1 (Utterance)">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a1"
+                TIME_SLOT_REF1="ts2" TIME_SLOT_REF2="ts4">
+                <ANNOTATION_VALUE>How do you read this?</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a2"
+                TIME_SLOT_REF1="ts6" TIME_SLOT_REF2="ts8">
+                <ANNOTATION_VALUE>このリンゴ、おいしいね！</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a3"
+                TIME_SLOT_REF1="ts11" TIME_SLOT_REF2="ts13">
+                <ANNOTATION_VALUE>What does it mean?</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a4"
+                TIME_SLOT_REF1="ts16" TIME_SLOT_REF2="ts18">
+                <ANNOTATION_VALUE>It means "This apple is delicious".</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a5"
+                TIME_SLOT_REF1="ts20" TIME_SLOT_REF2="ts25">
+                <ANNOTATION_VALUE>"この" means this</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a6"
+                TIME_SLOT_REF1="ts26" TIME_SLOT_REF2="ts31">
+                <ANNOTATION_VALUE>"リンゴ" means "apple"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a7"
+                TIME_SLOT_REF1="ts32" TIME_SLOT_REF2="ts39">
+                <ANNOTATION_VALUE>and "おいしい" means delicious.</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a8"
+                TIME_SLOT_REF1="ts42" TIME_SLOT_REF2="ts44">
+                <ANNOTATION_VALUE>Oh thanks</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER LINGUISTIC_TYPE_REF="Utterance" TIER_ID="marker">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a9"
+                TIME_SLOT_REF1="ts1" TIME_SLOT_REF2="ts10">
+                <ANNOTATION_VALUE>convo start</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a10"
+                TIME_SLOT_REF1="ts15" TIME_SLOT_REF2="ts40">
+                <ANNOTATION_VALUE>convo body</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a25"
+                TIME_SLOT_REF1="ts41" TIME_SLOT_REF2="ts46">
+                <ANNOTATION_VALUE>convo end</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER LINGUISTIC_TYPE_REF="Chunk" PARENT_REF="Person1 (Utterance)"
+        PARTICIPANT="P001" TIER_ID="Person1 (Chunk)">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a26"
+                TIME_SLOT_REF1="ts3" TIME_SLOT_REF2="ts5">
+                <ANNOTATION_VALUE>How do you read this?</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a27"
+                TIME_SLOT_REF1="ts7" TIME_SLOT_REF2="ts9">
+                <ANNOTATION_VALUE>このリンゴ、おいしいね！</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a28"
+                TIME_SLOT_REF1="ts12" TIME_SLOT_REF2="ts14">
+                <ANNOTATION_VALUE>What does it mean?</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a29"
+                TIME_SLOT_REF1="ts17" TIME_SLOT_REF2="ts19">
+                <ANNOTATION_VALUE>It means "This apple is delicious".</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a30"
+                TIME_SLOT_REF1="ts21" TIME_SLOT_REF2="ts22">
+                <ANNOTATION_VALUE>この</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a31"
+                TIME_SLOT_REF1="ts23" TIME_SLOT_REF2="ts24">
+                <ANNOTATION_VALUE>means "this"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a32"
+                TIME_SLOT_REF1="ts27" TIME_SLOT_REF2="ts28">
+                <ANNOTATION_VALUE> リンゴ</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a33"
+                TIME_SLOT_REF1="ts29" TIME_SLOT_REF2="ts30">
+                <ANNOTATION_VALUE>means "apple"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a34"
+                TIME_SLOT_REF1="ts33" TIME_SLOT_REF2="ts34">
+                <ANNOTATION_VALUE>and</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a35"
+                TIME_SLOT_REF1="ts35" TIME_SLOT_REF2="ts36">
+                <ANNOTATION_VALUE>おいしい</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a36"
+                TIME_SLOT_REF1="ts37" TIME_SLOT_REF2="ts38">
+                <ANNOTATION_VALUE>means "delicious"</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID="a37"
+                TIME_SLOT_REF1="ts43" TIME_SLOT_REF2="ts45">
+                <ANNOTATION_VALUE>oh thanks</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="tuananh" LINGUISTIC_TYPE_REF="ChunkLanguage"
+        PARENT_REF="Person1 (Chunk)" PARTICIPANT="P001" TIER_ID="Person1 (ChunkLanguage)">
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a38" ANNOTATION_REF="a26" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a39" ANNOTATION_REF="a27" CVE_REF="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+                <ANNOTATION_VALUE>jp</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a40" ANNOTATION_REF="a28" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a41" ANNOTATION_REF="a29" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a42" ANNOTATION_REF="a30" CVE_REF="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+                <ANNOTATION_VALUE>jp</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a43" ANNOTATION_REF="a31" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a44" ANNOTATION_REF="a32" CVE_REF="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+                <ANNOTATION_VALUE>jp</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a45" ANNOTATION_REF="a33" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a46" ANNOTATION_REF="a34" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a47" ANNOTATION_REF="a35" CVE_REF="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+                <ANNOTATION_VALUE>jp</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a48" ANNOTATION_REF="a36" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a49" ANNOTATION_REF="a37" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER ANNOTATOR="tuananh" LINGUISTIC_TYPE_REF="UtteranceLanguage"
+        PARENT_REF="Person1 (Utterance)" PARTICIPANT="P001" TIER_ID="Person1 (Language)">
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a50" ANNOTATION_REF="a1" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a51" ANNOTATION_REF="a2" CVE_REF="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+                <ANNOTATION_VALUE>jp</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a52" ANNOTATION_REF="a3" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a53" ANNOTATION_REF="a4" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a54" ANNOTATION_REF="a5" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a55" ANNOTATION_REF="a6" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a56" ANNOTATION_REF="a7" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="a57" ANNOTATION_REF="a8" CVE_REF="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+                <ANNOTATION_VALUE>en</ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <TIER LINGUISTIC_TYPE_REF="Utterance" PARTICIPANT="R004001" TIER_ID="R004 (Utterance)"/>
+    <LINGUISTIC_TYPE GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="Utterance" TIME_ALIGNABLE="true"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Included_In"
+        GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Chunk" TIME_ALIGNABLE="true"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
+        CONTROLLED_VOCABULARY_REF="Languages" GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="ChunkLanguage" TIME_ALIGNABLE="false"/>
+    <LINGUISTIC_TYPE CONSTRAINTS="Symbolic_Association"
+        CONTROLLED_VOCABULARY_REF="Languages" GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="UtteranceLanguage" TIME_ALIGNABLE="false"/>
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00138502-001"
+        LANG_ID="eng" LANG_LABEL="English (eng)"/>
+    <CONSTRAINT
+        DESCRIPTION="Time subdivision of parent annotation's time interval, no time gaps allowed within this interval" STEREOTYPE="Time_Subdivision"/>
+    <CONSTRAINT
+        DESCRIPTION="Symbolic subdivision of a parent annotation. Annotations refering to the same parent are ordered" STEREOTYPE="Symbolic_Subdivision"/>
+    <CONSTRAINT DESCRIPTION="1-1 association with a parent annotation" STEREOTYPE="Symbolic_Association"/>
+    <CONSTRAINT
+        DESCRIPTION="Time alignable annotations within the parent annotation's time interval, gaps are allowed" STEREOTYPE="Included_In"/>
+    <CONTROLLED_VOCABULARY CV_ID="Languages">
+        <DESCRIPTION LANG_REF="eng"/>
+        <CV_ENTRY_ML CVE_ID="cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5">
+            <CVE_VALUE DESCRIPTION="English" LANG_REF="eng">en</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7">
+            <CVE_VALUE DESCRIPTION="Japanese" LANG_REF="eng">jp</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</ANNOTATION_DOCUMENT>
