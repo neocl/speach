@@ -40,7 +40,8 @@ class TestELAN(unittest.TestCase):
 
     def test_read_elan(self):
         eaf = read_eaf()
-        expected_tiernames = ['Person1 (Utterance)', 'marker', 'Person1 (Chunk)', 'Person1 (ChunkLanguage)', 'Person1 (Language)']
+        expected_tiernames = ['Person1 (Utterance)', 'marker', 'Person1 (Chunk)', 'Person1 (ChunkLanguage)',
+                              'Person1 (Language)']
         actual_tiernames = [tier.ID for tier in eaf]
         self.assertEqual(expected_tiernames, actual_tiernames)
         annotations = []
@@ -153,6 +154,35 @@ class TestEditElan(unittest.TestCase):
         expected_annotations = [(':convo:start', 830, 5200), (':convo:body', 6890, 16260), (':convo:end', 16523, 17570)]
         self.assertEqual(marker_annotations, expected_annotations)
         self.assertEqual(eaf.to_csv_rows(), eaf2.to_csv_rows())
+
+    def test_edit_elan_participant_code(self):
+        eaf = elan.read_eaf(TEST_DATA / "test2.eaf")
+        participants = [(t.participant, t.name) for t in eaf]
+        expected = [('P001', 'Person1 (Utterance)'),
+                    ('', 'marker'),
+                    ('P001', 'Person1 (Chunk)'),
+                    ('P001', 'Person1 (ChunkLanguage)'),
+                    ('P001', 'Person1 (Language)'),
+                    ('R004001', 'R004 (Utterance)')]
+        self.assertEqual(expected, participants)
+        # edit the participant list
+        for tier in eaf:
+            if not tier.participant:
+                tier.participant = "nobody"
+            elif "001" in tier.participant:
+                orig_participant = tier.participant
+                tier.participant = tier.participant.replace("001", "x")
+        eaf.save(TEST_DATA / 'test2_edited.eaf')
+        # read it back
+        eaf2 = elan.read_eaf(TEST_DATA / 'test2_edited.eaf')
+        participants2 = [(t.participant, t.name) for t in eaf2]
+        expected2 = [('Px', 'Person1 (Utterance)'),
+                     ('nobody', 'marker'),
+                     ('Px', 'Person1 (Chunk)'),
+                     ('Px', 'Person1 (ChunkLanguage)'),
+                     ('Px', 'Person1 (Language)'),
+                     ('R004x', 'R004 (Utterance)')]
+        self.assertEqual(expected2, participants2)
 
 
 # -------------------------------------------------------------------------------
