@@ -1,5 +1,6 @@
 .idea/
 test/data/test.out.*
+test/data/test2_edited.eaf
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
