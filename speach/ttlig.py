@@ -62,20 +62,20 @@ class IGRow(DataObject):
         data = self.to_dict()
         for l in TTLIG.KNOWN_LABELS:
             if l not in ['text', 'orth', 'tokens'] and l in data and data[l]:
-                ttl_sent.new_tag(data[l], tagtype=l)
+                ttl_sent.tags.new(data[l], type=l)
         if self.tokens:
             _tokens = parse_ruby(self.tokens)
             ttl_sent.tokens = (t.text() for t in _tokens)
             for ttl_token, furi_token in zip(ttl_sent, _tokens):
                 if furi_token.surface != furi_token.text():
-                    ttl_token.new_tag(furi_token.surface, tagtype='furi')
+                    ttl_token.tags.new(furi_token.surface, type='furi')
             if self.morphtrans:
                 _morphtokens = tokenize(self.morphtrans)
                 if len(_morphtokens) != len(ttl_sent):
                     logging.getLogger(__name__).warning("Morphophonemic transliteration line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _morphtokens):
-                        t.new_tag(m, tagtype='mtrans')
+                        t.tags.new(m, type='mtrans')
             if self.pos:
                 _postokens = tokenize(self.pos)
                 if len(_postokens) != len(ttl_sent):
@@ -96,14 +96,14 @@ class IGRow(DataObject):
                     logging.getLogger(__name__).warning("morpheme-by-morpheme gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
-                        t.new_tag(m, tagtype='mgloss')
+                        t.tags.new(m, type='mgloss')
             if self.wordgloss:
                 _glosstokens = tokenize(self.wordgloss)
                 if len(_glosstokens) != len(ttl_sent):
                     logging.getLogger(__name__).warning("word-by-word gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
-                        t.new_tag(m, tagtype='wgloss')
+                        t.tags.new(m, type='wgloss')
         return ttl_sent
 
     def to_expex(self, default_ident=''):
