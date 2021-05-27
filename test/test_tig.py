@@ -17,7 +17,6 @@ from collections import OrderedDict
 
 from chirptext import chio
 from chirptext import deko
-from chirptext import dekomecab
 
 from speach import ttl
 from speach import ttlig
@@ -36,9 +35,10 @@ VN_EXPLICIT = os.path.join(TEST_DIR, 'data', 'testig_vi_explicit.txt')
 TRANSCRIPT_FILE = os.path.join(TEST_DIR, 'data', 'test_transcript.tab')
 TRANSCRIPT_EXPECTED_FILE = os.path.join(TEST_DIR, 'data', 'test_transcript.human.tab')
 
-_MECAB_VERSION = None
+_CAN_PARSE_JP = None
 try:
-    _MECAB_VERSION = dekomecab.version()
+    engines = deko.engines()
+    _CAN_PARSE_JP = len(engines)
 except Exception:
     pass
 
@@ -62,9 +62,9 @@ class TestTokenizer(unittest.TestCase):
         glosses = ttlig.tokenize(gloss_string)
         sent.tokens = tokens
         for tk, gl in zip(sent.tokens, glosses):
-            tk.new_tag(gl, tagtype='gloss')
+            tk.tag.gloss = gl
         # verify imported information
-        actual = [(t.text, t.get_tag('gloss').label) for t in sent]
+        actual = [(t.text, t.tag.gloss.value) for t in sent]
         expected = [('It', 'SUBJ'), ('works', 'work'), ('.', 'PUNC')]
         self.assertEqual(expected, actual)
 
@@ -220,18 +220,18 @@ I have two cat-s.
         invalid_file = os.path.join(TEST_DIR, 'data', 'testig_invalid.txt')
         self.assertRaises(Exception, lambda: ttlig.read(invalid_file))
 
-    @unittest.skipIf(not _MECAB_VERSION, "Deko is not available, test_make_furi_token is skipped.")
+    @unittest.skipIf(not _CAN_PARSE_JP, "Deko is not available, test_make_furi_token is skipped.")
     def test_make_furi_token(self):
         s = deko.parse('友達')
         # f = ttlig.mctoken_to_furi(s[0])
-        f = ttlig.RubyToken.from_furi(s[0].surface, s[0].reading_hira())
+        f = ttlig.RubyToken.from_furi(s[0].text, s[0].reading_hira)
         self.assertEqual(f.to_code(), '{友達/ともだち}')
         # half-width char
         s = deko.parse('0')
-        f = ttlig.RubyToken.from_furi(s[0].surface, s[0].reading_hira())
+        f = ttlig.RubyToken.from_furi(s[0].text, s[0].reading_hira)
         self.assertEqual(f.to_code(), '0')
 
-    @unittest.skipIf(not _MECAB_VERSION, "Deko is not available, test_tig_parsing is skipped.")
+    @unittest.skipIf(not _CAN_PARSE_JP, "Deko is not available, test_tig_parsing is skipped.")
     def test_tig_parsing(self):
         igrow = ttlig.text_to_igrow('友達と巡り会った。')
         self.assertEqual(igrow.text, '友達と巡り会った。')
