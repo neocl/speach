@@ -3,6 +3,13 @@
 Speach Changelog
 ================
 
+Speach 0.1a9
+------------
+
+- 2021-05-27
+
+  - Use TTLv2 API (chirptext >= 0.2a4.post1)
+
 Speach 0.1a8
 ------------
 

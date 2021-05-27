@@ -87,8 +87,7 @@ class TTLSQLite(Schema):
                        proto=ttl.Token).set_id('ID')
         self.add_table('concept', ['ID', 'sid', 'cidx', 'clemma', 'tag', 'flag', 'comment'],
                        proto=ttl.Concept).set_id('ID')
-        self.add_table('tag', ['ID', 'sid', 'wid', 'cfrom', 'cto', 'label', 'source', 'tagtype'],
-                       proto=ttl.Tag).set_id('ID')
+        self.add_table('tag', ['ID', 'sid', 'wid', 'cfrom', 'cto', 'value', 'source', 'type'], id_cols="ID")
         self.add_table('cwl', ['sid', 'cid', 'wid'], proto=CWLink)
 
     @with_ctx
@@ -169,23 +168,24 @@ class TTLSQLite(Schema):
         for tk in tokens:
             sent.tokens.append(tk)
         # select all tags
-        tags = ctx.tag.select('sid = ?', (sent.ID,))
+        tags = ctx.execute('SELECT * FROM TAG where sid = ?', (sent.ID,))
         for tag in tags:
-            if tag.wid is None:
-                sent.tags.append(tag)
-            elif tag.wid in tokenmap:
-                tokenmap[tag.wid].tags.append(tag)
+            # TODO: Don't use _append internal
+            if tag['wid'] is None:
+                sent.tags.new(**tag)
+            elif tag['wid'] in tokenmap:
+                tokenmap[tag['wid']].tags.new(**tag)
             else:
                 getLogger().warning("Orphan tag in sentence #{}: {}".format(sent.ID, tag))
         # select concepts
         concepts = ctx.concept.select('sid = ?', (sent.ID,))
         conceptmap = {c.ID: c for c in concepts}
         for c in concepts:
-            sent.add_concept(c)
+            sent.concepts._append(c)
         # select cwl
         cwlinks = ctx.cwl.select('sid = ?', (sent.ID,))
         for cwl in cwlinks:
-            conceptmap[cwl.cid].add_token(tokenmap[cwl.wid])
+            conceptmap[cwl.cid].tokens += tokenmap[cwl.wid]
         return sent
 
     @with_ctx

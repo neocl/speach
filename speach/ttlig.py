@@ -25,7 +25,7 @@ import warnings
 
 from chirptext import DataObject, piter
 from chirptext import chio
-from chirptext.deko import is_kana, parse
+from chirptext import deko
 from chirptext import ttl
 
 
@@ -62,20 +62,20 @@ class IGRow(DataObject):
         data = self.to_dict()
         for l in TTLIG.KNOWN_LABELS:
             if l not in ['text', 'orth', 'tokens'] and l in data and data[l]:
-                ttl_sent.new_tag(data[l], tagtype=l)
+                ttl_sent.tags.new(data[l], type=l)
         if self.tokens:
             _tokens = parse_ruby(self.tokens)
             ttl_sent.tokens = (t.text() for t in _tokens)
             for ttl_token, furi_token in zip(ttl_sent, _tokens):
                 if furi_token.surface != furi_token.text():
-                    ttl_token.new_tag(furi_token.surface, tagtype='furi')
+                    ttl_token.tags.new(furi_token.surface, type='furi')
             if self.morphtrans:
                 _morphtokens = tokenize(self.morphtrans)
                 if len(_morphtokens) != len(ttl_sent):
                     logging.getLogger(__name__).warning("Morphophonemic transliteration line and tokens line are mismatched for sentence: {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _morphtokens):
-                        t.new_tag(m, tagtype='mtrans')
+                        t.tags.new(m, type='mtrans')
             if self.pos:
                 _postokens = tokenize(self.pos)
                 if len(_postokens) != len(ttl_sent):
@@ -96,14 +96,14 @@ class IGRow(DataObject):
                     logging.getLogger(__name__).warning("morpheme-by-morpheme gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
-                        t.new_tag(m, tagtype='mgloss')
+                        t.tags.new(m, type='mgloss')
             if self.wordgloss:
                 _glosstokens = tokenize(self.wordgloss)
                 if len(_glosstokens) != len(ttl_sent):
                     logging.getLogger(__name__).warning("word-by-word gloss and tokens lines are mismatched for sentence {}".format(self.ident or self.ID or self.Id or self.id or self.text))
                 else:
                     for t, m in zip(ttl_sent, _glosstokens):
-                        t.new_tag(m, tagtype='wgloss')
+                        t.tags.new(m, type='wgloss')
         return ttl_sent
 
     def to_expex(self, default_ident=''):
@@ -177,7 +177,7 @@ class IGRow(DataObject):
             return None
         else:
             return self.tsto - self.tsfrom
-        
+
     def overlap(self, other):
         ''' Calculate overlap score between this utterance and another
         Score = 0 means adjacent, score > 0 means overlapped, score < 0 means no overlap (the distance between the two)
@@ -374,14 +374,14 @@ class RubyToken(DataObject):
             else:
                 frags.append(str(g))
         return ''.join(frags)
-    
+
     def __str__(self):
         return self.text()
 
     @staticmethod
     def from_furi(surface, kana):
         ruby = RubyToken(surface=surface)
-        if is_kana(surface):
+        if deko.is_kana(surface):
             ruby.append(surface)
             return ruby
         edit_seq = ndiff(surface, kana)
@@ -533,18 +533,24 @@ def mctoken_to_furi(token):
     return RubyToken.from_furi(token.surface, token.reading_hira())
 
 
-def text_to_igrow(txt):
-    ''' Parse text to TTLIG format '''
-    msent = parse(txt)
+def ttl_to_igrow(msent):
+    ''' Convert TTL to TTLIG format '''
     tokens = []
     pos = []
     lemmas = []
     for token in msent:
-        if token.is_eos:
-            continue
-        pos.append(token.pos3())
-        r = RubyToken.from_furi(token.surface, token.reading_hira())
-        tokens.append(r.to_code())
-        lemmas.append(token.root)
-    igrow = IGRow(text=txt, tokens=' '.join(tokens), pos=' '.join(pos), lemma=' '.join(lemmas))
+        pos.append(token.pos3 if token.pos3 else token.pos)
+        if token.reading_hira:
+            r = RubyToken.from_furi(token.text, token.reading_hira)
+            tokens.append(r.to_code())
+        else:
+            tokens.append(token.text)
+            lemmas.append(token.lemma if token.lemma else '')
+    igrow = IGRow(text=msent.text, tokens=' '.join(tokens), pos=' '.join(pos), lemma=' '.join(lemmas))
     return igrow
+
+
+def text_to_igrow(txt):
+    ''' Parse text to TTLIG format '''
+    sent = deko.parse(txt)
+    return ttl_to_igrow(sent)

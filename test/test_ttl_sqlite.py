@@ -10,6 +10,7 @@ Test basic TTL SQLite
 # :license: MIT, see LICENSE for more details.
 
 import os
+from pathlib import Path
 import unittest
 import logging
 
@@ -21,7 +22,8 @@ from speach.sqlite import TTLSQLite
 # Configuration
 # -------------------------------------------------------------------------------
 
-TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+TEST_DIR = Path(os.path.dirname(os.path.realpath(__file__)))
+TEST_DATA = TEST_DIR / 'data'
 
 
 def getLogger():
@@ -49,6 +51,11 @@ class TestTTLSQLite(unittest.TestCase):
         doc = ttl.Document(corpusID=2)
         self.assertEqual(doc.corpusID, 2)
 
+    def test_write_json(self):
+        from chirptext import deko
+        doc = deko.parse_doc('三毛猫が好きです。雨が降る。女の子はケーキを食べる。', splitlines=False)
+        ttl.write_json(TEST_DATA / 'testx.json', doc)
+
     def test_read_json(self):
         docjson = os.path.join(TEST_DIR, 'data', 'test.json')
         doc = ttl.read_json(docjson)
@@ -69,7 +76,7 @@ class TestTTLSQLite(unittest.TestCase):
             author = db.get_doc_meta_by_key(doc1.name, 'author', ctx=ctx)
             self.assertEqual(author.value, 'Le Tuan Anh')
             # make a sentence with ident
-            sent = doc1.new_sent('It rains.', ident='10000')
+            sent = doc1.sents.new('It rains.', ident='10000')
             sent.ID = None
             db.save_sent(sent, ctx=ctx)
             # select sentence by ident
@@ -99,14 +106,14 @@ class TestTTLSQLite(unittest.TestCase):
             testdoc_path = os.path.join(TEST_DIR, 'data', 'test.json')
             docjson = ttl.read_json(testdoc_path)
             docjson[0].comment = 'mikeneko ga suki desu.'
-            docjson[0].new_tag('I like calico cats.', tagtype='eng')
-            docjson[0][0].new_tag('mi', tagtype='romaji')
+            docjson[0].tag.eng = 'I like calico cats.'
+            docjson[0][0].tag.romaji = 'mi'
             docjson[1].comment = 'It rains.'
-            docjson[1].new_tag('It rains.', tagtype='eng')
-            docjson[1][0].new_tag('ame', tagtype='romaji')
+            docjson[1].tag.eng = 'It rains.'
+            docjson[1][0].tag.romaji = 'ame'
             docjson[2].comment = 'The girl eats the cake.'
-            docjson[2].new_tag('The girl eats the cake.', tagtype='eng')
-            docjson[2][0].new_tag('onna no ko', tagtype='romaji')
+            docjson[2].tag.eng = 'The girl eats the cake.'
+            docjson[2][0].tag.romaji = 'onna no ko'
             for sent in docjson:
                 sent.ID = None
                 sent.docID = doc.ID
@@ -117,8 +124,7 @@ class TestTTLSQLite(unittest.TestCase):
             self.assertTrue(sent)
             self.assertTrue(sent.tags)
             self.assertTrue(sent.tokens)
-            self.assertTrue(sent.concepts)
-            self.assertEqual(sent.get_tag('eng').label, 'I like calico cats.')
+            self.assertEqual(sent.tag.eng.value, 'I like calico cats.')
             self.assertEqual(sent.comment, 'mikeneko ga suki desu.')
             getLogger().debug(sent.tags)
             getLogger().debug(sent.tokens)
