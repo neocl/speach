@@ -89,9 +89,9 @@ CREATE TABLE IF NOT EXISTS "tag" (
     ,"wid" INTEGER
     ,"cfrom" INTEGER
     ,"cto" INTEGER
-    ,"label" TEXT
+    ,"value" TEXT
     ,"source" TEXT
-    ,"tagtype" TEXT
+    ,"type" TEXT
     ,FOREIGN KEY(sid) REFERENCES sentence(ID) ON DELETE CASCADE ON UPDATE CASCADE
 );
 

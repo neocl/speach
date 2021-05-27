@@ -25,7 +25,7 @@ import warnings
 
 from chirptext import DataObject, piter
 from chirptext import chio
-from chirptext.deko import is_kana, parse
+from chirptext import deko
 from chirptext import ttl
 
 
@@ -177,7 +177,7 @@ class IGRow(DataObject):
             return None
         else:
             return self.tsto - self.tsfrom
-        
+
     def overlap(self, other):
         ''' Calculate overlap score between this utterance and another
         Score = 0 means adjacent, score > 0 means overlapped, score < 0 means no overlap (the distance between the two)
@@ -374,14 +374,14 @@ class RubyToken(DataObject):
             else:
                 frags.append(str(g))
         return ''.join(frags)
-    
+
     def __str__(self):
         return self.text()
 
     @staticmethod
     def from_furi(surface, kana):
         ruby = RubyToken(surface=surface)
-        if is_kana(surface):
+        if deko.is_kana(surface):
             ruby.append(surface)
             return ruby
         edit_seq = ndiff(surface, kana)
@@ -533,18 +533,24 @@ def mctoken_to_furi(token):
     return RubyToken.from_furi(token.surface, token.reading_hira())
 
 
-def text_to_igrow(txt):
-    ''' Parse text to TTLIG format '''
-    msent = parse(txt)
+def ttl_to_igrow(msent):
+    ''' Convert TTL to TTLIG format '''
     tokens = []
     pos = []
     lemmas = []
     for token in msent:
-        if token.is_eos:
-            continue
-        pos.append(token.pos3())
-        r = RubyToken.from_furi(token.surface, token.reading_hira())
-        tokens.append(r.to_code())
-        lemmas.append(token.root)
-    igrow = IGRow(text=txt, tokens=' '.join(tokens), pos=' '.join(pos), lemma=' '.join(lemmas))
+        pos.append(token.pos3 if token.pos3 else token.pos)
+        if token.reading_hira:
+            r = RubyToken.from_furi(token.text, token.reading_hira)
+            tokens.append(r.to_code())
+        else:
+            tokens.append(token.text)
+            lemmas.append(token.lemma if token.lemma else '')
+    igrow = IGRow(text=msent.text, tokens=' '.join(tokens), pos=' '.join(pos), lemma=' '.join(lemmas))
     return igrow
+
+
+def text_to_igrow(txt):
+    ''' Parse text to TTLIG format '''
+    sent = deko.parse(txt)
+    return ttl_to_igrow(sent)
