@@ -251,6 +251,19 @@ I have two cat-s.
         igrow = ttlig.text_to_igrow('0時だ。')
         self.assertEqual(igrow.text, '0時だ。')
         self.assertEqual(igrow.tokens, '0 {時/じ} だ 。')
+        # test export to ttl
+        ttl_sent = igrow.to_ttl()
+        expected = {'tags': [{'type': 'pos', 'value': '名詞-数 名詞-接尾-助数詞 助動詞 記号-句点'}],
+                    'text': '0時だ。',
+                    'tokens': [{'cfrom': 0, 'cto': 1, 'pos': '名詞-数', 'text': '0'},
+                               {'cfrom': 1,
+                                'cto': 2,
+                                'pos': '名詞-接尾-助数詞',
+                                'tags': [{'type': 'furi', 'value': '{時/じ}'}],
+                                'text': '時'},
+                               {'cfrom': 2, 'cto': 3, 'pos': '助動詞', 'text': 'だ'},
+                               {'cfrom': 3, 'cto': 4, 'pos': '記号-句点', 'text': '。'}]}
+        self.assertEqual(expected, ttl_sent.to_dict())
 
     def test_parsing_aligned_text(self):
         print("Testing TTLIG with multiple spaces")
