@@ -60,6 +60,11 @@ class TimeSlot:
         """ TimeSlot value (in milliseconds) """
         return self.__value
 
+    @value.setter
+    def value(self, value):
+        # TODO: update DOM to be able to save
+        self.__value = value
+
     @property
     def ts(self) -> str:
         """ Return timestamp of this annotation in vtt format (00:01:02.345)
@@ -76,16 +81,22 @@ class TimeSlot:
     def __lt__(self, other):
         if other is None or (isinstance(other, TimeSlot) and other.value is None):
             return False
+        elif self.value is None:
+            return True
         return self.value < other.value if isinstance(other, TimeSlot) else self.value < other
 
     def __eq__(self, other):
-        if other is None or (isinstance(other, TimeSlot) and other.value is None):
+        if other is None:
             return False
+        elif isinstance(other, TimeSlot):
+            return other.value == self.value
         return self.value == other.value if isinstance(other, TimeSlot) else self.value == other
 
     def __gt__(self, other):
         if other is None or (isinstance(other, TimeSlot) and other.value is None):
             return True
+        elif self.value is None:
+            return False
         return self.value > other.value if isinstance(other, TimeSlot) else self.value > other
 
     def __le__(self, other):
@@ -195,7 +206,7 @@ class TimeAnnotation(Annotation):
     @property
     def duration(self) -> float:
         """ Duration of this annotation (in seconds) """
-        return self.to_ts.sec - self.from_ts.sec
+        return (self.to_ts.sec or 0) - (self.from_ts.sec or 0)
 
     def overlap(self, other):
         """ Calculate overlap score between two time annotations
