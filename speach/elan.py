@@ -106,10 +106,24 @@ class TimeSlot:
         return self > other or self == other
 
     def __add__(self, other):
-        return self.value + other.value if isinstance(other, TimeSlot) else self.value + other
+        sv = self.value if self.value is not None else 0
+        if other is None:
+            ov = 0
+        elif isinstance(other, TimeSlot):
+            ov = other.value if other.value is not None else 0
+        else:
+            ov = other
+        return sv + ov
 
     def __sub__(self, other):
-        return self.value - other.value if isinstance(other, TimeSlot) else self.value - other
+        sv = self.value if self.value is not None else 0
+        if other is None:
+            ov = 0
+        elif isinstance(other, TimeSlot):
+            ov = other.value if other.value is not None else 0
+        else:
+            ov = other
+        return sv - ov
 
     def __hash__(self):
         return id(self)
