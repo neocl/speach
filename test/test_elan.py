@@ -155,6 +155,22 @@ class TestEditElan(unittest.TestCase):
         self.assertEqual(marker_annotations, expected_annotations)
         self.assertEqual(eaf.to_csv_rows(), eaf2.to_csv_rows())
 
+    def test_updating_media_url(self):
+        eaf = read_eaf()
+        self.assertEqual(eaf.media_file, '')
+        self.assertEqual(eaf.media_url, 'file:///home/tuananh/Documents/ELAN/test.wav')
+        self.assertEqual(eaf.relative_media_url, './test.wav')
+        self.assertEqual(eaf.media_path(), '/home/tuananh/Documents/ELAN/test.wav')
+        eaf.media_file = 'test2.wav'
+        eaf.media_url = 'file:///home/user/Documents/ELAN/test2.wav'
+        eaf.relative_media_url = './test2.wav'
+        eaf2 = elan.parse_string(eaf.to_xml_str())
+        self.assertEqual(eaf2.media_file, 'test2.wav')
+        self.assertEqual(eaf2.media_url, 'file:///home/user/Documents/ELAN/test2.wav')
+        self.assertEqual(eaf2.relative_media_url, './test2.wav')
+        self.assertEqual(eaf2.media_path(), '/home/user/Documents/ELAN/test2.wav')
+
+
     def test_edit_elan_participant_code(self):
         eaf = elan.read_eaf(TEST_DATA / "test2.eaf")
         participants = [(t.participant, t.name) for t in eaf]

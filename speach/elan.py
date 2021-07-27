@@ -747,10 +747,10 @@ class Doc(DataObject):
     def media_path(self):
         """ Try to determine the best path to source media file """
         mpath = self.relative_media_url
-        if os.path.isfile(mpath):
+        if mpath and os.path.isfile(mpath):
             return mpath
         # try to join with eaf path if possible
-        if self.path:
+        if self.path and mpath:
             mpath = os.path.join(os.path.dirname(self.path), mpath)
             if os.path.isfile(mpath):
                 return mpath
@@ -861,21 +861,65 @@ class Doc(DataObject):
         self.fileformat = node.get('FORMAT')
         self.version = node.get('VERSION')
 
+    @property
+    def _xml_media_node(self):
+        if self.__xml_header_node is not None:
+            return self.__xml_header_node.find('MEDIA_DESCRIPTOR')
+        else:
+            return None
+
+    @property
+    def media_file(self):
+        return self.__xml_header_node.get('MEDIA_FILE', '')
+
+    @media_file.setter
+    def media_file(self, value):
+        # TODO: what if __xml_header_node is None?
+        self.__xml_header_node.set('MEDIA_FILE', value)
+
+    @property
+    def time_units(self):
+        return self.__xml_header_node.get('TIME_UNITS')
+
+    @time_units.setter
+    def time_units(self, value):
+        # TODO: what if __xml_header_node is None?
+        self.__xml_header_node.set('TIME_UNITS', value)
+
+    @property
+    def media_url(self):
+        return self._xml_media_node.get('MEDIA_URL')
+
+    @media_url.setter
+    def media_url(self, value):
+        # TODO: what if __xml_header_node is None?
+        self._xml_media_node.set('MEDIA_URL', value)
+
+    @property
+    def mime_type(self):
+        return self._xml_media_node.get('MIME_TYPE')
+
+    @mime_type.setter
+    def mime_type(self, value):
+        # TODO: what if __xml_header_node is None?
+        self._xml_media_node.set('MIME_TYPE', value)
+
+    @property
+    def relative_media_url(self):
+        return self._xml_media_node.get('RELATIVE_MEDIA_URL')
+
+    @relative_media_url.setter
+    def relative_media_url(self, value):
+        # TODO: what if __xml_header_node is None?
+        self._xml_media_node.set('RELATIVE_MEDIA_URL', value)
+
     def _update_header_xml(self, node):
         """ [Internal function] Read ELAN doc information from a HEADER XML node
 
         General users should not use this function.
         """
         self.__xml_header_node = node
-        self.media_file = node.get('MEDIA_FILE')
-        self.time_units = node.get('TIME_UNITS')
-        # extract media information
-        media_node = node.find('MEDIA_DESCRIPTOR')
-        if media_node is not None:
-            self.media_url = media_node.get('MEDIA_URL')
-            self.mime_type = media_node.get('MIME_TYPE')
-            self.relative_media_url = media_node.get('RELATIVE_MEDIA_URL')
-        # extract properties
+        # extract extra properties
         for prop_node in node.findall('PROPERTY'):
             self.properties[prop_node.get('NAME')] = prop_node.text
 
