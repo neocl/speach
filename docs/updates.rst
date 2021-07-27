@@ -3,6 +3,19 @@
 Speach Changelog
 ================
 
+Speach 0.1a10
+-------------
+
+- 2021-07-27
+
+  - Support editing ELAN media fields
+
+    - media_file
+    - time_units
+    - media_url
+    - mime_type
+    - relative_media_url
+
 Speach 0.1a9
 ------------
 
