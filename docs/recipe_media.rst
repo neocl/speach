@@ -31,11 +31,11 @@ cutting ``test.wav`` from the beginning to 00:00:10 and write output to ``test_b
 
 cutting ``test.wav`` from 00:00:15 to the end of the file and write output to ``test_after15.ogg``
    
->>> media.cut("test.wav", ELAN_DIR / "test_after15.ogg", from_ts="00:00:15")
+>>> media.cut("test.wav", "test_after15.ogg", from_ts="00:00:15")
 
 cutting ``test.wav`` from 00:00:15 to 00:00:15 and write output to ``test_10-15.ogg``
 
->>> media.cut(ELAN_DIR / "test.wav", ELAN_DIR / "test_10-15.ogg", from_ts="00:00:10", to_ts="00:00:15")
+>>> media.cut("test.wav", "test_10-15.ogg", from_ts="00:00:10", to_ts="00:00:15")
 
 Using extra arguments
 ---------------------
