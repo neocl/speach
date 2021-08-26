@@ -3,6 +3,13 @@
 Speach Changelog
 ================
 
+Speach 0.1a11
+-------------
+
+- 2021-08-26
+
+  - Add ``encoding`` option to ``eaf2csv`` command
+
 Speach 0.1a10
 -------------
 
