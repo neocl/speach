@@ -10,7 +10,11 @@ TTL Tools
 
 import os
 import logging
-from lxml import etree
+try:
+    from lxml import etree
+    _LXML_AVAILABLE = True
+except Exception:
+    _LXML_AVAILABLE = False
 
 from chirptext import TextReport, FileHelper
 from chirptext import chio
@@ -162,6 +166,9 @@ def make_text(sent, delimiter=' '):
 
 def make_html(cli, args):
     ''' Convert TTL to HTML '''
+    if not _LXML_AVAILABLE:
+        print("lxml library is required for this function")
+        exit()
     print("Reading document ...")
     ttl_doc = ttl.Document.read_ttl(args.ttl)
     output = TextReport(args.output)
@@ -183,16 +190,19 @@ def sec_str(a_float):
     return "{:.3f}".format(a_float)
 
 
-def convert_eaf_to_csv(eaf_path, csv_path):
+def convert_eaf_to_csv(eaf_path, csv_path, encoding='utf-8'):
     with chio.open(eaf_path) as eaf_stream:
         elan = parse_eaf_stream(eaf_stream)
         rows = elan.to_csv_rows()
-        chio.write_tsv(csv_path, rows, quoting=chio.QUOTE_MINIMAL)
+        chio.write_tsv(csv_path, rows, quoting=chio.QUOTE_MINIMAL, encoding=encoding)
 
 
 def eaf_to_csv(cli, args):
     ''' Convert ELAN file (*.eaf) to TSV (Tab-separated Values) format '''
-    convert_eaf_to_csv(args.eaf, args.output)
+    if args.encoding:
+        convert_eaf_to_csv(args.eaf, args.output, args.encoding)
+    else:
+        convert_eaf_to_csv(args.eaf, args.output)
     print("Output has been written to: {}".format(args.output))
 
 
@@ -230,6 +240,7 @@ def main():
     task = app.add_task('eaf2csv', func=eaf_to_csv)
     task.add_argument('eaf', help='Input EAF file')
     task.add_argument('-o', '--output', help='path to output CSV file')
+    task.add_argument('-e', '--encoding', help='Encoding of the output CSV file, defaulted to utf-8')
 
     # run app
     app.run()
