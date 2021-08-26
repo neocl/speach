@@ -95,4 +95,14 @@ Converting ELAN files to CSV
 
 .. code-block:: bash
 
-   python -m speach eaf2csv my_transcript.eaf -o my_transcript.csv
+   python -m speach eaf2csv path/to/my_transcript.eaf -o path/to/my_transcript.csv
+
+By default, speach generate output using ``utf-8`` and this should be useful for general uses.
+However in some situations users may want to customize the output encoding.
+For example Microsoft Excel on Windows may require a file to be encoded in ``utf-8-sig`` (UTF-8 file with explicit BOM signature in the beginning of the file) to recognize it as an UTF-8 file.
+It is possible to specify output encoding using the keyword ``encoding``, as in the example below:
+
+.. code-block:: bash
+
+    python -m speach eaf2csv my_transcript.eaf -o my_transcript.csv  --encoding=utf-8-sig
+
