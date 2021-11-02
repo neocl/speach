@@ -37,8 +37,110 @@ def getLogger():
 # Models
 # ----------------------------------------------------------------------
 
-CSVRow = List[str]
-CSVTable = List[CSVRow]
+class Language(DataObject):
+    """ Language information """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ID = xml_node.get('LANG_ID', default="")
+            self.__lang_def = xml_node.get('LANG_DEF', default="")
+            self.__label = xml_node.get('LANG_LABEL', default="")
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @property
+    def lang_def(self):
+        """ URL of the language """
+        return self.__lang_def
+
+    @property
+    def label(self):
+        """ Label of the language """
+        return self.__label
+
+    def __repr__(self):
+        return f"{self.lang_def}#{self.label}"
+
+    def __str__(self):
+        return self.label
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return Language(xml_node=xml_node, **kwargs)
+
+
+class License(DataObject):
+    """ License information """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__url = xml_node.get('LICENSE_URL', default="")
+
+    @property
+    def url(self):
+        return self.__url
+
+    def __repr__(self):
+        if not self.url:
+            return "License()"
+        else:
+            return f"License(url={repr(self.url)})"
+
+    def __str__(self):
+        return self.url
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return License(xml_node=xml_node, **kwargs)
+
+
+class ExternalRef(DataObject):
+    """ An external resource (normally an external controlled vocabulary)
+
+    <EXTERNAL_REF EXT_REF_ID="er1" TYPE="ecv" VALUE="file:/home/tuananh/Documents/ELAN/fables_cv.ecv"/>
+    """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        if xml_node is not None:
+            self.__ref_id = xml_node.get('EXT_REF_ID')
+            self.__type = xml_node.get('TYPE')
+            self.__value = xml_node.get('VALUE')
+
+    @property
+    def ref_id(self):
+        """ Reference ID of this external resource """
+        return self.__ref_id
+
+    @property
+    def type(self):
+        """ Type of external resource 
+        
+        - ecv: External controlled vocabulary
+        """
+        return self.__type
+
+    @property
+    def value(self):
+        """ URL to external resource """
+        return self.__value
+
+    def __repr__(self):
+        return f"{self.type}/{self.ref_id}/{self.value}"
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def from_xml(cls, xml_node, **kwargs):
+        return ExternalRef(xml_node=xml_node, **kwargs)
 
 
 class TimeSlot:
@@ -287,7 +389,7 @@ class LinguisticType(DataObject):
         return self.linguistic_type_id
 
     def __repr__(self):
-        return f"LinguisticType(ID={repr(self.ID)}, constraints={repr(self.constraints)}"
+        return f"LinguisticType(ID={repr(self.ID)}, constraints={repr(self.constraints)})"
 
     def __str__(self):
         return self.ID
@@ -398,11 +500,11 @@ class Tier(DataObject):
         return self.__type_ref_id
 
     @property
-    def type_ref(self):
+    def type_ref(self) -> LinguisticType:
         """ Tier type object """
         return self.__type_ref
 
-    def _set_type_ref(self, type_ref_object):
+    def _set_type_ref(self, type_ref_object: LinguisticType):
         """ [Internal function] Update type_ref object of this Tier """
         self.__type_ref = type_ref_object
 
@@ -509,6 +611,17 @@ class CVEntry(DataObject):
             self.__lang_ref = self.__entry_value_node.get('LANG_REF')
             self.__value = self.__entry_value_node.text
             self.__description = self.__entry_value_node.get('DESCRIPTION')
+        else:
+            self.__ID = ''
+            self.__xml_node = None
+            self.__entry_value_node = None
+            self.__lang_ref = 'und'
+            self.__value = ''
+            self.__description = ''
+
+    @property
+    def _xml_node(self):
+        return self.__xml_node
 
     @property
     def ID(self):
@@ -522,10 +635,22 @@ class CVEntry(DataObject):
     def value(self):
         return self.__value
 
+    @value.setter
+    def value(self, value):
+        self.__value = value
+        if self.__entry_value_node is not None:
+            self.__entry_value_node.text = str(value) if value else ''
+
     @property
     def description(self):
         """ Description of this controlled vocabulary entry """
         return self.__description
+
+    @description.setter
+    def description(self, value):
+        self.__description = value
+        if self.__entry_value_node is not None:
+            self.__entry_value_node.set('DESCRIPTION', str(value) if value else '')
 
     def __repr__(self):
         return f'CVEntry(ID={repr(self.ID)}, lang_ref={repr(self.lang_ref)}, value={repr(self.value)})'
@@ -555,9 +680,50 @@ class ControlledVocab(DataObject):
                     cv_entry = CVEntry(child)
                     self._add_child(cv_entry)
 
-    def _add_child(self, child):
-        self.__entries.append(child)
+    def _add_child(self, child, prev_entry=None, next_entry=None, **kwargs):
+        if prev_entry is not None:
+            self.__entries.insert(self.__entries.index(prev_entry) + 1, child)
+        elif next_entry is not None:
+            self.__entries.insert(self.__entries.index(next_entry), child)
+        else:
+            self.__entries.append(child)
         self.__entries_map[child.ID] = child
+
+    def new_entry(self, ID, value, description='', lang_ref='und', prev_entry=None, next_entry=None, **kwargs):
+        entry_node = etree.Element('CV_ENTRY_ML')
+        entry_node.set('CVE_ID', ID)
+        node_value = etree.SubElement(entry_node, 'CVE_VALUE')
+        if description:
+            node_value.set('DESCRIPTION', description)
+        node_value.set('LANG_REF', lang_ref)
+        node_value.text = value
+        # add entry node to vocab node
+        idx = None
+        if self.__xml_node:
+            if prev_entry is not None:
+                idx = list(self.__xml_node).index(prev_entry._xml_node) + 1
+            elif next_entry is not None:
+                idx = list(self.__xml_node).index(next_entry._xml_node)
+            # add child
+            if idx is not None:
+                self.__xml_node.insert(idx, entry_node)
+            else:
+                # append to the end of the list
+                self.__xml_node.append(entry_node)
+        cv_entry = CVEntry(entry_node)
+        self._add_child(cv_entry, prev_entry=prev_entry, next_entry=next_entry)
+        return cv_entry
+
+    def remove(self, child):
+        if self.__xml_node and child._xml_node:
+            self.__xml_node.remove(child._xml_node)
+        if child in self.__entries:
+            self.__entries.remove(child)
+        if child.ID in self.__entries_map:
+            self.__entries_map.pop(child.ID)
+
+    def __contains__(self, item):
+        return item in self.__entries_map
 
     def __getitem__(self, key):
         return self.__entries_map[key]
@@ -591,6 +757,116 @@ class ControlledVocab(DataObject):
         return self.__tiers
 
 
+class ExternalControlledVocabResource(DataObject):
+
+    def __init__(self, xml_node=None, path=None, **kwargs):
+        super().__init__(**kwargs)
+        self.__xml_node = xml_node
+        self.__path = path
+        self.__languages = []
+        self.__vocabs = []
+        if self.__xml_node:
+            for node in self.__xml_node:
+                if node.tag == 'LANGUAGE':
+                    self.__languages.append(Language.from_xml(node))
+                elif node.tag == 'CONTROLLED_VOCABULARY':
+                    self.__vocabs.append(ControlledVocab(node))
+                else:
+                    logging.getLogger(__name__).warning(f"Unknown tag name ({node.tag}) was found in current ECV stream")
+
+    def __iter__(self):
+        """ Iterate through all controlled vocab list in this ECV stream """
+        return iter(self.__vocabs)
+
+    @property
+    def vocabs(self) -> Tuple[ControlledVocab]:
+        """ A tuple of all controlled vocabulary lists in this ECV stream """
+        return tuple(self.__vocabs)
+
+    @property
+    def languages(self) -> Tuple[Language]:
+        """ A tuple of all language in this ECV stream """
+        return tuple(self.__languages)
+
+    @property
+    def author(self):
+        return self.__xml_node.get('AUTHOR') if self.__xml_node else None
+
+    @author.setter
+    def author(self, value):
+        if self.__xml_node:
+            self.__xml_node.set('AUTHOR', value)
+        else:
+            raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
+
+    @property
+    def date(self):
+        return self.__xml_node.get('DATE') if self.__xml_node else None
+
+    @date.setter
+    def date(self, value):
+        if self.__xml_node:
+            self.__xml_node.set('DATE', value)
+        else:
+            raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
+
+    @property
+    def version(self):
+        return self.__xml_node.get('VERSION') if self.__xml_node else None
+
+    @property
+    def schema_location(self):
+        return self.__xml_node.get('{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation') if self.__xml_node else None
+
+    @classmethod
+    def read_ecv(cls, ecv_path, encoding='utf-8', *args, **kwargs):
+        """ Read an external controlled vocabulary file
+
+        >>> from speach import elan
+        >>> ecv = elan.read_ecv("my_controlled_vocab_file.ecv")
+
+        :param ecv_path: Path to an existing ECV file
+        :type ecv_path: str or Path-like object
+        :param encoding: Encoding of the eaf stream, defaulted to UTF-8
+        :type encoding: str
+        :rtype: speach.elan.ExternalControlledVocabResource
+        """
+        ecv_path = str(ecv_path)
+        if ecv_path.startswith("~"):
+            ecv_path = os.path.expanduser(ecv_path)
+        with chio.open(ecv_path, encoding=encoding, *args, **kwargs) as ecv_stream:
+            _doc = cls.parse_stream(ecv_stream, path=ecv_path)
+            return _doc
+
+    @classmethod
+    def parse_stream(cls, ecv_stream, *args, **kwargs):
+        """ Parse an external controlled vocab input stream
+
+        >>> with open('test/data/test.ecv').read() as ecv_stream:
+        >>>    ecv = elan.parse_ecv_stream(ecv_stream)
+
+        :param ecv_stream: ECV text input stream
+        :rtype: speach.elan.ExternalControlledVocabResource
+        """
+        _root = etree.fromstring(ecv_stream.read())
+        ecv = ExternalControlledVocabResource(xml_node=_root, **kwargs)
+        return ecv
+
+    @classmethod
+    def parse_string(cls, ecv_string, *args, **kwargs):
+        """ Parse ECV content in a string
+
+        >>> with open('test/data/test.ecv').read() as ecv_stream:
+        >>>    ecv_content = ecv_stream.read()
+        >>>    ecv = elan.parse_ecv_string(ecv_content)
+
+        :param eaf_string: ECV content stored in a string
+        :type eaf_string: str
+        :rtype: speach.elan.ExternalControlledVocabResource
+        """
+        return cls.parse_ecv_stream(StringIO(ecv_string), *args, **kwargs)
+
+
 class Constraint(DataObject):
     """ ELAN Tier Constraints """
 
@@ -614,112 +890,6 @@ class Constraint(DataObject):
 
     def __str__(self):
         return self.stereotype
-
-
-class Language(DataObject):
-    """ Language information """
-
-    def __init__(self, xml_node=None, **kwargs):
-        super().__init__(**kwargs)
-        self.__xml_node = xml_node
-        if xml_node is not None:
-            self.__ID = xml_node.get('LANG_ID', default="")
-            self.__lang_def = xml_node.get('LANG_DEF', default="")
-            self.__label = xml_node.get('LANG_LABEL', default="")
-
-    @property
-    def ID(self):
-        return self.__ID
-
-    @property
-    def lang_def(self):
-        """ URL of the language """
-        return self.__lang_def
-
-    @property
-    def label(self):
-        """ Label of the language """
-        return self.__label
-
-    def __repr__(self):
-        return f"{self.lang_def}#{self.label}"
-
-    def __str__(self):
-        return self.lang_def
-
-    @classmethod
-    def from_xml(cls, xml_node, **kwargs):
-        return Language(xml_node=xml_node, **kwargs)
-
-
-class License(DataObject):
-    """ License information """
-
-    def __init__(self, xml_node=None, **kwargs):
-        super().__init__(**kwargs)
-        self.__xml_node = xml_node
-        if xml_node is not None:
-            self.__url = xml_node.get('LICENSE_URL', default="")
-
-    @property
-    def url(self):
-        return self.__url
-
-    def __repr__(self):
-        if not self.url:
-            return "License()"
-        else:
-            return f"License(url={repr(self.url)})"
-
-    def __str__(self):
-        return self.url
-
-    @classmethod
-    def from_xml(cls, xml_node, **kwargs):
-        return License(xml_node=xml_node, **kwargs)
-
-
-class ExternalRef(DataObject):
-    """ An external resource (normally an external controlled vocabulary)
-
-    <EXTERNAL_REF EXT_REF_ID="er1" TYPE="ecv" VALUE="file:/home/tuananh/Documents/ELAN/fables_cv.ecv"/>
-    """
-
-    def __init__(self, xml_node=None, **kwargs):
-        super().__init__(**kwargs)
-        self.__xml_node = xml_node
-        if xml_node is not None:
-            self.__ref_id = xml_node.get('EXT_REF_ID')
-            self.__type = xml_node.get('TYPE')
-            self.__value = xml_node.get('VALUE')
-
-    @property
-    def ref_id(self):
-        """ Reference ID of this external resource """
-        return self.__ref_id
-
-    @property
-    def type(self):
-        """ Type of external resource 
-        
-        - ecv: External controlled vocabulary
-        """
-        return self.__type
-
-    @property
-    def value(self):
-        """ URL to external resource """
-        return self.__value
-
-    def __repr__(self):
-        return f"{self.type}/{self.ref_id}/{self.value}"
-
-    def __str__(self):
-        return self.value
-
-    @classmethod
-    def from_xml(cls, xml_node, **kwargs):
-        return ExternalRef(xml_node=xml_node, **kwargs)
 
 
 class Doc(DataObject):
@@ -985,11 +1155,11 @@ class Doc(DataObject):
         """
         self.__languages.append(Language.from_xml(elem))
 
-    def to_csv_rows(self) -> CSVTable:
+    def to_csv_rows(self) -> List[List[str]]:
         """ Convert this ELAN Doc into a CSV-friendly structure (i.e. list of list of strings)
 
         :return: A list of list of strings
-        :rtype: CSVTable
+        :rtype: List[List[str]]
         """
         rows = []
         for tier in self.tiers():
@@ -1020,7 +1190,7 @@ class Doc(DataObject):
         _content = self.to_xml_bin(encoding=encoding,
                                    xml_declaration=xml_declaration,
                                    default_namespace=default_namespace,
-                                   short_empty_elements=short_empty_elements)
+                                   short_empty_elements=short_empty_elements, *args, **kwargs)
         chio.write_file(path, _content, encoding=encoding)
 
     def cut(self, section, outfile, media_file=None):
@@ -1146,6 +1316,9 @@ class Doc(DataObject):
 read_eaf = Doc.read_eaf
 parse_eaf_stream = Doc.parse_eaf_stream
 parse_string = Doc.parse_string
+read_ecv = ExternalControlledVocabResource.read_ecv
+parse_ecv_string = ExternalControlledVocabResource.parse_string
+parse_ecv_stream = ExternalControlledVocabResource.parse_stream
 
 
 def open_eaf(*args, **kwargs):
