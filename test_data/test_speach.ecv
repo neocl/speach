@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CV_RESOURCE AUTHOR="Le Tuan Anh" DATE="2021-10-29T11:39:43+08:00" VERSION="0.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.mpi.nl/tools/elan/EAFv2.8.xsd">
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00138539-001"
+        LANG_ID="jpn" LANG_LABEL="Japanese (jpn)"/>
+    <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00138502-001"
+        LANG_ID="eng" LANG_LABEL="English (eng)"/>
+    <CONTROLLED_VOCABULARY CV_ID="Prompt_Words">
+        <DESCRIPTION LANG_REF="eng">Word list to prompt speech from infants</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid_8852638b-ce28-47ea-ba2c-6f450d9e16be">
+            <CVE_VALUE DESCRIPTION="Mother" LANG_REF="eng">mama</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_1469b811-ec54-4a6e-9ae0-57c8d935d42e">
+            <CVE_VALUE DESCRIPTION="Father" LANG_REF="eng">papa</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_2b218228-bf70-45c2-a902-f02e1da66509">
+            <CVE_VALUE DESCRIPTION="The common fruit" LANG_REF="eng">apple</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+    <CONTROLLED_VOCABULARY CV_ID="喃語">
+        <DESCRIPTION LANG_REF="jpn">喃語（なんご）とは、乳児が発する意味のない声。言語を獲得する前段階で、声帯の使い方や発声される音を学習している。</DESCRIPTION>
+        <CV_ENTRY_ML CVE_ID="cveid_5be8575f-7f1f-4c16-88e6-b0f177d63b2c">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="jpn">あっあっ</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_5a10927a-8a51-4a4e-8aec-8e1db774f3a3">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="jpn">えっえっ</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_7f88f97b-fa7a-4faf-a7d6-383140073b23">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="jpn">あうー</CVE_VALUE>
+        </CV_ENTRY_ML>
+        <CV_ENTRY_ML CVE_ID="cveid_57ee66f2-5a08-4d78-8191-3fca86871b07">
+            <CVE_VALUE DESCRIPTION="" LANG_REF="jpn">おぉー</CVE_VALUE>
+        </CV_ENTRY_ML>
+    </CONTROLLED_VOCABULARY>
+</CV_RESOURCE>
