@@ -17,6 +17,7 @@ import logging
 import platform
 import subprocess
 import tempfile
+from binascii import crc32 as python_crc32
 from pathlib import Path
 
 # ------------------------------------------------------------
@@ -250,3 +251,15 @@ def metadata(infile, *args, ffmpeg_path=None):
                 k, v = p.split(":", maxsplit=1)
                 meta[k.strip()] = v.strip()
     return meta
+
+
+def crc32_bytes(data, encoding='utf-8'):
+    return hex(python_crc32(data))[2:].upper()
+
+
+def crc32_str(data, encoding='utf-8'):
+    return crc32_bytes(data.encode(encoding=encoding))
+
+
+def crc32_file(file_path):
+    return crc32_bytes(file_path.read_bytes())
