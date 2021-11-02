@@ -262,4 +262,4 @@ def crc32_str(data, encoding='utf-8'):
 
 
 def crc32_file(file_path):
-    return crc32_bytes(file_path.read_bytes())
+    return crc32_bytes(Path(file_path).read_bytes())
