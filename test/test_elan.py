@@ -26,6 +26,7 @@ TEST_DATA = TEST_DIR / 'data'
 TEST_EAF = TEST_DATA / 'test.eaf'
 TEST_TSV = TEST_DATA / 'test.eaf.tsv'
 TEST_EAF2 = TEST_DIR / '../test_data/fables_01_03_aesop_64kb.eaf'
+TEST_ECV2 = TEST_DIR / '../test_data/test_speach.ecv'
 
 
 # -------------------------------------------------------------------------------
@@ -112,6 +113,91 @@ class TestELAN(unittest.TestCase):
         # test external resource
         self.assertTrue(eaf.external_refs)
         self.assertEqual(eaf.external_refs[0].value, "file:/home/tuananh/Documents/ELAN/fables_cv.ecv")
+
+
+class TestExternalCV(unittest.TestCase):
+
+    def test_reading_ecv(self):
+        ecv = elan.read_ecv(TEST_ECV2)
+        self.assertEqual(ecv.author, "Le Tuan Anh")
+        self.assertEqual(ecv.date, "2021-10-29T11:39:43+08:00")
+        self.assertEqual(ecv.version, "0.2")
+        self.assertEqual(ecv.schema_location, "http://www.mpi.nl/tools/elan/EAFv2.8.xsd")
+        # test parsing languages
+        actual = set()
+        for lang in ecv.languages:
+            actual.add((lang.label, lang.lang_def))
+        expected = {
+            ('English (eng)', 'http://cdb.iso.org/lg/CDB-00138502-001'),
+            ('Japanese (jpn)', 'http://cdb.iso.org/lg/CDB-00138539-001')
+        }
+        self.assertEqual(actual, expected)
+        # test parsing controlled vocabs
+        actual = dict()
+        for cv in ecv.vocabs:
+            key = f"{cv.ID}/{cv.description}"
+            actual[key] = []
+            for entry in cv:
+                actual[key].append((entry.lang_ref, entry.ID, entry.value, entry.description))
+        expected = {
+            'Prompt_Words/Word list to prompt speech from infants': [
+                ('eng',
+                 'cveid_8852638b-ce28-47ea-ba2c-6f450d9e16be',
+                 'mama',
+                 'Mother'),
+                ('eng',
+                 'cveid_1469b811-ec54-4a6e-9ae0-57c8d935d42e',
+                 'papa',
+                 'Father'),
+                ('eng',
+                 'cveid_2b218228-bf70-45c2-a902-f02e1da66509',
+                 'apple',
+                 'The common fruit')],
+            '喃語/喃語（なんご）とは、乳児が発する意味のない声。言語を獲得する前段階で、声帯の使い方や発声される音を学習している。': [
+                ('jpn',
+                 'cveid_5be8575f-7f1f-4c16-88e6-b0f177d63b2c',
+                 'あっあっ',
+                 ''),
+                ('jpn',
+                 'cveid_5a10927a-8a51-4a4e-8aec-8e1db774f3a3',
+                 'えっえっ',
+                 ''),
+                ('jpn',
+                 'cveid_7f88f97b-fa7a-4faf-a7d6-383140073b23',
+                 'あうー',
+                 ''),
+                ('jpn',
+                 'cveid_57ee66f2-5a08-4d78-8191-3fca86871b07',
+                 'おぉー',
+                 '')]}
+        self.assertEqual(expected, actual)
+
+    def test_editing_ecv(self):
+        eaf = read_eaf()
+        expected = [('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc7', 'vi', 'Vietnamese'),
+                    ('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc8', 'ko', 'Korean'),
+                    ('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', 'jp', 'Japanese')]
+        # remove en
+        eaf.vocabs[0].remove(eaf.vocabs[0]['cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'])
+        jp = eaf.vocabs[0]['cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7']
+        # add vi
+        vi = eaf.vocabs[0].new_entry('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc7', 'vi', 'Vietnamese', next_entry=jp)
+        # add ko
+        eaf.vocabs[0].new_entry('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc8', 'ko', 'Korean', prev_entry=vi)
+        actual = []
+        for e in eaf.vocabs[0]:
+            actual.append((e.ID, e.value, e.description))
+            e.value = e.value.upper()
+            e.description = e.description + " Language"
+        self.assertEqual(expected, actual)
+        eaf2 = elan.parse_string(eaf.to_xml_str())
+        expected2 = [('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc7', 'VI', 'Vietnamese Language'),
+                     ('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc8', 'KO', 'Korean Language'),
+                     ('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', 'JP', 'Japanese Language')]
+        actual2 = []
+        for e in eaf2.vocabs[0]:
+            actual2.append((e.ID, e.value, e.description))
+        self.assertEqual(expected2, actual2)
 
 
 class TestEditElan(unittest.TestCase):

@@ -57,6 +57,12 @@ class TestMedia(unittest.TestCase):
         media.convert(TEST_OGG, TEST_WAV, "-loglevel", "error")
         self.assertTrue(TEST_WAV.is_file())
 
+    def test_crc32(self):
+        h = media.crc32_str("hello CRC32")
+        self.assertEqual(h, 'C1281542')
+        h2 = media.crc32_file(TEST_OGG)
+        self.assertEqual(h2, "7903DEC5")
+
 
 # -------------------------------------------------------------------------------
 # MAIN
