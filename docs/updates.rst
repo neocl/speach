@@ -3,6 +3,16 @@
 Speach Changelog
 ================
 
+Speach 01.a12
+
+- 2021-11-03
+
+   - Support controlled vocabularies editing
+      - Add new controlled vocabulary entries
+      - Remove controlled vocabulary entries
+      - Edit controlled vocabularies (values, desciptions, languages)
+   - Add crc32 helper functions to ``speach.media`` module
+
 Speach 0.1a11
 -------------
 
