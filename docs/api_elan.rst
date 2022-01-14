@@ -5,6 +5,12 @@ ELAN module
 
 ``speach`` supports reading and manipulating multi-tier transcriptions from ELAN directly.
 
+.. note::
+
+    For better security, ``speach`` will use the package ``defusedxml`` automatically if available to parse XML streams (instead of Python's default parser).
+    When ``defusedxml`` is available, the flag ``speach.elan.SAFE_MODE`` will be set to True.
+
+
 For common code samples to processing ELAN, see :ref:`recipe_elan` page.
 
 .. contents:: Table of Contents

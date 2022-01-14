@@ -3,7 +3,15 @@
 Speach Changelog
 ================
 
-Speach 01.a12
+Speach 0.1a13
+-------------
+
+- 2022-01-14
+
+  - Use ``defusedxml`` automatically when available to parse XML for better security
+
+Speach 0.1a12
+-------------
 
 - 2021-11-03
 
