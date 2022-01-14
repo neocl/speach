@@ -15,6 +15,13 @@ from collections import OrderedDict
 from collections import defaultdict as dd
 from typing import List, Tuple
 import xml.etree.ElementTree as etree
+try:
+    import defusedxml.ElementTree as best_parser
+    SAFE_MODE = True
+except ModuleNotFoundError as e:
+    best_parser = etree
+    SAFE_MODE = False
+
 import warnings
 
 from chirptext import DataObject
@@ -848,7 +855,7 @@ class ExternalControlledVocabResource(DataObject):
         :param ecv_stream: ECV text input stream
         :rtype: speach.elan.ExternalControlledVocabResource
         """
-        _root = etree.fromstring(ecv_stream.read())
+        _root = best_parser.fromstring(ecv_stream.read())
         ecv = ExternalControlledVocabResource(xml_node=_root, **kwargs)
         return ecv
 
@@ -1176,8 +1183,8 @@ class Doc(DataObject):
         :returns: EAF content
         :rtype: bytes
         """
-        _content = etree.tostring(self.__xml_root, encoding=encoding, method="xml",
-                                  short_empty_elements=short_empty_elements, *args, **kwargs)
+        _content = best_parser.tostring(self.__xml_root, encoding=encoding, method="xml",
+                                       short_empty_elements=short_empty_elements, *args, **kwargs)
         return _content
 
     def to_xml_str(self, encoding='utf-8', *args, **kwargs):
@@ -1248,7 +1255,7 @@ class Doc(DataObject):
         :param eaf_stream: EAF text input stream
         :rtype: speach.elan.Doc
         """
-        _root = etree.fromstring(eaf_stream.read())
+        _root = best_parser.fromstring(eaf_stream.read())
         _doc = Doc()
         _doc.__xml_root = _root
         _doc._update_info_xml(_root)

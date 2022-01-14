@@ -39,6 +39,10 @@ def read_eaf():
 
 class TestELAN(unittest.TestCase):
 
+    def test_safe_mode(self):
+        print(f"ELAN safe mode: {elan.SAFE_MODE}")
+        print(f"ELAN XML parser: {elan.best_parser.__name__}")
+
     def test_read_elan(self):
         eaf = read_eaf()
         expected_tiernames = ['Person1 (Utterance)', 'marker', 'Person1 (Chunk)', 'Person1 (ChunkLanguage)',
