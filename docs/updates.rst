@@ -9,6 +9,7 @@ Speach 0.1a14 [WIP]
 - 2022-01-14
 
    - Add ``LOCALE`` support
+   - Add Speach logo
 
 Speach 0.1a13
 -------------
