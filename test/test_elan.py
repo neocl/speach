@@ -106,6 +106,14 @@ class TestELAN(unittest.TestCase):
         self.assertEqual(ann.from_ts.sec, 1.04)
         self.assertEqual(ann.to_ts.sec, 2.33)
 
+    def test_elan_locale(self):
+        loc = elan.Locale(language_code='vi')
+        self.assertEqual(repr(loc), "Locale(language_code='vi')")
+        self.assertEqual(str(loc), 'vi')
+        eaf = elan.read_eaf(TEST_EAF2)
+        self.assertEqual(repr(eaf.locale), "Locale(country_code='GB', language_code='en')")
+        self.assertEqual(str(eaf.locale), 'en')
+
     def test_elan_sample2(self):
         eaf = elan.read_eaf(TEST_EAF2)
         # test languages

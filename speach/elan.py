@@ -899,6 +899,36 @@ class Constraint(DataObject):
         return self.stereotype
 
 
+class Locale(DataObject):
+    """ Locale information """
+
+    def __init__(self, xml_node=None, **kwargs):
+        super().__init__()
+        self.__xml_node = xml_node
+        self.__country_code = kwargs.get("country_code")
+        self.__language_code = kwargs.get("language_code")
+        if xml_node is not None:
+            self.__country_code = xml_node.get('COUNTRY_CODE')
+            self.__language_code = xml_node.get('LANGUAGE_CODE', default="en")
+
+    @property
+    def country_code(self):
+        return self.__country_code
+
+    @property
+    def language_code(self):
+        return self.__language_code
+
+    def __repr__(self):
+        if self.__country_code:
+            return f"Locale(country_code={repr(self.__country_code)}, language_code={repr(self.__language_code)})"
+        else:
+            return f"Locale(language_code={repr(self.__language_code)})"
+
+    def __str__(self):
+        return self.__language_code
+
+
 class Doc(DataObject):
     """ This class represents an ELAN file (\*.eaf)
     """
@@ -916,6 +946,7 @@ class Doc(DataObject):
         self.__licenses = []
         self.__external_refs = []
         self.__languages = []
+        self.__locale = None
         self.path = None
         self.__xml_root = None
         self.__xml_header_node = None
@@ -936,6 +967,10 @@ class Doc(DataObject):
         if mpath.startswith("file://"):
             mpath = mpath[7:]
         return mpath
+
+    @property
+    def locale(self):
+        return self.__locale
 
     def annotation(self, ID):
         """ Get annotation by ID """
@@ -1162,6 +1197,13 @@ class Doc(DataObject):
         """
         self.__languages.append(Language.from_xml(elem))
 
+    def _add_locale_xml(self, elem):
+        """ [Internal function] Parse a LOCALE XML node and link it to current ELAN Doc
+
+        General users should not use this function.
+        """
+        self.__locale = Locale(elem)
+
     def to_csv_rows(self) -> List[List[str]]:
         """ Convert this ELAN Doc into a CSV-friendly structure (i.e. list of list of strings)
 
@@ -1280,6 +1322,8 @@ class Doc(DataObject):
                 _doc._add_external_ref(elem)
             elif elem.tag == 'LANGUAGE':
                 _doc._add_language_xml(elem)
+            elif elem.tag == 'LOCALE':
+                _doc._add_locale_xml(elem)
             else:
                 logging.getLogger(__name__).warning(
                     f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")

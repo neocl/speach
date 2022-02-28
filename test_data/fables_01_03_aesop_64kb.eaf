@@ -667,6 +667,7 @@
         GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="ChunkType" TIME_ALIGNABLE="false"/>
     <LINGUISTIC_TYPE CONSTRAINTS="Included_In"
         GRAPHIC_REFERENCES="false" LINGUISTIC_TYPE_ID="Chunk" TIME_ALIGNABLE="true"/>
+    <LOCALE COUNTRY_CODE="GB" LANGUAGE_CODE="en" />
     <LANGUAGE LANG_DEF="http://cdb.iso.org/lg/CDB-00130975-001"
         LANG_ID="und" LANG_LABEL="undetermined (und)"/>
     <CONSTRAINT
