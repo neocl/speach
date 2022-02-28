@@ -1,4 +1,4 @@
-# speach
+# ![SpeachLogo](https://github.com/neocl/speach/blob/main/graphics/speach_logo_64.png?raw=true) Speach 🐍🍑
 
 [![ReadTheDocs Badge](https://readthedocs.org/projects/speach/badge/?version=latest&style=plastic)](https://speach.readthedocs.io/)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/neocl/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/neocl/speach/alerts/)
@@ -65,5 +65,18 @@ Read [Speach documentation](https://speach.readthedocs.io/) for more information
 
 - [Le Tuan Anh](https://github.com/letuananh) (Maintainer)
 - [Victoria Chua](https://github.com/vicchuayh)
+
+### Graphic materials
+
+The Speach logo
+(![SpeachLogo](https://github.com/neocl/speach/blob/main/graphics/speach_logo_32.png?raw=true)) was
+created by using the [snake
+emoji](https://openmoji.org/library/#author=Selina%20Bauder&emoji=1F40D)
+(created by Selina Bauder) and the [peach
+emoji](https://openmoji.org/library/#author=Marius%20Schnabel&emoji=1F351)
+(created by Marius Schnabel) from [Openmoji
+project](https://openmoji.org/about/). License: [CC BY-SA
+4.0](https://github.com/dakside/openmoji/blob/master/LICENSE.txt)
+
 
 Contributors are welcome! If you want to help developing speach, please visit [Contributing](https://speach.readthedocs.io/en/latest/contributing.html) page.
