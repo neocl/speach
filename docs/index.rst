@@ -3,10 +3,14 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Speach - Documenting Natural languages
-======================================
+|SpeachLogo|_ SPeach - Documenting Natural languages
+====================================================
 
-Welcome to speach's documentation!
+.. |SpeachLogo| image:: _static/images/speach_logo.png
+                       :width: 48px
+.. _SpeachLogo: https://github.com/neocl/speach
+
+Welcome to Speach's documentation!
 Speach, formerly `texttaglib <https://github.com/letuananh/texttaglib>`_, is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TIG, ISF, etc.)
 
 Main functions:
@@ -84,7 +88,17 @@ Contributors
 
 - `Le Tuan Anh <https://github.com/letuananh>`__ (Maintainer)
 - `Victoria Chua <https://github.com/vicchuayh>`__
-  
+
+Graphic materials
+~~~~~~~~~~~~~~~~~
+
+The SPeach logo (|SpeachLogo|_) was created by using
+the `snake emoji <https://openmoji.org/library/#author=Selina%20Bauder&emoji=1F40D>`__
+(created by Selina Bauder)
+and the `peach emoji <https://openmoji.org/library/#author=Marius%20Schnabel&emoji=1F351>`__
+(created by Marius Schnabel)
+from `Openmoji project <https://openmoji.org/about/>`__. License: `CC BY-SA 4.0 <https://github.com/dakside/openmoji/blob/master/LICENSE.txt>`__
+ 
 Indices and tables
 ==================
 
