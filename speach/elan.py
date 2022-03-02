@@ -9,6 +9,7 @@ ELAN module - manipulating ELAN transcript files (\*.eaf, \*.pfsx)
 # :license: MIT, see LICENSE for more details.
 
 import os
+from datetime import datetime
 from io import StringIO
 import logging
 from collections import OrderedDict
@@ -30,6 +31,7 @@ from chirptext import chio
 from .__version__ import __issue__
 from .vtt import sec2ts, ts2sec
 from .media import cut
+from .data import ELAN_BLANK_FILE
 
 
 # ----------------------------------------------------------------------
@@ -813,6 +815,8 @@ class ExternalControlledVocabResource(DataObject):
     @date.setter
     def date(self, value):
         if self.__xml_node:
+            if isinstance(value, datetime):
+                value = datetime.astimezone().isoformat()
             self.__xml_node.set('DATE', value)
         else:
             raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
@@ -951,6 +955,28 @@ class Doc(DataObject):
         self.__xml_root = None
         self.__xml_header_node = None
         self.__xml_time_order_node = None
+        self.__date = None
+        self.__author = ""
+
+    @property
+    def author(self):
+        return self.__author
+
+    @author.setter
+    def author(self, value):
+        self.__author = value
+        self.__xml_root.set('AUTHOR', value)
+
+    @property
+    def date(self):
+        return self.__date
+
+    @date.setter
+    def date(self, value):
+        if isinstance(value, datetime):
+            value = value.astimezone().isoformat()
+        self.__date = value
+        self.__xml_root.set('DATE', value)
 
     def media_path(self):
         """ Try to determine the best path to source media file """
@@ -1262,8 +1288,8 @@ class Doc(DataObject):
         General users should not use this function.
         """
         # Update ELAN file metadata from an XML node
-        self.author = self.__xml_root.get('AUTHOR')
-        self.date = self.__xml_root.get('DATE')
+        self.__author = self.__xml_root.get('AUTHOR')
+        self.__date = self.__xml_root.get('DATE')
         self.fileformat = self.__xml_root.get('FORMAT')
         self.version = self.__xml_root.get('VERSION')
         
@@ -1378,10 +1404,40 @@ class Doc(DataObject):
             _doc.path = eaf_path
             return _doc
 
+    @classmethod
+    def create(cls, media_file='audio.wav',
+               media_url=None,
+               relative_media_url=None,
+               author="",
+               *args, **kwargs):
+        """ Create a new blank ELAN doc
+
+        >>> from speach import elan
+        >>> eaf = elan.create()
+
+        :param encoding: Encoding of the eaf stream, defaulted to UTF-8
+        :type encoding: str
+        :rtype: speach.elan.Doc
+        """
+        eaf = cls.read_eaf(ELAN_BLANK_FILE, *args, **kwargs)
+        if not media_url:
+            media_url = media_file
+        if not relative_media_url:
+            relative_media_url = media_file
+        if media_file:
+            eaf.media_file = media_file
+            eaf.media_url = media_url
+            eaf.relative_media_url = relative_media_url
+        eaf.date = datetime.now()
+        if author:
+            eaf.author = author
+        return eaf
+
 
 read_eaf = Doc.read_eaf
 parse_eaf_stream = Doc.parse_eaf_stream
 parse_string = Doc.parse_string
+create = Doc.create
 read_ecv = ExternalControlledVocabResource.read_ecv
 parse_ecv_string = ExternalControlledVocabResource.parse_string
 parse_ecv_stream = ExternalControlledVocabResource.parse_stream

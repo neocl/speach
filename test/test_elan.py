@@ -9,6 +9,7 @@ Test ELAN support
 # :copyright: (c) 2018 Le Tuan Anh <tuananh.ke@gmail.com>
 # :license: MIT, see LICENSE for more details.
 
+from datetime import datetime
 import os
 import unittest
 from pathlib import Path
@@ -125,6 +126,21 @@ class TestELAN(unittest.TestCase):
         # test external resource
         self.assertTrue(eaf.external_refs)
         self.assertEqual(eaf.external_refs[0].value, "file:/home/tuananh/Documents/ELAN/fables_cv.ecv")
+
+    def test_new_elan(self):
+        # test creating a new EAF file from scratch
+        d = datetime.now()
+        eaf = elan.create(media_file='new_test.wav', author='Le Tuan Anh')
+        self.assertEqual(eaf.author, 'Le Tuan Anh')
+        # test update created time
+        eaf.date = d
+        eaf2 = elan.parse_string(eaf.to_xml_str())  # save simulation
+        # make sure that customized information is saved
+        self.assertEqual(eaf2.date, d.astimezone().isoformat())
+        self.assertEqual(eaf2.author, "Le Tuan Anh")
+        self.assertEqual(eaf2.media_file, 'new_test.wav')
+        self.assertEqual(eaf2.media_url, 'new_test.wav')
+        self.assertEqual(eaf2.relative_media_url, 'new_test.wav')
 
 
 class TestExternalCV(unittest.TestCase):
