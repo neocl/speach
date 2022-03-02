@@ -6,7 +6,11 @@ Speach Changelog
 Speach 0.1a14 [WIP]
 -------------
 
-- 2022-01-14
+- 2022-03-02
+
+  - Add ``speach.elan.create()`` function for creating a new ELAN file from scratch
+
+- 2022-02-28
 
    - Add ``LOCALE`` support
    - Add Speach logo
