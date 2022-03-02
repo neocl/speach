@@ -18,7 +18,7 @@ import xml.etree.ElementTree as etree
 try:
     import defusedxml.ElementTree as best_parser
     SAFE_MODE = True
-except ModuleNotFoundError as e:
+except ModuleNotFoundError:
     best_parser = etree
     SAFE_MODE = False
 
