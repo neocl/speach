@@ -1063,16 +1063,6 @@ class Doc(DataObject):
         """
         self.__tier_map = None
 
-    def _update_info_xml(self, node):
-        """ [Internal function] Update ELAN file metadata from an XML node
-
-        General users should not use this function.
-        """
-        self.author = node.get('AUTHOR')
-        self.date = node.get('DATE')
-        self.fileformat = node.get('FORMAT')
-        self.version = node.get('VERSION')
-
     @property
     def _xml_media_node(self):
         if self.__xml_header_node is not None:
@@ -1266,6 +1256,107 @@ class Doc(DataObject):
             raise FileNotFoundError(f"Source media file ({media_file}) could not be found")
         cut(media_file, outfile, from_ts=section.from_ts, to_ts=section.to_ts)
 
+    def _parse_root(self):
+        """ [Internal] Parse XML structure to build ELAN structure
+
+        General users should not use this function.
+        """
+        # Update ELAN file metadata from an XML node
+        self.author = self.__xml_root.get('AUTHOR')
+        self.date = self.__xml_root.get('DATE')
+        self.fileformat = self.__xml_root.get('FORMAT')
+        self.version = self.__xml_root.get('VERSION')
+        
+        for elem in self.__xml_root:
+            if elem.tag == 'HEADER':
+                self._update_header_xml(elem)
+            elif elem.tag == 'TIME_ORDER':
+                self.__xml_time_order_node = elem
+                for time_elem in elem:
+                    self._add_timeslot_xml(time_elem)
+            elif elem.tag == 'TIER':
+                self._add_tier_xml(elem)
+            elif elem.tag == 'LINGUISTIC_TYPE':
+                self._add_linguistic_type_xml(elem)
+            elif elem.tag == 'CONSTRAINT':
+                self._add_constraint_xml(elem)
+            elif elem.tag == 'CONTROLLED_VOCABULARY':
+                self._add_vocab_xml(elem)
+            elif elem.tag == 'LICENSE':
+                self._add_license_xml(elem)
+            elif elem.tag == "EXTERNAL_REF":
+                self._add_external_ref(elem)
+            elif elem.tag == 'LANGUAGE':
+                self._add_language_xml(elem)
+            elif elem.tag == 'LOCALE':
+                self._add_locale_xml(elem)
+            else:
+                logging.getLogger(__name__).warning(
+                    f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
+
+    def _resolve_structure(self):
+        """ [Internal] Link different parts of the Doc structure together
+        + Link linguistic types to controlled vocabularies
+        + Create tier hierarchy
+        + Link annotations and tiers and vocabularies
+
+        General users should not use this function.
+        """
+        # linguistic_types -> vocabs
+        for lingtype in self.linguistic_types:
+            if lingtype.controlled_vocabulary_ref:
+                lingtype.vocab = self.get_vocab(lingtype.controlled_vocabulary_ref)
+        # resolves tiers' roots, parents, and type
+        for tier in self:
+            for ann in tier:
+                self.__ann_map[ann.ID] = ann
+            lingtype = self.get_linguistic_type(tier._type_ref_id)
+            tier._set_type_ref(lingtype)
+            lingtype.tiers.append(tier)  # type -> tiers
+            if lingtype.vocab:
+                lingtype.vocab.tiers.append(tier)  # vocab -> tiers
+            if tier.parent_ref is not None:
+                self[tier.parent_ref].children.append(tier)
+        # resolve ref_ann
+        for ann in self.__ann_map.values():
+            if ann.ref_id:
+                ann.resolve(self)
+
+
+    @classmethod
+    def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
+        """ Parse an EAF input stream and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf = elan.parse_eaf_stream(eaf_stream)
+
+        :param eaf_stream: EAF text input stream
+        :rtype: speach.elan.Doc
+        """
+        _root = best_parser.fromstring(eaf_stream.read())
+        _doc = Doc()
+        # store XML root node
+        _doc.__xml_root = _root
+        # construct raw ELAN structure
+        _doc._parse_root()
+        # linking parts together
+        _doc._resolve_structure()
+        return _doc
+
+    @classmethod
+    def parse_string(cls, eaf_string, *args, **kwargs):
+        """ Parse EAF content in a string and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf_content = eaf_stream.read()
+        >>>    eaf = elan.parse_string(eaf_content)
+
+        :param eaf_string: EAF content stored in a string
+        :type eaf_string: str
+        :rtype: speach.elan.Doc
+        """
+        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
+
     @classmethod
     def read_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
         """ Read an EAF file and return an elan.Doc object
@@ -1286,82 +1377,6 @@ class Doc(DataObject):
             _doc = cls.parse_eaf_stream(eaf_stream)
             _doc.path = eaf_path
             return _doc
-
-    @classmethod
-    def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
-        """ Parse an EAF input stream and return an elan.Doc object
-
-        >>> with open('test/data/test.eaf').read() as eaf_stream:
-        >>>    eaf = elan.parse_eaf_stream(eaf_stream)
-
-        :param eaf_stream: EAF text input stream
-        :rtype: speach.elan.Doc
-        """
-        _root = best_parser.fromstring(eaf_stream.read())
-        _doc = Doc()
-        _doc.__xml_root = _root
-        _doc._update_info_xml(_root)
-        for elem in _root:
-            if elem.tag == 'HEADER':
-                _doc._update_header_xml(elem)
-            elif elem.tag == 'TIME_ORDER':
-                _doc.__xml_time_order_node = elem
-                for time_elem in elem:
-                    _doc._add_timeslot_xml(time_elem)
-            elif elem.tag == 'TIER':
-                _doc._add_tier_xml(elem)
-            elif elem.tag == 'LINGUISTIC_TYPE':
-                _doc._add_linguistic_type_xml(elem)
-            elif elem.tag == 'CONSTRAINT':
-                _doc._add_constraint_xml(elem)
-            elif elem.tag == 'CONTROLLED_VOCABULARY':
-                _doc._add_vocab_xml(elem)
-            elif elem.tag == 'LICENSE':
-                _doc._add_license_xml(elem)
-            elif elem.tag == "EXTERNAL_REF":
-                _doc._add_external_ref(elem)
-            elif elem.tag == 'LANGUAGE':
-                _doc._add_language_xml(elem)
-            elif elem.tag == 'LOCALE':
-                _doc._add_locale_xml(elem)
-            else:
-                logging.getLogger(__name__).warning(
-                    f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
-        # linking parts together
-        # linguistic_types -> vocabs
-        for lingtype in _doc.linguistic_types:
-            if lingtype.controlled_vocabulary_ref:
-                lingtype.vocab = _doc.get_vocab(lingtype.controlled_vocabulary_ref)
-        # resolves tiers' roots, parents, and type
-        for tier in _doc:
-            for ann in tier:
-                _doc.__ann_map[ann.ID] = ann
-            lingtype = _doc.get_linguistic_type(tier._type_ref_id)
-            tier._set_type_ref(lingtype)
-            lingtype.tiers.append(tier)  # type -> tiers
-            if lingtype.vocab:
-                lingtype.vocab.tiers.append(tier)  # vocab -> tiers
-            if tier.parent_ref is not None:
-                _doc[tier.parent_ref].children.append(tier)
-        # resolve ref_ann
-        for ann in _doc.__ann_map.values():
-            if ann.ref_id:
-                ann.resolve(_doc)
-        return _doc
-
-    @classmethod
-    def parse_string(cls, eaf_string, *args, **kwargs):
-        """ Parse EAF content in a string and return an elan.Doc object
-
-        >>> with open('test/data/test.eaf').read() as eaf_stream:
-        >>>    eaf_content = eaf_stream.read()
-        >>>    eaf = elan.parse_string(eaf_content)
-
-        :param eaf_string: EAF content stored in a string
-        :type eaf_string: str
-        :rtype: speach.elan.Doc
-        """
-        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
 
 
 read_eaf = Doc.read_eaf
