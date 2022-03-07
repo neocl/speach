@@ -6,6 +6,16 @@ Speach Changelog
 Speach 0.1a14 [WIP]
 -------------
 
+- 2022-03-07
+
+  - Allow to add new annotations to all 5 tier stereotypes
+
+    - None (default root tiers)
+    - Included In
+    - Time Subdivision
+    - Symbolic Subdivision
+    - Symbolic Association
+
 - 2022-03-02
 
   - Add ``speach.elan.create()`` function for creating a new ELAN file from scratch
