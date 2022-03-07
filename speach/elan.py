@@ -81,7 +81,7 @@ def _xml_tostring(root, encoding='utf-8',
                   method="xml",
                   pretty_print=False,
                   short_empty_elements=True, *args, **kwargs):
-    """ [Internal] Generate XML content """
+    """ [Internal] Generate XML content as bytes """
     if XML_PARSER == 'lxml':
         # short_empty_elements is not supported
         return etree.tostring(root, encoding=encoding,
