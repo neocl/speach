@@ -618,7 +618,7 @@ class Tier(DataObject):
         >>> # alternative method (set value to None and provide everything with values)
         >>> tto.new_annotation(None, values=['Xin', 'chào'], ann_ref_id=a1.ID)
         """
-        if self.time_alignable:
+        if self.stereotype in (None, 'Included_In'):
             if from_ts is None:
                 raise ValueError("From timestamp cannot be empty")
             if to_ts is None:
@@ -686,6 +686,35 @@ class Tier(DataObject):
                     ann_obj = self._add_annotation_xml(ann_node)
                     ann_obj.resolve(self.doc)
                     self.doc._register_ann(ann_obj)
+            else:
+                # Time_Subdivision
+                if len(_values) > 1 and (not timeslots or len(timeslots) != len(_values) - 1):
+                    raise ValueError("There is a mismatch between the number of annotation values and the number of provided timeslots")
+                for t in timeslots:
+                    if t is None or t <= ann_ref.from_ts or t >= ann_ref.to_ts:
+                        raise ValueError("Child annotations must be within the time range of referent annotation")
+                ts_objs = [ann_ref.from_ts.ID]
+                if len(_values) > 1:
+                    for t in sorted(timeslots):
+                        ts_obj = self.doc.new_timeslot(t)
+                        ts_objs.append(ts_obj.ID)
+                ts_objs.append(ann_ref.to_ts.ID)
+                for idx, v in enumerate(_values):
+                    ann_node = etree.XML("""<ANNOTATION>
+                    <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
+                    TIME_SLOT_REF1="" TIME_SLOT_REF2="">
+                    <ANNOTATION_VALUE></ANNOTATION_VALUE>
+                    </ALIGNABLE_ANNOTATION>
+                    </ANNOTATION>""")
+                    ann_info = ann_node.find('ALIGNABLE_ANNOTATION')
+                    ann_info.find('ANNOTATION_VALUE').text = v
+                    ann_info.set('TIME_SLOT_REF1', ts_objs[idx])
+                    ann_info.set('TIME_SLOT_REF2', ts_objs[idx + 1])
+                    ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
+                    self.__xml_node.append(ann_node)
+                    ann_obj = self._add_annotation_xml(ann_node)
+                    self.doc._register_ann(ann_obj)
+                # create new annotation    
         elif self.stereotype == 'Symbolic_Association':
             ann_node = etree.XML("""        <ANNOTATION>
             <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">

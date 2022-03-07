@@ -391,19 +391,23 @@ class TestEditElan(unittest.TestCase):
     def test_add_annotation(self):
         eaf = elan.create('test.wav')
         eaf.new_linguistic_type('Utterance')
-        # eaf.new_linguistic_type('default-ts', 'Time_Subdivision', vc.ID)
+        eaf.new_linguistic_type('Words', 'Time_Subdivision')
         eaf.new_linguistic_type('Tokens', 'Symbolic_Subdivision')
-        eaf.new_linguistic_type('Language', 'Symbolic_Association')
+        eaf.new_linguistic_type('Translate', 'Symbolic_Association')
         eaf.new_linguistic_type('Phoneme', 'Included_In')
         eaf.new_tier('Baby (Utterance)', 'Utterance')
-        tl = eaf.new_tier('Baby (Language)', 'Language', 'Baby (Utterance)')
+        tw = eaf.new_tier('Baby (Words)', 'Words', 'Baby (Utterance)')
+        te = eaf.new_tier('Baby (Translate)', 'Translate', 'Baby (Utterance)')
         tp = eaf.new_tier('Baby (Phoneme)', 'Phoneme', 'Baby (Utterance)')
         tt = eaf.new_tier('Baby (Tokens)', 'Tokens', 'Baby (Utterance)')
         tu = eaf['Baby (Utterance)']
         a = tu.new_annotation('ano ringo tabetai',
                               elan.ts2msec("00:00:01.123"),
                               elan.ts2msec("00:00:02.456"))
-        tl.new_annotation('(I) want to eat that apple', ann_ref_id=a.ID)
+        tw.new_annotation('ano', values=['ringo', 'tabetai'],
+                          timeslots=[1500, 2000],
+                          ann_ref_id=a.ID)
+        te.new_annotation('(I) want to eat that apple', ann_ref_id=a.ID)
         tp.new_annotation('t', 2100, 2200, ann_ref_id=a.ID)
         tt.new_annotation('ano', values=['ringo', 'tabetai'], ann_ref_id=a.ID)
         self.assertRaises(ValueError, lambda: tp.new_annotation('t', 1600, 2700, ann_ref_id=a.ID))
@@ -412,13 +416,17 @@ class TestEditElan(unittest.TestCase):
         actual = [(t.ID, [(a.ID, a.value, a.from_ts.sec, a.to_ts.sec, a.ref.ID if a.ref else None) for a in t]) for t in eaf]
         expected = [('default', []),
                     ('Baby (Utterance)', [('a1', 'ano ringo tabetai', 1.123, 2.456, None)]),
-                    ('Baby (Language)',
-                     [('a2', '(I) want to eat that apple', 1.123, 2.456, 'a1')]),
-                    ('Baby (Phoneme)', [('a3', 't', 2.1, 2.2, None)]),
+                    ('Baby (Words)',
+                     [('a2', 'ano', 1.123, 1.5, None),
+                      ('a3', 'ringo', 1.5, 2.0, None),
+                      ('a4', 'tabetai', 2.0, 2.456, None)]),
+                    ('Baby (Translate)',
+                     [('a5', '(I) want to eat that apple', 1.123, 2.456, 'a1')]),
+                    ('Baby (Phoneme)', [('a6', 't', 2.1, 2.2, None)]),
                     ('Baby (Tokens)',
-                     [('a4', 'ano', 1.123, 2.456, 'a1'),
-                      ('a5', 'ringo', 1.123, 2.456, 'a1'),
-                      ('a6', 'tabetai', 1.123, 2.456, 'a1')])]
+                     [('a7', 'ano', 1.123, 2.456, 'a1'),
+                      ('a8', 'ringo', 1.123, 2.456, 'a1'),
+                      ('a9', 'tabetai', 1.123, 2.456, 'a1')])]
         self.assertEqual(expected, actual)
 
 
