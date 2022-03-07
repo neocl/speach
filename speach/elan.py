@@ -16,13 +16,24 @@ import logging
 from collections import OrderedDict
 from collections import defaultdict as dd
 from typing import List, Tuple
-import xml.etree.ElementTree as etree
+
 try:
     import defusedxml.ElementTree as best_parser
+    import xml.etree.ElementTree as etree
     SAFE_MODE = True
+    XML_PARSER = 'default'
 except ModuleNotFoundError:
-    best_parser = etree
     SAFE_MODE = False
+    try:
+        # prioritise lxml if it is available
+        from lxml import etree
+        best_parser = etree
+        XML_PARSER = 'lxml'
+    except ImportError:
+        import xml.etree.ElementTree as etree
+        best_parser = etree
+        XML_PARSER = 'default'
+from xml.dom.minidom import parseString as minidom_parseString
 
 import warnings
 
@@ -55,6 +66,37 @@ def ts2msec(ts):
 def msec2ts(value):
     """ Convert milliseconds to ELAN timestamp string """
     return sec2ts(value / 1000)
+
+
+def _parse_xml(source):
+    """ [Internal] Parse an XML stream """
+    if XML_PARSER == 'lxml':
+        return best_parser.parse(source).getroot()
+    else:
+        return best_parser.fromstring(source.read())
+
+
+def _xml_tostring(root, encoding='utf-8',
+                  default_namespace=None,
+                  method="xml",
+                  pretty_print=False,
+                  short_empty_elements=True, *args, **kwargs):
+    """ [Internal] Generate XML content """
+    if XML_PARSER == 'lxml':
+        # short_empty_elements is not supported
+        return etree.tostring(root, encoding=encoding,
+                              pretty_print=pretty_print,
+                              *args, **kwargs)
+    else:
+        # does not support pretty_print
+        _content = etree.tostring(root,
+                                  encoding=encoding, method=method,
+                                  short_empty_elements=short_empty_elements,
+                                  *args, **kwargs)
+        if pretty_print:
+            dom = minidom_parseString(_content.decode(encoding))
+            _content = dom.toprettyxml(encoding=encoding)
+        return _content
 
 
 # ----------------------------------------------------------------------
@@ -639,7 +681,7 @@ class Tier(DataObject):
             if self.stereotype == 'Included_In':
                 if ann_ref.from_ts > float(from_ts) or ann_ref.to_ts < float(to_ts):
                     raise ValueError("New annotation must be contained within the referent annotation")
-            ann_node = etree.XML(""" <ANNOTATION>
+            ann_node = best_parser.XML(""" <ANNOTATION>
             <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
             TIME_SLOT_REF1="" TIME_SLOT_REF2="">
             <ANNOTATION_VALUE></ANNOTATION_VALUE>
@@ -669,7 +711,7 @@ class Tier(DataObject):
                         previous_ids.add(ann.ID)
                 # create new nodes
                 for v in _values:
-                    ann_node = etree.XML("""<ANNOTATION>
+                    ann_node = best_parser.XML("""<ANNOTATION>
                     <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
                     <ANNOTATION_VALUE></ANNOTATION_VALUE>
                     </REF_ANNOTATION>
@@ -700,7 +742,7 @@ class Tier(DataObject):
                         ts_objs.append(ts_obj.ID)
                 ts_objs.append(ann_ref.to_ts.ID)
                 for idx, v in enumerate(_values):
-                    ann_node = etree.XML("""<ANNOTATION>
+                    ann_node = best_parser.XML("""<ANNOTATION>
                     <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
                     TIME_SLOT_REF1="" TIME_SLOT_REF2="">
                     <ANNOTATION_VALUE></ANNOTATION_VALUE>
@@ -716,7 +758,7 @@ class Tier(DataObject):
                     self.doc._register_ann(ann_obj)
                 # create new annotation    
         elif self.stereotype == 'Symbolic_Association':
-            ann_node = etree.XML("""        <ANNOTATION>
+            ann_node = best_parser.XML("""        <ANNOTATION>
             <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
             <ANNOTATION_VALUE></ANNOTATION_VALUE>
             </REF_ANNOTATION>
@@ -892,7 +934,7 @@ class ControlledVocab(DataObject):
         node_value.text = value
         # add entry node to vocab node
         idx = None
-        if self.__xml_node:
+        if self.__xml_node is not None:
             if prev_entry is not None:
                 idx = list(self.__xml_node).index(prev_entry._xml_node) + 1
             elif next_entry is not None:
@@ -908,7 +950,7 @@ class ControlledVocab(DataObject):
         return cv_entry
 
     def remove(self, child):
-        if self.__xml_node and child._xml_node:
+        if self.__xml_node is not None  and child._xml_node is not None:
             self.__xml_node.remove(child._xml_node)
         if child in self.__entries:
             self.__entries.remove(child)
@@ -958,7 +1000,7 @@ class ExternalControlledVocabResource(DataObject):
         self.__path = path
         self.__languages = []
         self.__vocabs = []
-        if self.__xml_node:
+        if self.__xml_node is not None:
             for node in self.__xml_node:
                 if node.tag == 'LANGUAGE':
                     self.__languages.append(Language.from_xml(node))
@@ -983,22 +1025,22 @@ class ExternalControlledVocabResource(DataObject):
 
     @property
     def author(self):
-        return self.__xml_node.get('AUTHOR') if self.__xml_node else None
+        return self.__xml_node.get('AUTHOR') if self.__xml_node is not None else None
 
     @author.setter
     def author(self, value):
-        if self.__xml_node:
+        if self.__xml_node is not None:
             self.__xml_node.set('AUTHOR', value)
         else:
             raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
 
     @property
     def date(self):
-        return self.__xml_node.get('DATE') if self.__xml_node else None
+        return self.__xml_node.get('DATE') if self.__xml_node is not None else None
 
     @date.setter
     def date(self, value):
-        if self.__xml_node:
+        if self.__xml_node is not None:
             if isinstance(value, datetime):
                 value = datetime.astimezone().isoformat()
             self.__xml_node.set('DATE', value)
@@ -1007,11 +1049,14 @@ class ExternalControlledVocabResource(DataObject):
 
     @property
     def version(self):
-        return self.__xml_node.get('VERSION') if self.__xml_node else None
+        return self.__xml_node.get('VERSION') if self.__xml_node is not None else None
 
     @property
     def schema_location(self):
-        return self.__xml_node.get('{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation') if self.__xml_node else None
+        if self.__xml_node is not None:
+            return self.__xml_node.get('{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation')
+        else:
+            return None
 
     @classmethod
     def read_ecv(cls, ecv_path, encoding='utf-8', *args, **kwargs):
@@ -1043,7 +1088,7 @@ class ExternalControlledVocabResource(DataObject):
         :param ecv_stream: ECV text input stream
         :rtype: speach.elan.ExternalControlledVocabResource
         """
-        _root = best_parser.fromstring(ecv_stream.read())
+        _root = _parse_xml(ecv_stream)
         ecv = ExternalControlledVocabResource(xml_node=_root, **kwargs)
         return ecv
 
@@ -1260,7 +1305,7 @@ class Doc(DataObject):
             raise ValueError(f"ID of linguistic type must be unique. type_id {type_id} already exists.")
         else:
             idx = self._find_last_element_index('LINGUISTIC_TYPE') + 1
-            new_lt = etree.XML('''<LINGUISTIC_TYPE GRAPHIC_REFERENCES="false"
+            new_lt = best_parser.XML('''<LINGUISTIC_TYPE GRAPHIC_REFERENCES="false"
         LINGUISTIC_TYPE_ID="" TIME_ALIGNABLE="true"/>''')
             new_lt.set("LINGUISTIC_TYPE_ID", type_id)
             if constraints is not None:
@@ -1286,7 +1331,7 @@ class Doc(DataObject):
             raise ValueError("Controlled vocabulary ID cannot be blank")
         elif self.get_vocab(vocab_id) is not None:
             raise ValueError(f"Controlled vocabulary ID must be unique. {vocab_id} already exists.")
-        vc_node = etree.XML(""" <CONTROLLED_VOCABULARY CV_ID="">
+        vc_node = best_parser.XML(""" <CONTROLLED_VOCABULARY CV_ID="">
         <DESCRIPTION LANG_REF="eng"/>
         </CONTROLLED_VOCABULARY> """)
         vc_node.set("CV_ID", vocab_id)
@@ -1367,7 +1412,7 @@ class Doc(DataObject):
             idx = self._find_last_element_index('TIER') + 1
         else:
             idx = self._find_last_element_index('TIME_ORDER') + 1
-        tier_node = etree.XML(""" <TIER LINGUISTIC_TYPE_REF="" TIER_ID=""></TIER>""")
+        tier_node = best_parser.XML(""" <TIER LINGUISTIC_TYPE_REF="" TIER_ID=""></TIER>""")
         tier_node.set('TIER_ID', tier_id)
         tier_node.set('LINGUISTIC_TYPE_REF', type_id)
         if parent_id:
@@ -1537,27 +1582,34 @@ class Doc(DataObject):
                 rows.append((tier.ID, tier.participant, _from_ts, _to_ts, _duration, anno.value))
         return rows
 
-    def to_xml_bin(self, encoding='utf-8', default_namespace=None, short_empty_elements=True, *args, **kwargs):
+    def to_xml_bin(self, encoding='utf-8',
+                   default_namespace=None,
+                   short_empty_elements=True, *args, **kwargs):
         """ Generate EAF content (bytes) in XML format
 
         :returns: EAF content
         :rtype: bytes
         """
-        _content = best_parser.tostring(self.__xml_root, encoding=encoding, method="xml",
-                                       short_empty_elements=short_empty_elements, *args, **kwargs)
+        _content = _xml_tostring(self.__xml_root,
+                                 encoding=encoding,
+                                 default_namespace=default_namespace,
+                                 short_empty_elements=short_empty_elements,
+                                 *args, **kwargs)
         return _content
 
     def to_xml_str(self, encoding='utf-8', *args, **kwargs):
         """ Generate EAF content string in XML format """
-        return self.to_xml_bin(encoding=encoding, *args, **kwargs).decode(encoding)
+        return _xml_tostring(self.__xml_root,
+                             *args, **kwargs).decode(encoding=encoding)
 
     def save(self, path, encoding='utf-8', xml_declaration=None,
              default_namespace=None, short_empty_elements=True, *args, **kwargs):
         """ Write ELAN Doc to an EAF file """
-        _content = self.to_xml_bin(encoding=encoding,
+        _content = self.to_xml_str(encoding=encoding,
                                    xml_declaration=xml_declaration,
                                    default_namespace=default_namespace,
-                                   short_empty_elements=short_empty_elements, *args, **kwargs)
+                                   short_empty_elements=short_empty_elements,
+                                   *args, **kwargs)
         chio.write_file(path, _content, encoding=encoding)
 
     def cut(self, section, outfile, media_file=None):
@@ -1660,7 +1712,7 @@ class Doc(DataObject):
         :param eaf_stream: EAF text input stream
         :rtype: speach.elan.Doc
         """
-        _root = best_parser.fromstring(eaf_stream.read())
+        _root = _parse_xml(eaf_stream)
         _doc = Doc()
         # store XML root node
         _doc.__xml_root = _root
