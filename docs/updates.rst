@@ -16,6 +16,10 @@ Speach 0.1a14 [WIP]
     - Symbolic Subdivision
     - Symbolic Association
 
+   - Support ``lxml`` when available
+
+   - Support ``pretty_print`` in ``elan.Doc.to_xml_str()`` and ``elan.Doc.to_xml_bin()``
+
 - 2022-03-02
 
   - Add ``speach.elan.create()`` function for creating a new ELAN file from scratch
