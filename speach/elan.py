@@ -585,6 +585,13 @@ class Tier(DataObject):
         return self.type_ref.constraints
 
     @property
+    def vocab(self):
+        if self.type_ref is not None and self.type_ref.vocab is not None:
+            return self.type_ref.vocab
+        else:
+            return None
+
+    @property
     def _type_ref_id(self):
         return self.__type_ref_id
 
@@ -622,8 +629,17 @@ class Tier(DataObject):
     def __str__(self):
         return f'Tier(ID={repr(self.ID)}),type={repr(self.linguistic_type)})'.format(self.ID, self.linguistic_type)
 
-    def new_annotation(self, value, from_ts=None, to_ts=None, ann_ref_id=None, values=None, timeslots=None):
-        """ Create new annotation(s) in this current tier 
+    def _validate_value(self, value):
+        """ [Internal] """
+        if self.vocab is not None:
+            if not self.vocab.has_value(value):
+                raise ValueError(f"{repr(value)} is not a valid value for tier {self.name}")
+            else:
+                return self.vocab.by_value(value)
+        return None
+
+    def new_annotation(self, value, from_ts=None, to_ts=None, ann_ref_id=None, values=None, timeslots=None, check_cv=True):
+        """ Create new annotation(s) in this current tier
         ELAN provides 5 different tier stereotypes.
 
         To create a new standard annotation (in a tier with no constraints),
@@ -681,6 +697,7 @@ class Tier(DataObject):
             if self.stereotype == 'Included_In':
                 if ann_ref.from_ts > float(from_ts) or ann_ref.to_ts < float(to_ts):
                     raise ValueError("New annotation must be contained within the referent annotation")
+            cve_ref = self._validate_value(value)
             ann_node = best_parser.XML(""" <ANNOTATION>
             <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
             TIME_SLOT_REF1="" TIME_SLOT_REF2="">
@@ -688,6 +705,8 @@ class Tier(DataObject):
             </ALIGNABLE_ANNOTATION>
             </ANNOTATION>""")
             ann_info = ann_node.find("ALIGNABLE_ANNOTATION")
+            if cve_ref is not None:
+                ann_info.set('CVE_REF', cve_ref.ID)
             ann_info.set('TIME_SLOT_REF1', self.doc.new_timeslot(from_ts).ID)
             ann_info.set('TIME_SLOT_REF2', self.doc.new_timeslot(to_ts).ID)
             ann_info.find('ANNOTATION_VALUE').text = value
@@ -700,6 +719,8 @@ class Tier(DataObject):
             _values = [value] if value is not None else []
             if values:
                 _values.extend(values)
+            for v in _values:
+                self._validate_value(v)
             if self.stereotype == 'Symbolic_Subdivision':
                 last_id = None
                 previous_ids = set()
@@ -718,6 +739,9 @@ class Tier(DataObject):
                     </REF_ANNOTATION>
                     </ANNOTATION>""")
                     ann_info = ann_node.find('REF_ANNOTATION')
+                    cve_ref = self._validate_value(v)
+                    if cve_ref is not None:
+                        ann_info.set('CVE_REF', cve_ref.ID)
                     ann_info.set('ANNOTATION_REF', ann_ref.ID)
                     ann_info.find('ANNOTATION_VALUE').text = v
                     _nid = self.doc.new_annotation_id()
@@ -753,6 +777,9 @@ class Tier(DataObject):
                     </ALIGNABLE_ANNOTATION>
                     </ANNOTATION>""")
                     ann_info = ann_node.find('ALIGNABLE_ANNOTATION')
+                    cve_ref = self._validate_value(v)
+                    if cve_ref is not None:
+                        ann_info.set('CVE_REF', cve_ref.ID)
                     ann_info.find('ANNOTATION_VALUE').text = v
                     ann_info.set('TIME_SLOT_REF1', ts_objs[idx])
                     ann_info.set('TIME_SLOT_REF2', ts_objs[idx + 1])
@@ -764,6 +791,7 @@ class Tier(DataObject):
                 return ann_objs
                 # create new annotation    
         elif self.stereotype == 'Symbolic_Association':
+            cve_ref = self._validate_value(value)
             ann_node = best_parser.XML("""        <ANNOTATION>
             <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
             <ANNOTATION_VALUE></ANNOTATION_VALUE>
@@ -771,6 +799,8 @@ class Tier(DataObject):
             </ANNOTATION>""")
             ann_info = ann_node.find("REF_ANNOTATION")
             ann_info.set('ANNOTATION_REF', ann_ref_id)
+            if cve_ref is not None:
+                ann_info.set('CVE_REF', cve_ref.ID)
             ann_info.find('ANNOTATION_VALUE').text = value
             ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
             self.__xml_node.append(ann_node)
@@ -871,6 +901,8 @@ class CVEntry(DataObject):
 
     @value.setter
     def value(self, value):
+        if not value:
+            raise ValueError("CV entry value cannot be blank")
         self.__value = value
         if self.__entry_value_node is not None:
             self.__entry_value_node.text = str(value) if value else ''
@@ -900,6 +932,7 @@ class ControlledVocab(DataObject):
         super().__init__(**kwargs)
         self.__entries = []
         self.__entries_map = dict()
+        self.__values_map = dict()  # values are also uniquq
         self.__tiers = []
         self.__xml_node = xml_node
         if xml_node is not None:
@@ -922,6 +955,7 @@ class ControlledVocab(DataObject):
         else:
             self.__entries.append(child)
         self.__entries_map[child.ID] = child
+        self.__values_map[child.value] = child
 
     def new_entry(self, ID, value, description='', lang_ref=None, prev_entry=None, next_entry=None, **kwargs):
         if lang_ref is None:
@@ -930,6 +964,12 @@ class ControlledVocab(DataObject):
             else:
                 lang_ref = 'und'
         entry_node = etree.Element('CV_ENTRY_ML')
+        if not value:
+            raise ValueError("CV Entry value cannot be blank")
+        if value in self.__values_map:
+            raise ValueError("CV Entry {repr()} already exists.")
+        if ID is not None and ID in self.__entries_map:
+            raise ValueError("CV entry ID {repr(ID)} already exists.")
         if ID is None:
             ID = f'cveid_{uuid.uuid4()}'
         entry_node.set('CVE_ID', ID)
@@ -962,11 +1002,29 @@ class ControlledVocab(DataObject):
             self.__entries.remove(child)
         if child.ID in self.__entries_map:
             self.__entries_map.pop(child.ID)
+        if child.value in self.__values_map:
+            self.__values_map.pop(child.value)
 
     def __contains__(self, item):
         return item in self.__entries_map
 
     def __getitem__(self, key):
+        """ Get a CV entry object by its unique text value """
+        return self.by_value(key)
+
+    def has_id(self, key):
+        return key in self.__entries_map
+
+    def has_value(self, key):
+        return key in self.__values_map
+
+    def by_value(self, key):
+        """ Get a CV entry object by its unique text value """
+        return self.__values_map[key]
+
+    def by_id(self, key):
+        """ Get a CV entry object by its cveid (i.e. randomly generated UUID)
+        """
         return self.__entries_map[key]
 
     def __iter__(self):
@@ -998,31 +1056,27 @@ class ControlledVocab(DataObject):
         return self.__tiers
 
 
-class ExternalControlledVocabResource(DataObject):
+class ExternalControlledVocabResource(ControlledVocab):
 
     def __init__(self, xml_node=None, path=None, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(xml_node=None, **kwargs)
         self.__xml_node = xml_node
         self.__path = path
         self.__languages = []
-        self.__vocabs = []
+        # self.__vocabs = []
         if self.__xml_node is not None:
             for node in self.__xml_node:
                 if node.tag == 'LANGUAGE':
                     self.__languages.append(Language.from_xml(node))
                 elif node.tag == 'CONTROLLED_VOCABULARY':
-                    self.__vocabs.append(ControlledVocab(node))
+                    self._add_child(ControlledVocab(node))
                 else:
                     logging.getLogger(__name__).warning(f"Unknown tag name ({node.tag}) was found in current ECV stream")
-
-    def __iter__(self):
-        """ Iterate through all controlled vocab list in this ECV stream """
-        return iter(self.__vocabs)
 
     @property
     def vocabs(self) -> Tuple[ControlledVocab]:
         """ A tuple of all controlled vocabulary lists in this ECV stream """
-        return tuple(self.__vocabs)
+        return tuple(self)
 
     @property
     def languages(self) -> Tuple[Language]:

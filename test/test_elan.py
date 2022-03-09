@@ -178,7 +178,7 @@ class TestELAN(unittest.TestCase):
         self.assertEqual(eaf2.relative_media_url, './new_test.wav')
 
 
-class TestExternalCV(unittest.TestCase):
+class TestControlledVocab(unittest.TestCase):
 
     def test_reading_ecv(self):
         ecv = elan.read_ecv(TEST_ECV2)
@@ -241,8 +241,8 @@ class TestExternalCV(unittest.TestCase):
                     ('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc8', 'ko', 'Korean'),
                     ('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', 'jp', 'Japanese')]
         # remove en
-        eaf.vocabs[0].remove(eaf.vocabs[0]['cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'])
-        jp = eaf.vocabs[0]['cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7']
+        eaf.vocabs[0].remove(eaf.vocabs[0].by_id('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'))
+        jp = eaf.vocabs[0].by_id('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7')
         # add vi
         vi = eaf.vocabs[0].new_entry('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc7', 'vi', 'Vietnamese', next_entry=jp)
         # add ko
@@ -261,6 +261,21 @@ class TestExternalCV(unittest.TestCase):
         for e in eaf2.vocabs[0]:
             actual2.append((e.ID, e.value, e.description))
         self.assertEqual(expected2, actual2)
+
+    def test_ecv_new_annotation(self):
+        # internal vocabs
+        eaf = read_eaf()
+        icv = eaf.get_vocab('Languages')
+        self.assertEqual(icv.ID, 'Languages')
+        en_id = 'cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'
+        self.assertEqual(icv.by_id(en_id).value, 'en')
+        self.assertEqual(icv['en'].ID, en_id)
+        # make sure that controlled vocab has been linked properly
+        t = eaf['Person1 (Language)']
+        self.assertEqual(t.vocab.ID, 'Languages')
+        # external vocabs
+        ecv = elan.read_ecv(TEST_ECV2)
+        self.assertEqual(ecv.by_id('Prompt_Words').ID, 'Prompt_Words')
 
 
 class TestEditElan(unittest.TestCase):
@@ -434,6 +449,19 @@ class TestEditElan(unittest.TestCase):
                       ('a8', 'ringo', 1.123, 2.456, 'a1'),
                       ('a9', 'tabetai', 1.123, 2.456, 'a1')])]
         self.assertEqual(expected, actual)
+
+    def test_cv_check_add_annotation_ref(self):
+        en_id = 'cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'
+        eaf = read_eaf()
+        tu = eaf['Person1 (Utterance)']
+        tl = eaf['Person1 (Language)']
+        u = tu.new_annotation('test', 1000, 2000)
+        self.assertRaises(ValueError, lambda: tl.new_annotation('test', ann_ref_id=u.ID))
+        tl.new_annotation('en', ann_ref_id=u.ID)
+        eaf = elan.parse_string(eaf.to_xml_str())
+        tl = eaf['Person1 (Language)']
+        self.assertEqual(tl[-1].cve_ref, en_id)
+        self.assertEqual(tl[-1].ref.value, 'test')
 
 
 # -------------------------------------------------------------------------------
