@@ -6,6 +6,10 @@ Speach Changelog
 Speach 0.1a14 [WIP]
 -------------
 
+- 20022-03-09
+
+  - Cross-check with controlled vocabularies when creating annotations if possible
+
 - 2022-03-07
 
   - Allow to add new annotations to all 5 tier stereotypes
