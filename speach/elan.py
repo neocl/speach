@@ -710,6 +710,7 @@ class Tier(DataObject):
                         last_id = ann.ID
                         previous_ids.add(ann.ID)
                 # create new nodes
+                ann_objs = []
                 for v in _values:
                     ann_node = best_parser.XML("""<ANNOTATION>
                     <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
@@ -728,6 +729,8 @@ class Tier(DataObject):
                     ann_obj = self._add_annotation_xml(ann_node)
                     ann_obj.resolve(self.doc)
                     self.doc._register_ann(ann_obj)
+                    ann_objs.append(ann_obj)
+                return ann_objs
             else:
                 # Time_Subdivision
                 if len(_values) > 1 and (not timeslots or len(timeslots) != len(_values) - 1):
@@ -741,6 +744,7 @@ class Tier(DataObject):
                         ts_obj = self.doc.new_timeslot(t)
                         ts_objs.append(ts_obj.ID)
                 ts_objs.append(ann_ref.to_ts.ID)
+                ann_objs = []
                 for idx, v in enumerate(_values):
                     ann_node = best_parser.XML("""<ANNOTATION>
                     <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
@@ -756,6 +760,8 @@ class Tier(DataObject):
                     self.__xml_node.append(ann_node)
                     ann_obj = self._add_annotation_xml(ann_node)
                     self.doc._register_ann(ann_obj)
+                    ann_objs.append(ann_obj)
+                return ann_objs
                 # create new annotation    
         elif self.stereotype == 'Symbolic_Association':
             ann_node = best_parser.XML("""        <ANNOTATION>
