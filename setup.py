@@ -50,7 +50,9 @@ setup(
     long_description_content_type='text/markdown',
     packages=['speach',
               'speach.data'],
-    package_data={'speach': ['data/*.sql', 'data/*.gz']},
+    package_data={'speach': ['data/scripts/*.sql',
+                             'data/*.gz',
+                             'data/elan/*.eaf']},
     include_package_data=True,
     url=pkg_info['__url__'],
     project_urls={

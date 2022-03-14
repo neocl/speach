@@ -9,6 +9,7 @@ Test ELAN support
 # :copyright: (c) 2018 Le Tuan Anh <tuananh.ke@gmail.com>
 # :license: MIT, see LICENSE for more details.
 
+from datetime import datetime
 import os
 import unittest
 from pathlib import Path
@@ -42,6 +43,12 @@ class TestELAN(unittest.TestCase):
     def test_safe_mode(self):
         print(f"ELAN safe mode: {elan.SAFE_MODE}")
         print(f"ELAN XML parser: {elan.best_parser.__name__}")
+
+    def test_pretty_print(self):
+        x = elan.create().to_xml_bin(pretty_print=True)
+        self.assertTrue(x)
+        x = elan.create().to_xml_str(pretty_print=True)
+        self.assertTrue(x)
 
     def test_read_elan(self):
         eaf = read_eaf()
@@ -126,8 +133,52 @@ class TestELAN(unittest.TestCase):
         self.assertTrue(eaf.external_refs)
         self.assertEqual(eaf.external_refs[0].value, "file:/home/tuananh/Documents/ELAN/fables_cv.ecv")
 
+    def test_new_elan(self):
+        # test creating a new EAF file from scratch
+        eaf = elan.create(media_file='test.wav',
+                          author='Le Tuan Anh')
+        eaf = elan.parse_string(eaf.to_xml_str())
+        self.assertEqual(eaf.media_file, 'test.wav')
+        self.assertEqual(eaf.media_url, 'test.wav')
+        self.assertEqual(eaf.relative_media_url, 'test.wav')
+        # set relative_media_url
+        eaf = elan.create(media_file='test.wav',
+                          relative_media_url='./test.wav',
+                          author='Le Tuan Anh')
+        eaf = elan.parse_string(eaf.to_xml_str())
+        self.assertEqual(eaf.media_file, 'test.wav')
+        self.assertEqual(eaf.media_url, 'test.wav')
+        self.assertEqual(eaf.relative_media_url, './test.wav')
+        # set media_url
+        eaf = elan.create(media_file='test.wav',
+                          media_url='/home/tuananh/test.wav',
+                          author='Le Tuan Anh')
+        eaf = elan.parse_string(eaf.to_xml_str())
+        self.assertEqual(eaf.media_file, 'test.wav')
+        self.assertEqual(eaf.media_url, '/home/tuananh/test.wav')
+        self.assertEqual(eaf.relative_media_url, 'test.wav')
+        # set datetime
+        d = datetime.now()
+        eaf = elan.create(media_file='test.wav',
+                          media_url='file:///home/tuananh/Documents/ELAN/test.eaf',
+                          relative_media_url='./test.wav',
+                          author='Le Tuan Anh')
+        # update media info after created
+        eaf.media_file = 'new_test.wav'
+        eaf.media_url = 'file:///home/tuananh/Documents/ELAN/new_test.eaf'
+        eaf.relative_media_url = './new_test.wav'
+        # test update created time
+        eaf.date = d
+        eaf2 = elan.parse_string(eaf.to_xml_str())  # save simulation
+        # make sure that customized information is saved
+        self.assertEqual(eaf2.date, d.astimezone().isoformat())
+        self.assertEqual(eaf2.author, "Le Tuan Anh")
+        self.assertEqual(eaf2.media_file, 'new_test.wav')
+        self.assertEqual(eaf2.media_url, 'file:///home/tuananh/Documents/ELAN/new_test.eaf')
+        self.assertEqual(eaf2.relative_media_url, './new_test.wav')
 
-class TestExternalCV(unittest.TestCase):
+
+class TestControlledVocab(unittest.TestCase):
 
     def test_reading_ecv(self):
         ecv = elan.read_ecv(TEST_ECV2)
@@ -190,8 +241,8 @@ class TestExternalCV(unittest.TestCase):
                     ('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc8', 'ko', 'Korean'),
                     ('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7', 'jp', 'Japanese')]
         # remove en
-        eaf.vocabs[0].remove(eaf.vocabs[0]['cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'])
-        jp = eaf.vocabs[0]['cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7']
+        eaf.vocabs[0].remove(eaf.vocabs[0].by_id('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'))
+        jp = eaf.vocabs[0].by_id('cveid_2fef57d6-45fc-4763-95d8-2dca63b043d7')
         # add vi
         vi = eaf.vocabs[0].new_entry('cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc7', 'vi', 'Vietnamese', next_entry=jp)
         # add ko
@@ -210,6 +261,21 @@ class TestExternalCV(unittest.TestCase):
         for e in eaf2.vocabs[0]:
             actual2.append((e.ID, e.value, e.description))
         self.assertEqual(expected2, actual2)
+
+    def test_ecv_new_annotation(self):
+        # internal vocabs
+        eaf = read_eaf()
+        icv = eaf.get_vocab('Languages')
+        self.assertEqual(icv.ID, 'Languages')
+        en_id = 'cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'
+        self.assertEqual(icv.by_id(en_id).value, 'en')
+        self.assertEqual(icv['en'].ID, en_id)
+        # make sure that controlled vocab has been linked properly
+        t = eaf['Person1 (Language)']
+        self.assertEqual(t.vocab.ID, 'Languages')
+        # external vocabs
+        ecv = elan.read_ecv(TEST_ECV2)
+        self.assertEqual(ecv.by_id('Prompt_Words').ID, 'Prompt_Words')
 
 
 class TestEditElan(unittest.TestCase):
@@ -268,7 +334,6 @@ class TestEditElan(unittest.TestCase):
         self.assertEqual(eaf2.relative_media_url, './test2.wav')
         self.assertEqual(eaf2.media_path(), '/home/user/Documents/ELAN/test2.wav')
 
-
     def test_edit_elan_participant_code(self):
         eaf = elan.read_eaf(TEST_DATA / "test2.eaf")
         participants = [(t.participant, t.name) for t in eaf]
@@ -297,6 +362,106 @@ class TestEditElan(unittest.TestCase):
                      ('Px', 'Person1 (Language)'),
                      ('R004x', 'R004 (Utterance)')]
         self.assertEqual(expected2, participants2)
+
+    def test_create_new_elan_file(self):
+        eaf = elan.create()
+        # test add new vocab
+        vc = eaf.new_vocab('Fruits', 'jpn')
+        vc.new_entry(None, 'ringo', 'apple')
+        vc.new_entry(None, 'ichigo', 'strawberry')
+        # test adding new tier type
+        eaf.new_linguistic_type('default-lt2')
+        eaf.new_linguistic_type('default-ts', 'Time_Subdivision', vc.ID)
+        eaf.new_linguistic_type('default-ss', 'Symbolic_Subdivision')
+        eaf.new_linguistic_type('default-sa', 'Symbolic_Association')
+        eaf.new_linguistic_type('default-ii', 'Included_In')
+        # add new tiers
+        eaf.new_tier('tier-lt2', 'default-lt2')
+        eaf.new_tier('tier-ts', 'default-ts', 'tier-lt2')
+        eaf.new_tier('tier-ss', 'default-ss', 'tier-lt2')
+        eaf.new_tier('tier-sa', 'default-sa', 'tier-lt2')
+        eaf.new_tier('tier-ii', 'default-ii', 'tier-lt2')
+        # save eaf
+        eaf = elan.parse_string(eaf.to_xml_str())
+        # all stereotypes
+        constraints = {c.stereotype for c in eaf.constraints}
+        expected = {'Time_Subdivision', 'Symbolic_Subdivision', 'Symbolic_Association', 'Included_In'}
+        self.assertEqual(constraints, expected)
+        # validate linguistic types
+        types = [(t.ID, t.constraints, t.vocab.ID if t.vocab else None) for t in eaf.linguistic_types]
+        expected = [('default-lt', None, None), ('default-lt2', None, None),
+                    ('default-ts', 'Time_Subdivision', 'Fruits'),
+                    ('default-ss', 'Symbolic_Subdivision', None),
+                    ('default-sa', 'Symbolic_Association', None),
+                    ('default-ii', 'Included_In', None)]
+        self.assertEqual(types, expected)
+        # validate tiers
+        tiers = [(t.ID, t.type_ref.ID, t.parent.ID if t.parent is not None else None) for t in eaf]
+        expected = [('default', 'default-lt', None),
+                    ('tier-lt2', 'default-lt2', None),
+                    ('tier-ts', 'default-ts', 'tier-lt2'),
+                    ('tier-ss', 'default-ss', 'tier-lt2'),
+                    ('tier-sa', 'default-sa', 'tier-lt2'),
+                    ('tier-ii', 'default-ii', 'tier-lt2')]
+        self.assertEqual(tiers, expected)
+        # validate controlled vocab
+        entries = [(e.value, e.description, e.lang_ref) for e in eaf.get_linguistic_type('default-ts').vocab]
+        expected = [('ringo', 'apple', 'jpn'), ('ichigo', 'strawberry', 'jpn')]
+        self.assertEqual(entries, expected)
+
+    def test_add_annotation(self):
+        eaf = elan.create('test.wav')
+        eaf.new_linguistic_type('Utterance')
+        eaf.new_linguistic_type('Words', 'Time_Subdivision')
+        eaf.new_linguistic_type('Tokens', 'Symbolic_Subdivision')
+        eaf.new_linguistic_type('Translate', 'Symbolic_Association')
+        eaf.new_linguistic_type('Phoneme', 'Included_In')
+        eaf.new_tier('Baby (Utterance)', 'Utterance')
+        tw = eaf.new_tier('Baby (Words)', 'Words', 'Baby (Utterance)')
+        te = eaf.new_tier('Baby (Translate)', 'Translate', 'Baby (Utterance)')
+        tp = eaf.new_tier('Baby (Phoneme)', 'Phoneme', 'Baby (Utterance)')
+        tt = eaf.new_tier('Baby (Tokens)', 'Tokens', 'Baby (Utterance)')
+        tu = eaf['Baby (Utterance)']
+        a = tu.new_annotation('ano ringo tabetai',
+                              elan.ts2msec("00:00:01.123"),
+                              elan.ts2msec("00:00:02.456"))
+        tw.new_annotation('ano', values=['ringo', 'tabetai'],
+                          timeslots=[1500, 2000],
+                          ann_ref_id=a.ID)
+        te.new_annotation('(I) want to eat that apple', ann_ref_id=a.ID)
+        tp.new_annotation('t', 2100, 2200, ann_ref_id=a.ID)
+        tt.new_annotation('ano', values=['ringo', 'tabetai'], ann_ref_id=a.ID)
+        self.assertRaises(ValueError, lambda: tp.new_annotation('t', 1600, 2700, ann_ref_id=a.ID))
+        # save changes
+        eaf = elan.parse_string(eaf.to_xml_str())
+        actual = [(t.ID, [(a.ID, a.value, a.from_ts.sec, a.to_ts.sec, a.ref.ID if a.ref else None) for a in t]) for t in eaf]
+        expected = [('default', []),
+                    ('Baby (Utterance)', [('a1', 'ano ringo tabetai', 1.123, 2.456, None)]),
+                    ('Baby (Words)',
+                     [('a2', 'ano', 1.123, 1.5, None),
+                      ('a3', 'ringo', 1.5, 2.0, None),
+                      ('a4', 'tabetai', 2.0, 2.456, None)]),
+                    ('Baby (Translate)',
+                     [('a5', '(I) want to eat that apple', 1.123, 2.456, 'a1')]),
+                    ('Baby (Phoneme)', [('a6', 't', 2.1, 2.2, None)]),
+                    ('Baby (Tokens)',
+                     [('a7', 'ano', 1.123, 2.456, 'a1'),
+                      ('a8', 'ringo', 1.123, 2.456, 'a1'),
+                      ('a9', 'tabetai', 1.123, 2.456, 'a1')])]
+        self.assertEqual(expected, actual)
+
+    def test_cv_check_add_annotation_ref(self):
+        en_id = 'cveid_20c62fa0-8144-44cb-b0d1-ebe9bec51cc5'
+        eaf = read_eaf()
+        tu = eaf['Person1 (Utterance)']
+        tl = eaf['Person1 (Language)']
+        u = tu.new_annotation('test', 1000, 2000)
+        self.assertRaises(ValueError, lambda: tl.new_annotation('test', ann_ref_id=u.ID))
+        tl.new_annotation('en', ann_ref_id=u.ID)
+        eaf = elan.parse_string(eaf.to_xml_str())
+        tl = eaf['Person1 (Language)']
+        self.assertEqual(tl[-1].cve_ref, en_id)
+        self.assertEqual(tl[-1].ref.value, 'test')
 
 
 # -------------------------------------------------------------------------------

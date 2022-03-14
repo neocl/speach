@@ -3,10 +3,32 @@
 Speach Changelog
 ================
 
-Speach 0.1a14 [WIP]
+Speach 0.1a14
 -------------
 
-- 2022-01-14
+- 20022-03-09
+
+  - Cross-check with controlled vocabularies when creating annotations if possible
+
+- 2022-03-07
+
+  - Allow to add new annotations to all 5 tier stereotypes
+
+    - None (default root tiers)
+    - Included In
+    - Time Subdivision
+    - Symbolic Subdivision
+    - Symbolic Association
+
+   - Support ``lxml`` when available
+
+   - Support ``pretty_print`` in ``elan.Doc.to_xml_str()`` and ``elan.Doc.to_xml_bin()``
+
+- 2022-03-02
+
+  - Add ``speach.elan.create()`` function for creating a new ELAN file from scratch
+
+- 2022-02-28
 
    - Add ``LOCALE`` support
    - Add Speach logo

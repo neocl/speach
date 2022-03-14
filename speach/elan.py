@@ -9,18 +9,31 @@ ELAN module - manipulating ELAN transcript files (\*.eaf, \*.pfsx)
 # :license: MIT, see LICENSE for more details.
 
 import os
+import uuid
+from datetime import datetime
 from io import StringIO
 import logging
 from collections import OrderedDict
 from collections import defaultdict as dd
 from typing import List, Tuple
-import xml.etree.ElementTree as etree
+
 try:
     import defusedxml.ElementTree as best_parser
+    import xml.etree.ElementTree as etree
     SAFE_MODE = True
-except ModuleNotFoundError as e:
-    best_parser = etree
+    XML_PARSER = 'default'
+except ModuleNotFoundError:
     SAFE_MODE = False
+    try:
+        # prioritise lxml if it is available
+        from lxml import etree
+        best_parser = etree
+        XML_PARSER = 'lxml'
+    except ImportError:
+        import xml.etree.ElementTree as etree
+        best_parser = etree
+        XML_PARSER = 'default'
+from xml.dom.minidom import parseString as minidom_parseString
 
 import warnings
 
@@ -30,6 +43,7 @@ from chirptext import chio
 from .__version__ import __issue__
 from .vtt import sec2ts, ts2sec
 from .media import cut
+from .data import ELAN_BLANK_FILE
 
 
 # ----------------------------------------------------------------------
@@ -38,6 +52,51 @@ from .media import cut
 
 def getLogger():
     return logging.getLogger(__name__)
+
+
+# ----------------------------------------------------------------------
+# Helper functions
+# ----------------------------------------------------------------------
+
+def ts2msec(ts):
+    """ Convert ELAN timestamp string to milliseconds """
+    return ts2sec(ts) * 1000
+
+
+def msec2ts(value):
+    """ Convert milliseconds to ELAN timestamp string """
+    return sec2ts(value / 1000)
+
+
+def _parse_xml(source):
+    """ [Internal] Parse an XML stream """
+    if XML_PARSER == 'lxml':
+        return best_parser.parse(source).getroot()
+    else:
+        return best_parser.fromstring(source.read())
+
+
+def _xml_tostring(root, encoding='utf-8',
+                  default_namespace=None,
+                  method="xml",
+                  pretty_print=False,
+                  short_empty_elements=True, *args, **kwargs):
+    """ [Internal] Generate XML content as bytes """
+    if XML_PARSER == 'lxml':
+        # short_empty_elements is not supported
+        return etree.tostring(root, encoding=encoding,
+                              pretty_print=pretty_print,
+                              *args, **kwargs)
+    else:
+        # does not support pretty_print
+        _content = etree.tostring(root,
+                                  encoding=encoding, method=method,
+                                  short_empty_elements=short_empty_elements,
+                                  *args, **kwargs)
+        if pretty_print:
+            dom = minidom_parseString(_content.decode(encoding))
+            _content = dom.toprettyxml(encoding=encoding)
+        return _content
 
 
 # ----------------------------------------------------------------------
@@ -172,6 +231,8 @@ class TimeSlot:
     @value.setter
     def value(self, value):
         # TODO: update DOM to be able to save
+        if isinstance(value, float):
+            value = round(value)
         self.__value = value
 
     @property
@@ -384,6 +445,7 @@ class LinguisticType(DataObject):
     """
 
     def __init__(self, xml_node=None):
+        self.__xml_node = xml_node
         data = {k.lower(): v for k, v in xml_node.attrib.items()} if xml_node is not None else {}
         if "time_alignable" in data:
             data["time_alignable"] = data["time_alignable"] == "true"
@@ -394,6 +456,14 @@ class LinguisticType(DataObject):
     @property
     def ID(self):
         return self.linguistic_type_id
+
+    @property
+    def stereotype(self):
+        return self.constraints
+
+    @stereotype.setter
+    def stereotype(self, value):
+        self.constraints = value
 
     def __repr__(self):
         return f"LinguisticType(ID={repr(self.ID)}, constraints={repr(self.constraints)})"
@@ -416,7 +486,6 @@ class Tier(DataObject):
         ELAN Tier Model which contains annotation objects
         """
         super().__init__(**kwargs)
-        self.__type_ref = None
         self.doc = doc
         self.children = []
         self.__annotations = []
@@ -469,11 +538,6 @@ class Tier(DataObject):
         return self.linguistic_type and self.linguistic_type.time_alignable
 
     @property
-    def linguistic_type(self) -> LinguisticType:
-        """ Linguistic type object of this Tier """
-        return self.__type_ref
-
-    @property
     def participant(self):
         return self.__participant
 
@@ -509,11 +573,23 @@ class Tier(DataObject):
     @property
     def type_ref(self) -> LinguisticType:
         """ Tier type object """
-        return self.__type_ref
+        return self.doc.get_linguistic_type(self.__type_ref_id)
 
-    def _set_type_ref(self, type_ref_object: LinguisticType):
-        """ [Internal function] Update type_ref object of this Tier """
-        self.__type_ref = type_ref_object
+    @property
+    def linguistic_type(self) -> LinguisticType:
+        """ Linguistic type object of this Tier (alias of type_ref """
+        return self.type_ref
+
+    @property
+    def stereotype(self):
+        return self.type_ref.constraints
+
+    @property
+    def vocab(self):
+        if self.type_ref is not None and self.type_ref.vocab is not None:
+            return self.type_ref.vocab
+        else:
+            return None
 
     @property
     def _type_ref_id(self):
@@ -552,6 +628,187 @@ class Tier(DataObject):
 
     def __str__(self):
         return f'Tier(ID={repr(self.ID)}),type={repr(self.linguistic_type)})'.format(self.ID, self.linguistic_type)
+
+    def _validate_value(self, value):
+        """ [Internal] """
+        if self.vocab is not None:
+            if not self.vocab.has_value(value):
+                raise ValueError(f"{repr(value)} is not a valid value for tier {self.name}")
+            else:
+                return self.vocab.by_value(value)
+        return None
+
+    def new_annotation(self, value, from_ts=None, to_ts=None, ann_ref_id=None, values=None, timeslots=None, check_cv=True):
+        """ Create new annotation(s) in this current tier
+        ELAN provides 5 different tier stereotypes.
+
+        To create a new standard annotation (in a tier with no constraints),
+        a text value and a pair of from-to timestamp must be provided.
+
+        >>> from speach import elan
+        >>> eaf = elan.create()  # create a new ELAN transcript
+        >>> # create a new utterance tier
+        >>> tier = eaf.new_tier('Person1 (Utterance)')
+        >>> # create a new annotation between 00:00:01.000 and 00:00:02.000
+        >>> a1 = tier.new_annotation('Xin chào', 1000, 2000)
+
+        Included-In tiers
+
+        >>> eaf.new_linguistic_type('Phoneme', 'Included_In')
+        >>> tp = eaf.new_tier('Person1 (Phoneme)', 'Phoneme', 'Person1 (Utterance)')
+        >>> # string-based timestamps can also be used with the helper function elan.ts2msec()
+        >>> tt.new_annotation('ch', elan.ts2msec("00:00:01.500"),
+                              elan.ts2msec("00:00:01.600"),
+                              ann_ref_id=a1.ID)
+        
+        Annotations in Symbolic-Associtation tiers:
+
+        >>> eaf.new_linguistic_type('Translate', 'Symbolic_Association')
+        >>> tt = eaf.new_tier('Person1 (Translate)', 'Translate', 'Person1 (Utterance)')
+        >>> tt.new_annotation('Hello', ann_ref_id=a1.ID)
+
+        Symbolic-Subdivision tiers:
+
+        >>> eaf.new_linguistic_type('Tokens', 'Symbolic_Subdivision')
+        >>> tto = eaf.new_tier('Person1 (Tokens)', 'Tokens', 'Person1 (Utterance)')
+        >>> # extra annotations can be provided with the argument values
+        >>> tto.new_annotation('Xin', values=['chào'], ann_ref_id=a1.ID)
+        >>> # alternative method (set value to None and provide everything with values)
+        >>> tto.new_annotation(None, values=['Xin', 'chào'], ann_ref_id=a1.ID)
+        """
+        if self.stereotype in (None, 'Included_In'):
+            if from_ts is None:
+                raise ValueError("From timestamp cannot be empty")
+            if to_ts is None:
+                raise ValueError("To timestamp cannot be empty")
+        else:
+            if from_ts is not None:
+                raise ValueError(f"{self.linguistic_type} is not time-alignable (from_ts was provided)")
+            if to_ts is not None:
+                raise ValueError(f"{self.linguistic_type} is not time-alignable (to_ts was provided)")
+        ann_ref = None
+        if ann_ref_id:
+            ann_ref = self.doc.annotation(ann_ref_id)
+            if ann_ref is None:
+                raise ValueError(f"Referent annotation ID {repr(ann_ref_id)} could not be found")
+        if self.type_ref.constraints is not None and ann_ref is None:
+            raise ValueError("Dependent tiers require a referent annotation to create new annotations")
+        if not self.stereotype or self.stereotype == 'Included_In':
+            if self.stereotype == 'Included_In':
+                if ann_ref.from_ts > float(from_ts) or ann_ref.to_ts < float(to_ts):
+                    raise ValueError("New annotation must be contained within the referent annotation")
+            cve_ref = self._validate_value(value)
+            ann_node = best_parser.XML(""" <ANNOTATION>
+            <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
+            TIME_SLOT_REF1="" TIME_SLOT_REF2="">
+            <ANNOTATION_VALUE></ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+            </ANNOTATION>""")
+            ann_info = ann_node.find("ALIGNABLE_ANNOTATION")
+            if cve_ref is not None:
+                ann_info.set('CVE_REF', cve_ref.ID)
+            ann_info.set('TIME_SLOT_REF1', self.doc.new_timeslot(from_ts).ID)
+            ann_info.set('TIME_SLOT_REF2', self.doc.new_timeslot(to_ts).ID)
+            ann_info.find('ANNOTATION_VALUE').text = value
+            ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
+            self.__xml_node.append(ann_node)
+            ann_obj = self._add_annotation_xml(ann_node)
+            self.doc._register_ann(ann_obj)
+            return ann_obj
+        elif self.stereotype in ('Time_Subdivision', 'Symbolic_Subdivision'):
+            _values = [value] if value is not None else []
+            if values:
+                _values.extend(values)
+            for v in _values:
+                self._validate_value(v)
+            if self.stereotype == 'Symbolic_Subdivision':
+                last_id = None
+                previous_ids = set()
+                for ann in self:
+                    if ann.ref.ID == ann_ref_id:
+                        if ann.previous and ann.previous.ID not in previous_ids:
+                            raise ValueError("Corrupted Time_Subdivision tier")
+                        last_id = ann.ID
+                        previous_ids.add(ann.ID)
+                # create new nodes
+                ann_objs = []
+                for v in _values:
+                    ann_node = best_parser.XML("""<ANNOTATION>
+                    <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
+                    <ANNOTATION_VALUE></ANNOTATION_VALUE>
+                    </REF_ANNOTATION>
+                    </ANNOTATION>""")
+                    ann_info = ann_node.find('REF_ANNOTATION')
+                    cve_ref = self._validate_value(v)
+                    if cve_ref is not None:
+                        ann_info.set('CVE_REF', cve_ref.ID)
+                    ann_info.set('ANNOTATION_REF', ann_ref.ID)
+                    ann_info.find('ANNOTATION_VALUE').text = v
+                    _nid = self.doc.new_annotation_id()
+                    ann_info.set('ANNOTATION_ID', _nid)
+                    if last_id is not None:
+                        ann_info.set('PREVIOUS_ANNOTATION', last_id)
+                    last_id = _nid
+                    self.__xml_node.append(ann_node)
+                    ann_obj = self._add_annotation_xml(ann_node)
+                    ann_obj.resolve(self.doc)
+                    self.doc._register_ann(ann_obj)
+                    ann_objs.append(ann_obj)
+                return ann_objs
+            else:
+                # Time_Subdivision
+                if len(_values) > 1 and (not timeslots or len(timeslots) != len(_values) - 1):
+                    raise ValueError("There is a mismatch between the number of annotation values and the number of provided timeslots")
+                for t in timeslots:
+                    if t is None or t <= ann_ref.from_ts or t >= ann_ref.to_ts:
+                        raise ValueError("Child annotations must be within the time range of referent annotation")
+                ts_objs = [ann_ref.from_ts.ID]
+                if len(_values) > 1:
+                    for t in sorted(timeslots):
+                        ts_obj = self.doc.new_timeslot(t)
+                        ts_objs.append(ts_obj.ID)
+                ts_objs.append(ann_ref.to_ts.ID)
+                ann_objs = []
+                for idx, v in enumerate(_values):
+                    ann_node = best_parser.XML("""<ANNOTATION>
+                    <ALIGNABLE_ANNOTATION ANNOTATION_ID=""
+                    TIME_SLOT_REF1="" TIME_SLOT_REF2="">
+                    <ANNOTATION_VALUE></ANNOTATION_VALUE>
+                    </ALIGNABLE_ANNOTATION>
+                    </ANNOTATION>""")
+                    ann_info = ann_node.find('ALIGNABLE_ANNOTATION')
+                    cve_ref = self._validate_value(v)
+                    if cve_ref is not None:
+                        ann_info.set('CVE_REF', cve_ref.ID)
+                    ann_info.find('ANNOTATION_VALUE').text = v
+                    ann_info.set('TIME_SLOT_REF1', ts_objs[idx])
+                    ann_info.set('TIME_SLOT_REF2', ts_objs[idx + 1])
+                    ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
+                    self.__xml_node.append(ann_node)
+                    ann_obj = self._add_annotation_xml(ann_node)
+                    self.doc._register_ann(ann_obj)
+                    ann_objs.append(ann_obj)
+                return ann_objs
+                # create new annotation    
+        elif self.stereotype == 'Symbolic_Association':
+            cve_ref = self._validate_value(value)
+            ann_node = best_parser.XML("""        <ANNOTATION>
+            <REF_ANNOTATION ANNOTATION_ID="" ANNOTATION_REF="">
+            <ANNOTATION_VALUE></ANNOTATION_VALUE>
+            </REF_ANNOTATION>
+            </ANNOTATION>""")
+            ann_info = ann_node.find("REF_ANNOTATION")
+            ann_info.set('ANNOTATION_REF', ann_ref_id)
+            if cve_ref is not None:
+                ann_info.set('CVE_REF', cve_ref.ID)
+            ann_info.find('ANNOTATION_VALUE').text = value
+            ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
+            self.__xml_node.append(ann_node)
+            ann_obj = self._add_annotation_xml(ann_node)
+            self.doc._register_ann(ann_obj)
+            return ann_obj
+        else:
+            raise NotImplementedError(f"Adding new annotation for {self.stereotype} tiers is yet to be implemented")
 
     def add_alignable_annotation_xml(self, alignable):
         ann_id = alignable.get('ANNOTATION_ID')
@@ -644,6 +901,8 @@ class CVEntry(DataObject):
 
     @value.setter
     def value(self, value):
+        if not value:
+            raise ValueError("CV entry value cannot be blank")
         self.__value = value
         if self.__entry_value_node is not None:
             self.__entry_value_node.text = str(value) if value else ''
@@ -673,6 +932,7 @@ class ControlledVocab(DataObject):
         super().__init__(**kwargs)
         self.__entries = []
         self.__entries_map = dict()
+        self.__values_map = dict()  # values are also uniquq
         self.__tiers = []
         self.__xml_node = xml_node
         if xml_node is not None:
@@ -695,9 +955,23 @@ class ControlledVocab(DataObject):
         else:
             self.__entries.append(child)
         self.__entries_map[child.ID] = child
+        self.__values_map[child.value] = child
 
-    def new_entry(self, ID, value, description='', lang_ref='und', prev_entry=None, next_entry=None, **kwargs):
+    def new_entry(self, ID, value, description='', lang_ref=None, prev_entry=None, next_entry=None, **kwargs):
+        if lang_ref is None:
+            if self.__lang_ref:
+                lang_ref = self.__lang_ref
+            else:
+                lang_ref = 'und'
         entry_node = etree.Element('CV_ENTRY_ML')
+        if not value:
+            raise ValueError("CV Entry value cannot be blank")
+        if value in self.__values_map:
+            raise ValueError("CV Entry {repr()} already exists.")
+        if ID is not None and ID in self.__entries_map:
+            raise ValueError("CV entry ID {repr(ID)} already exists.")
+        if ID is None:
+            ID = f'cveid_{uuid.uuid4()}'
         entry_node.set('CVE_ID', ID)
         node_value = etree.SubElement(entry_node, 'CVE_VALUE')
         if description:
@@ -706,7 +980,7 @@ class ControlledVocab(DataObject):
         node_value.text = value
         # add entry node to vocab node
         idx = None
-        if self.__xml_node:
+        if self.__xml_node is not None:
             if prev_entry is not None:
                 idx = list(self.__xml_node).index(prev_entry._xml_node) + 1
             elif next_entry is not None:
@@ -722,17 +996,35 @@ class ControlledVocab(DataObject):
         return cv_entry
 
     def remove(self, child):
-        if self.__xml_node and child._xml_node:
+        if self.__xml_node is not None  and child._xml_node is not None:
             self.__xml_node.remove(child._xml_node)
         if child in self.__entries:
             self.__entries.remove(child)
         if child.ID in self.__entries_map:
             self.__entries_map.pop(child.ID)
+        if child.value in self.__values_map:
+            self.__values_map.pop(child.value)
 
     def __contains__(self, item):
         return item in self.__entries_map
 
     def __getitem__(self, key):
+        """ Get a CV entry object by its unique text value """
+        return self.by_value(key)
+
+    def has_id(self, key):
+        return key in self.__entries_map
+
+    def has_value(self, key):
+        return key in self.__values_map
+
+    def by_value(self, key):
+        """ Get a CV entry object by its unique text value """
+        return self.__values_map[key]
+
+    def by_id(self, key):
+        """ Get a CV entry object by its cveid (i.e. randomly generated UUID)
+        """
         return self.__entries_map[key]
 
     def __iter__(self):
@@ -764,31 +1056,27 @@ class ControlledVocab(DataObject):
         return self.__tiers
 
 
-class ExternalControlledVocabResource(DataObject):
+class ExternalControlledVocabResource(ControlledVocab):
 
     def __init__(self, xml_node=None, path=None, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(xml_node=None, **kwargs)
         self.__xml_node = xml_node
         self.__path = path
         self.__languages = []
-        self.__vocabs = []
-        if self.__xml_node:
+        # self.__vocabs = []
+        if self.__xml_node is not None:
             for node in self.__xml_node:
                 if node.tag == 'LANGUAGE':
                     self.__languages.append(Language.from_xml(node))
                 elif node.tag == 'CONTROLLED_VOCABULARY':
-                    self.__vocabs.append(ControlledVocab(node))
+                    self._add_child(ControlledVocab(node))
                 else:
                     logging.getLogger(__name__).warning(f"Unknown tag name ({node.tag}) was found in current ECV stream")
-
-    def __iter__(self):
-        """ Iterate through all controlled vocab list in this ECV stream """
-        return iter(self.__vocabs)
 
     @property
     def vocabs(self) -> Tuple[ControlledVocab]:
         """ A tuple of all controlled vocabulary lists in this ECV stream """
-        return tuple(self.__vocabs)
+        return tuple(self)
 
     @property
     def languages(self) -> Tuple[Language]:
@@ -797,33 +1085,38 @@ class ExternalControlledVocabResource(DataObject):
 
     @property
     def author(self):
-        return self.__xml_node.get('AUTHOR') if self.__xml_node else None
+        return self.__xml_node.get('AUTHOR') if self.__xml_node is not None else None
 
     @author.setter
     def author(self, value):
-        if self.__xml_node:
+        if self.__xml_node is not None:
             self.__xml_node.set('AUTHOR', value)
         else:
             raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
 
     @property
     def date(self):
-        return self.__xml_node.get('DATE') if self.__xml_node else None
+        return self.__xml_node.get('DATE') if self.__xml_node is not None else None
 
     @date.setter
     def date(self, value):
-        if self.__xml_node:
+        if self.__xml_node is not None:
+            if isinstance(value, datetime):
+                value = datetime.astimezone().isoformat()
             self.__xml_node.set('DATE', value)
         else:
             raise Exception("Editing empty ExternalControlledVocabResource is yet to be implemented")
 
     @property
     def version(self):
-        return self.__xml_node.get('VERSION') if self.__xml_node else None
+        return self.__xml_node.get('VERSION') if self.__xml_node is not None else None
 
     @property
     def schema_location(self):
-        return self.__xml_node.get('{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation') if self.__xml_node else None
+        if self.__xml_node is not None:
+            return self.__xml_node.get('{http://www.w3.org/2001/XMLSchema-instance}noNamespaceSchemaLocation')
+        else:
+            return None
 
     @classmethod
     def read_ecv(cls, ecv_path, encoding='utf-8', *args, **kwargs):
@@ -855,7 +1148,7 @@ class ExternalControlledVocabResource(DataObject):
         :param ecv_stream: ECV text input stream
         :rtype: speach.elan.ExternalControlledVocabResource
         """
-        _root = best_parser.fromstring(ecv_stream.read())
+        _root = _parse_xml(ecv_stream)
         ecv = ExternalControlledVocabResource(xml_node=_root, **kwargs)
         return ecv
 
@@ -951,6 +1244,28 @@ class Doc(DataObject):
         self.__xml_root = None
         self.__xml_header_node = None
         self.__xml_time_order_node = None
+        self.__date = None
+        self.__author = ""
+
+    @property
+    def author(self):
+        return self.__author
+
+    @author.setter
+    def author(self, value):
+        self.__author = value
+        self.__xml_root.set('AUTHOR', value)
+
+    @property
+    def date(self):
+        return self.__date
+
+    @date.setter
+    def date(self, value):
+        if isinstance(value, datetime):
+            value = value.astimezone().isoformat()
+        self.__date = value
+        self.__xml_root.set('DATE', value)
 
     def media_path(self):
         """ Try to determine the best path to source media file """
@@ -975,6 +1290,15 @@ class Doc(DataObject):
     def annotation(self, ID):
         """ Get annotation by ID """
         return self.__ann_map.get(ID, None)
+
+    def new_annotation_id(self):
+        seed = len(self.__ann_map) + 1
+        while True:
+            ann_id = f"a{seed}"
+            if ann_id in self.__ann_map:
+                seed += 1
+            else:
+                return ann_id
 
     @property
     def tier_map(self):
@@ -1024,12 +1348,80 @@ class Doc(DataObject):
                 return lingtype
         return None
 
+    def _find_last_element_index(self, tag_name):
+        """ [Internal] """
+        last_idx = None
+        for idx, elem in enumerate(self.__xml_root):
+            if elem.tag == tag_name:
+                last_idx = idx
+        return last_idx
+
+    def new_linguistic_type(self, type_id, constraints=None, vocab_id=None):
+        if constraints not in (None, "Time_Subdivision", "Included_In",
+                               "Symbolic_Subdivision", "Symbolic_Association"):
+            raise ValueError(f"{constraints} is not a supported tier stereotype")
+        lt = self.get_linguistic_type(type_id)
+        if lt is not None:
+            raise ValueError(f"ID of linguistic type must be unique. type_id {type_id} already exists.")
+        else:
+            idx = self._find_last_element_index('LINGUISTIC_TYPE') + 1
+            new_lt = best_parser.XML('''<LINGUISTIC_TYPE GRAPHIC_REFERENCES="false"
+        LINGUISTIC_TYPE_ID="" TIME_ALIGNABLE="true"/>''')
+            new_lt.set("LINGUISTIC_TYPE_ID", type_id)
+            if constraints is not None:
+                new_lt.set("CONSTRAINTS", constraints)
+            if constraints in ("Symbolic_Subdivision", "Symbolic_Association"):
+                new_lt.set("TIME_ALIGNABLE", "false")
+            if vocab_id is not None:
+                new_lt.set("CONTROLLED_VOCABULARY_REF", vocab_id)
+            self.__xml_root.insert(idx, new_lt)
+            lt_obj = self._add_linguistic_type_xml(new_lt)
+            if vocab_id:
+                lt_obj.vocab = self.get_vocab(vocab_id)
+
     def get_vocab(self, vocab_id):
         """ Get controlled vocab list by ID """
         for vocab in self.__vocabs:
             if vocab.ID == vocab_id:
                 return vocab
         return None
+
+    def new_vocab(self, vocab_id, language=None):
+        if not vocab_id:
+            raise ValueError("Controlled vocabulary ID cannot be blank")
+        elif self.get_vocab(vocab_id) is not None:
+            raise ValueError(f"Controlled vocabulary ID must be unique. {vocab_id} already exists.")
+        vc_node = best_parser.XML(""" <CONTROLLED_VOCABULARY CV_ID="">
+        <DESCRIPTION LANG_REF="eng"/>
+        </CONTROLLED_VOCABULARY> """)
+        vc_node.set("CV_ID", vocab_id)
+        if language is not None:
+            vc_node.find('DESCRIPTION').set('LANG_REF', language)
+        vc_obj = self._add_vocab_xml(vc_node)
+        self.__xml_root.append(vc_node)
+        return vc_obj
+
+    def new_timeslot(self, value):
+        """ Create a new timeslot object 
+
+        :param value: Timeslot value (in milliseconds)
+        :type value: int or str
+        """
+        ts_node = etree.Element("TIME_SLOT")
+        seed = len(self.time_order) + 1
+        while True:
+            ts_id = f"ts{seed}"
+            if ts_id in self.time_order:
+                seed += 1
+            else:
+                ts_node.set('TIME_SLOT_ID', ts_id)
+                break
+        if isinstance(value, float):
+            value = round(value)
+        ts_node.set('TIME_VALUE', str(value))
+        self.__xml_root.find('TIME_ORDER').append(ts_node)
+        ts_obj = self._add_timeslot_xml(ts_node)
+        return ts_obj
 
     def get_participant_map(self):
         """ Map participants to tiers
@@ -1063,15 +1455,37 @@ class Doc(DataObject):
         """
         self.__tier_map = None
 
-    def _update_info_xml(self, node):
-        """ [Internal function] Update ELAN file metadata from an XML node
-
-        General users should not use this function.
-        """
-        self.author = node.get('AUTHOR')
-        self.date = node.get('DATE')
-        self.fileformat = node.get('FORMAT')
-        self.version = node.get('VERSION')
+    def new_tier(self, tier_id, type_id, parent_id=None, participant=None, annotator=None):
+        if tier_id is None:
+            raise ValueError("Tier ID cannot be blank")
+        type_obj = self.get_linguistic_type(type_id)
+        if type_obj is None:
+            raise ValueError("Unknown linguistic type ID was provided")
+        if parent_id is not None and parent_id not in self:
+            raise ValueError(f"Tier {repr(parent_id)} could not be found")
+        parent_tier = None if parent_id is None else self[parent_id]
+        if type_obj.constraints is not None and parent_tier is None:
+            raise ValueError(f"Tiers with type={type_obj.constraints} require a parent tier.")
+        elif parent_tier is not None and not type_obj.constraints:
+            raise ValueError("Tiers without constraints must be root level.")
+        if self.__tiers:
+            idx = self._find_last_element_index('TIER') + 1
+        else:
+            idx = self._find_last_element_index('TIME_ORDER') + 1
+        tier_node = best_parser.XML(""" <TIER LINGUISTIC_TYPE_REF="" TIER_ID=""></TIER>""")
+        tier_node.set('TIER_ID', tier_id)
+        tier_node.set('LINGUISTIC_TYPE_REF', type_id)
+        if parent_id:
+            tier_node.set('PARENT_REF', parent_id)
+        if participant:
+            tier_node.set('PARTICIPANT', participant)
+        if annotator:
+            tier_node.set('ANNOTATOR', annotator)
+        self.__xml_root.insert(idx, tier_node)
+        tier_obj = self._add_tier_xml(tier_node)
+        if parent_tier is not None:
+            self[tier_obj.parent_ref].children.append(tier_obj)
+        return tier_obj
 
     @property
     def _xml_media_node(self):
@@ -1154,13 +1568,16 @@ class Doc(DataObject):
         """
         timeslot = TimeSlot(timeslot_node)
         self.time_order[timeslot.ID] = timeslot
+        return timeslot
 
     def _add_linguistic_type_xml(self, elem):
         """ [Internal function] Parse a LinguisticType XML node and link it to current ELAN Doc
 
         General users should not use this function.
         """
-        self.__linguistic_types.append(LinguisticType(elem))
+        lt = LinguisticType(elem)
+        self.__linguistic_types.append(lt)
+        return lt
 
     def _add_constraint_xml(self, elem):
         """ [Internal function] Parse a CONSTRAINT XML node and link it to current ELAN Doc
@@ -1174,7 +1591,9 @@ class Doc(DataObject):
 
         General users should not use this function.
         """
-        self.__vocabs.append(ControlledVocab(elem))
+        cv = ControlledVocab(elem)
+        self.__vocabs.append(cv)
+        return cv
 
     def _add_license_xml(self, elem):
         """ [Internal function] Parse a LICENSE XML node and link it to current ELAN Doc
@@ -1204,6 +1623,10 @@ class Doc(DataObject):
         """
         self.__locale = Locale(elem)
 
+    def _register_ann(self, ann):
+        """ [Internal] """
+        self.__ann_map[ann.ID] = ann
+
     def to_csv_rows(self) -> List[List[str]]:
         """ Convert this ELAN Doc into a CSV-friendly structure (i.e. list of list of strings)
 
@@ -1219,27 +1642,34 @@ class Doc(DataObject):
                 rows.append((tier.ID, tier.participant, _from_ts, _to_ts, _duration, anno.value))
         return rows
 
-    def to_xml_bin(self, encoding='utf-8', default_namespace=None, short_empty_elements=True, *args, **kwargs):
+    def to_xml_bin(self, encoding='utf-8',
+                   default_namespace=None,
+                   short_empty_elements=True, *args, **kwargs):
         """ Generate EAF content (bytes) in XML format
 
         :returns: EAF content
         :rtype: bytes
         """
-        _content = best_parser.tostring(self.__xml_root, encoding=encoding, method="xml",
-                                       short_empty_elements=short_empty_elements, *args, **kwargs)
+        _content = _xml_tostring(self.__xml_root,
+                                 encoding=encoding,
+                                 default_namespace=default_namespace,
+                                 short_empty_elements=short_empty_elements,
+                                 *args, **kwargs)
         return _content
 
     def to_xml_str(self, encoding='utf-8', *args, **kwargs):
         """ Generate EAF content string in XML format """
-        return self.to_xml_bin(encoding=encoding, *args, **kwargs).decode(encoding)
+        return _xml_tostring(self.__xml_root,
+                             *args, **kwargs).decode(encoding=encoding)
 
     def save(self, path, encoding='utf-8', xml_declaration=None,
              default_namespace=None, short_empty_elements=True, *args, **kwargs):
         """ Write ELAN Doc to an EAF file """
-        _content = self.to_xml_bin(encoding=encoding,
+        _content = self.to_xml_str(encoding=encoding,
                                    xml_declaration=xml_declaration,
                                    default_namespace=default_namespace,
-                                   short_empty_elements=short_empty_elements, *args, **kwargs)
+                                   short_empty_elements=short_empty_elements,
+                                   *args, **kwargs)
         chio.write_file(path, _content, encoding=encoding)
 
     def cut(self, section, outfile, media_file=None):
@@ -1266,6 +1696,106 @@ class Doc(DataObject):
             raise FileNotFoundError(f"Source media file ({media_file}) could not be found")
         cut(media_file, outfile, from_ts=section.from_ts, to_ts=section.to_ts)
 
+    def _parse_root(self):
+        """ [Internal] Parse XML structure to build ELAN structure
+
+        General users should not use this function.
+        """
+        # Update ELAN file metadata from an XML node
+        self.__author = self.__xml_root.get('AUTHOR')
+        self.__date = self.__xml_root.get('DATE')
+        self.fileformat = self.__xml_root.get('FORMAT')
+        self.version = self.__xml_root.get('VERSION')
+        
+        for elem in self.__xml_root:
+            if elem.tag == 'HEADER':
+                self._update_header_xml(elem)
+            elif elem.tag == 'TIME_ORDER':
+                self.__xml_time_order_node = elem
+                for time_elem in elem:
+                    self._add_timeslot_xml(time_elem)
+            elif elem.tag == 'TIER':
+                self._add_tier_xml(elem)
+            elif elem.tag == 'LINGUISTIC_TYPE':
+                self._add_linguistic_type_xml(elem)
+            elif elem.tag == 'CONSTRAINT':
+                self._add_constraint_xml(elem)
+            elif elem.tag == 'CONTROLLED_VOCABULARY':
+                self._add_vocab_xml(elem)
+            elif elem.tag == 'LICENSE':
+                self._add_license_xml(elem)
+            elif elem.tag == "EXTERNAL_REF":
+                self._add_external_ref(elem)
+            elif elem.tag == 'LANGUAGE':
+                self._add_language_xml(elem)
+            elif elem.tag == 'LOCALE':
+                self._add_locale_xml(elem)
+            else:
+                logging.getLogger(__name__).warning(
+                    f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
+
+    def _resolve_structure(self):
+        """ [Internal] Link different parts of the Doc structure together
+        + Link linguistic types to controlled vocabularies
+        + Create tier hierarchy
+        + Link annotations and tiers and vocabularies
+
+        General users should not use this function.
+        """
+        # linguistic_types -> vocabs
+        for lingtype in self.linguistic_types:
+            if lingtype.controlled_vocabulary_ref:
+                lingtype.vocab = self.get_vocab(lingtype.controlled_vocabulary_ref)
+        # resolves tiers' roots, parents, and type
+        for tier in self:
+            for ann in tier:
+                self._register_ann(ann)
+            lingtype = self.get_linguistic_type(tier._type_ref_id)
+            lingtype.tiers.append(tier)  # type -> tiers
+            if lingtype.vocab:
+                lingtype.vocab.tiers.append(tier)  # vocab -> tiers
+            if tier.parent_ref is not None:
+                self[tier.parent_ref].children.append(tier)
+        # resolve ref_ann
+        for ann in self.__ann_map.values():
+            if ann.ref_id:
+                ann.resolve(self)
+
+
+    @classmethod
+    def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
+        """ Parse an EAF input stream and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf = elan.parse_eaf_stream(eaf_stream)
+
+        :param eaf_stream: EAF text input stream
+        :rtype: speach.elan.Doc
+        """
+        _root = _parse_xml(eaf_stream)
+        _doc = Doc()
+        # store XML root node
+        _doc.__xml_root = _root
+        # construct raw ELAN structure
+        _doc._parse_root()
+        # linking parts together
+        _doc._resolve_structure()
+        return _doc
+
+    @classmethod
+    def parse_string(cls, eaf_string, *args, **kwargs):
+        """ Parse EAF content in a string and return an elan.Doc object
+
+        >>> with open('test/data/test.eaf').read() as eaf_stream:
+        >>>    eaf_content = eaf_stream.read()
+        >>>    eaf = elan.parse_string(eaf_content)
+
+        :param eaf_string: EAF content stored in a string
+        :type eaf_string: str
+        :rtype: speach.elan.Doc
+        """
+        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
+
     @classmethod
     def read_eaf(cls, eaf_path, encoding='utf-8', *args, **kwargs):
         """ Read an EAF file and return an elan.Doc object
@@ -1288,85 +1818,39 @@ class Doc(DataObject):
             return _doc
 
     @classmethod
-    def parse_eaf_stream(cls, eaf_stream, *args, **kwargs):
-        """ Parse an EAF input stream and return an elan.Doc object
+    def create(cls, media_file='audio.wav',
+               media_url=None,
+               relative_media_url=None,
+               author="",
+               *args, **kwargs):
+        """ Create a new blank ELAN doc
 
-        >>> with open('test/data/test.eaf').read() as eaf_stream:
-        >>>    eaf = elan.parse_eaf_stream(eaf_stream)
+        >>> from speach import elan
+        >>> eaf = elan.create()
 
-        :param eaf_stream: EAF text input stream
+        :param encoding: Encoding of the eaf stream, defaulted to UTF-8
+        :type encoding: str
         :rtype: speach.elan.Doc
         """
-        _root = best_parser.fromstring(eaf_stream.read())
-        _doc = Doc()
-        _doc.__xml_root = _root
-        _doc._update_info_xml(_root)
-        for elem in _root:
-            if elem.tag == 'HEADER':
-                _doc._update_header_xml(elem)
-            elif elem.tag == 'TIME_ORDER':
-                _doc.__xml_time_order_node = elem
-                for time_elem in elem:
-                    _doc._add_timeslot_xml(time_elem)
-            elif elem.tag == 'TIER':
-                _doc._add_tier_xml(elem)
-            elif elem.tag == 'LINGUISTIC_TYPE':
-                _doc._add_linguistic_type_xml(elem)
-            elif elem.tag == 'CONSTRAINT':
-                _doc._add_constraint_xml(elem)
-            elif elem.tag == 'CONTROLLED_VOCABULARY':
-                _doc._add_vocab_xml(elem)
-            elif elem.tag == 'LICENSE':
-                _doc._add_license_xml(elem)
-            elif elem.tag == "EXTERNAL_REF":
-                _doc._add_external_ref(elem)
-            elif elem.tag == 'LANGUAGE':
-                _doc._add_language_xml(elem)
-            elif elem.tag == 'LOCALE':
-                _doc._add_locale_xml(elem)
-            else:
-                logging.getLogger(__name__).warning(
-                    f"Unknown element type -- {elem.tag}. Please consider to report an issue at {__issue__}")
-        # linking parts together
-        # linguistic_types -> vocabs
-        for lingtype in _doc.linguistic_types:
-            if lingtype.controlled_vocabulary_ref:
-                lingtype.vocab = _doc.get_vocab(lingtype.controlled_vocabulary_ref)
-        # resolves tiers' roots, parents, and type
-        for tier in _doc:
-            for ann in tier:
-                _doc.__ann_map[ann.ID] = ann
-            lingtype = _doc.get_linguistic_type(tier._type_ref_id)
-            tier._set_type_ref(lingtype)
-            lingtype.tiers.append(tier)  # type -> tiers
-            if lingtype.vocab:
-                lingtype.vocab.tiers.append(tier)  # vocab -> tiers
-            if tier.parent_ref is not None:
-                _doc[tier.parent_ref].children.append(tier)
-        # resolve ref_ann
-        for ann in _doc.__ann_map.values():
-            if ann.ref_id:
-                ann.resolve(_doc)
-        return _doc
-
-    @classmethod
-    def parse_string(cls, eaf_string, *args, **kwargs):
-        """ Parse EAF content in a string and return an elan.Doc object
-
-        >>> with open('test/data/test.eaf').read() as eaf_stream:
-        >>>    eaf_content = eaf_stream.read()
-        >>>    eaf = elan.parse_string(eaf_content)
-
-        :param eaf_string: EAF content stored in a string
-        :type eaf_string: str
-        :rtype: speach.elan.Doc
-        """
-        return cls.parse_eaf_stream(StringIO(eaf_string), *args, **kwargs)
+        eaf = cls.read_eaf(ELAN_BLANK_FILE, *args, **kwargs)
+        if not media_url:
+            media_url = media_file
+        if not relative_media_url:
+            relative_media_url = media_file
+        if media_file:
+            eaf.media_file = media_file
+            eaf.media_url = media_url
+            eaf.relative_media_url = relative_media_url
+        eaf.date = datetime.now()
+        if author:
+            eaf.author = author
+        return eaf
 
 
 read_eaf = Doc.read_eaf
 parse_eaf_stream = Doc.parse_eaf_stream
 parse_string = Doc.parse_string
+create = Doc.create
 read_ecv = ExternalControlledVocabResource.read_ecv
 parse_ecv_string = ExternalControlledVocabResource.parse_string
 parse_ecv_stream = ExternalControlledVocabResource.parse_stream
