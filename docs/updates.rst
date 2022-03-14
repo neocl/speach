@@ -3,7 +3,7 @@
 Speach Changelog
 ================
 
-Speach 0.1a14 [WIP]
+Speach 0.1a14
 -------------
 
 - 20022-03-09
