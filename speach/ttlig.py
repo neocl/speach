@@ -546,7 +546,7 @@ def ttl_to_igrow(msent):
         else:
             tokens.append(token.text)
             lemmas.append(token.lemma if token.lemma else '')
-    igrow = IGRow(text=msent.text, tokens=' '.join(tokens), pos=' '.join(pos), lemma=' '.join(lemmas))
+    igrow = IGRow(text=msent.text, tokens=' '.join(tokens), pos=' '.join(pos), lemmas=' '.join(lemmas))
     return igrow
 
 
