@@ -9,6 +9,7 @@ ELAN module - manipulating ELAN transcript files (\*.eaf, \*.pfsx)
 # :license: MIT, see LICENSE for more details.
 
 import os
+import sys
 import uuid
 from datetime import datetime
 from io import StringIO
@@ -89,6 +90,8 @@ def _xml_tostring(root, encoding='utf-8',
                               *args, **kwargs)
     else:
         # does not support pretty_print
+        if sys.version_info < (3, 8) and 'xml_declaration' in kwargs:
+            kwargs.pop('xml_declaration')
         _content = etree.tostring(root,
                                   encoding=encoding, method=method,
                                   short_empty_elements=short_empty_elements,
