@@ -3,6 +3,15 @@
 Speach Changelog
 ================
 
+Speach 0.1a15
+-------------
+
+- 2022-03-15
+
+  - Use ``chirptext`` >= 0.2a6 for Python 3.10 and Python 3.11 support
+  - Fixed missing lemmas bug in ``ttl_to_igrow()``
+  - Fixed ``_xml_tostring()`` method for Python < 3.8
+
 Speach 0.1a14
 -------------
 
