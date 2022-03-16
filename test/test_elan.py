@@ -463,6 +463,31 @@ class TestEditElan(unittest.TestCase):
         self.assertEqual(tl[-1].cve_ref, en_id)
         self.assertEqual(tl[-1].ref.value, 'test')
 
+    def test_ref_time_info(self):
+        eaf = elan.create()
+        eaf.new_linguistic_type('Utterance')
+        eaf.new_linguistic_type('Translate', 'Symbolic_Association')
+        eaf.new_linguistic_type('TranslateType', 'Symbolic_Association')        
+        tu = eaf.new_tier('Baby (Utterance)', 'Utterance')
+        tt = eaf.new_tier('Baby (Translate)', 'Translate', 'Baby (Utterance)')
+        ttt = eaf.new_tier('Baby (TranslateType)', 'TranslateType', 'Baby (Translate)')
+        ann = tu.new_annotation('ano ringo tabetai',
+                                elan.ts2msec("00:00:01.123"),
+                                elan.ts2msec("00:00:02.456"))
+        ann_t = tt.new_annotation('(I) want to eat that apple', ann_ref_id=ann.ID)
+        ann_tt = ttt.new_annotation('mock', ann_ref_id=ann_t.ID)
+        self.assertIsNotNone(ann_t.ref)
+        self.assertIsNotNone(ann_tt.ref)
+        self.assertEqual(ann_tt.from_ts, elan.ts2msec('00:00:01.123'))
+        self.assertEqual(ann_tt.to_ts, elan.ts2msec('00:00:02.456'))
+        self.assertEqual(ann_tt.duration, 1.333)
+        eaf = eaf.clone()
+        expected = [[('ano ringo tabetai', 1123, 2456, 1.333)],
+                    [('(I) want to eat that apple', 1123, 2456, 1.333)],
+                    [('mock', 1123, 2456, 1.333)]]
+        actual = [[(u.value, u.from_ts.value, u.to_ts.value, u.duration) for u in t] for t in eaf if len(t)]
+        self.assertEqual(expected, actual)
+
     def test_clone(self):
         eaf1 = read_eaf()
         c1 = eaf1.clone()
