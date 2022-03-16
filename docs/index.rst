@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-|SpeachLogo|_ SPeach - Documenting Natural languages
+|SpeachLogo|_ Speach - Documenting natural languages
 ====================================================
 
 .. |SpeachLogo| image:: _static/images/speach_logo.png
@@ -92,7 +92,7 @@ Contributors
 Graphic materials
 ~~~~~~~~~~~~~~~~~
 
-The SPeach logo (|SpeachLogo|_) was created by using
+The Speach logo (|SpeachLogo|_) was created by using
 the `snake emoji <https://openmoji.org/library/#author=Selina%20Bauder&emoji=1F40D>`__
 (created by Selina Bauder)
 and the `peach emoji <https://openmoji.org/library/#author=Marius%20Schnabel&emoji=1F351>`__

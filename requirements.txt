@@ -1,2 +1,2 @@
-chirptext >= 0.2a4.post1, <0.3
+chirptext >= 0.2a6.post1, <0.3
 puchikarui >= 0.1, <0.3

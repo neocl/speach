@@ -15,7 +15,7 @@ import unittest
 from pathlib import Path
 
 from chirptext import chio
-
+from chirptext import __version__ as CHIRPTEXT_VERSION
 from speach import elan
 
 # -------------------------------------------------------------------------------
@@ -41,8 +41,12 @@ def read_eaf():
 class TestELAN(unittest.TestCase):
 
     def test_safe_mode(self):
+        print()
+        print("*" * 60)
         print(f"ELAN safe mode: {elan.SAFE_MODE}")
         print(f"ELAN XML parser: {elan.best_parser.__name__}")
+        print(f"chirptext version: {CHIRPTEXT_VERSION}")
+        print("*" * 60)
 
     def test_pretty_print(self):
         x = elan.create().to_xml_bin(pretty_print=True)
