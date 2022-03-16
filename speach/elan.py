@@ -805,6 +805,7 @@ class Tier(DataObject):
             ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
             self.__xml_node.append(ann_node)
             ann_obj = self._add_annotation_xml(ann_node)
+            ann_obj.resolve(self.doc)
             self.doc._register_ann(ann_obj)
             return ann_obj
         else:
