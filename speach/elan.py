@@ -421,11 +421,15 @@ class RefAnnotation(Annotation):
 
     @property
     def from_ts(self):
-        return self.__ref.from_ts if self.__ref is not None else None
+        return self.__ref.from_ts if self.ref is not None else None
 
     @property
     def to_ts(self):
-        return self.__ref.to_ts if self.__ref is not None else None
+        return self.__ref.to_ts if self.ref is not None else None
+
+    @property
+    def duration(self):
+        return self.__ref.duration if self.ref is not None else None
 
     def resolve(self, elan_doc):
         _ref_ann = elan_doc.annotation(self.__ref_id)
@@ -787,6 +791,7 @@ class Tier(DataObject):
                     self.__xml_node.append(ann_node)
                     ann_obj = self._add_annotation_xml(ann_node)
                     self.doc._register_ann(ann_obj)
+
                     ann_objs.append(ann_obj)
                 return ann_objs
                 # create new annotation    
