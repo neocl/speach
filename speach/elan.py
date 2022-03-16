@@ -1672,6 +1672,10 @@ class Doc(DataObject):
                                    *args, **kwargs)
         chio.write_file(path, _content, encoding=encoding)
 
+    def clone(self, *args, **kwargs):
+        """ Clone this ELAN object by using the save() action """
+        return Doc.parse_string(self.to_xml_str())
+
     def cut(self, section, outfile, media_file=None):
         """ Cut the source media with timestamps defined in section object 
 

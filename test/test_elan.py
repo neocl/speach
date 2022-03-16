@@ -463,6 +463,11 @@ class TestEditElan(unittest.TestCase):
         self.assertEqual(tl[-1].cve_ref, en_id)
         self.assertEqual(tl[-1].ref.value, 'test')
 
+    def test_clone(self):
+        eaf1 = read_eaf()
+        c1 = eaf1.clone()
+        self.assertEqual(eaf1.to_xml_str(), c1.to_xml_str())
+
 
 # -------------------------------------------------------------------------------
 # MAIN
