@@ -1636,9 +1636,9 @@ class Doc(DataObject):
         rows = []
         for tier in self.tiers():
             for anno in tier.annotations:
-                _from_ts = f"{anno.from_ts.sec:.3f}" if anno.from_ts else ''
-                _to_ts = f"{anno.to_ts.sec:.3f}" if anno.to_ts else ''
-                _duration = f"{anno.duration:.3f}" if anno.duration else ''
+                _from_ts = f"{anno.from_ts.sec:.3f}" if anno.from_ts is not None else ''
+                _to_ts = f"{anno.to_ts.sec:.3f}" if anno.to_ts is not None else ''
+                _duration = f"{anno.duration:.3f}" if anno.duration is not None else ''
                 rows.append((tier.ID, tier.participant, _from_ts, _to_ts, _duration, anno.value))
         return rows
 
