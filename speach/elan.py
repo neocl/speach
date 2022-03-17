@@ -85,8 +85,8 @@ def _xml_tostring(root, encoding='utf-8',
     """ [Internal] Generate XML content as bytes """
     if XML_PARSER == 'lxml':
         # short_empty_elements is not supported
+        kwargs['pretty_print'] = pretty_print
         return etree.tostring(root, encoding=encoding,
-                              pretty_print=pretty_print,
                               *args, **kwargs)
     else:
         # does not support pretty_print
