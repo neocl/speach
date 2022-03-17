@@ -85,8 +85,8 @@ def _xml_tostring(root, encoding='utf-8',
     """ [Internal] Generate XML content as bytes """
     if XML_PARSER == 'lxml':
         # short_empty_elements is not supported
+        kwargs['pretty_print'] = pretty_print
         return etree.tostring(root, encoding=encoding,
-                              pretty_print=pretty_print,
                               *args, **kwargs)
     else:
         # does not support pretty_print
@@ -424,11 +424,15 @@ class RefAnnotation(Annotation):
 
     @property
     def from_ts(self):
-        return self.__ref.from_ts if self.__ref is not None else None
+        return self.__ref.from_ts if self.ref is not None else None
 
     @property
     def to_ts(self):
-        return self.__ref.to_ts if self.__ref is not None else None
+        return self.__ref.to_ts if self.ref is not None else None
+
+    @property
+    def duration(self):
+        return self.__ref.duration if self.ref is not None else None
 
     def resolve(self, elan_doc):
         _ref_ann = elan_doc.annotation(self.__ref_id)
@@ -790,6 +794,7 @@ class Tier(DataObject):
                     self.__xml_node.append(ann_node)
                     ann_obj = self._add_annotation_xml(ann_node)
                     self.doc._register_ann(ann_obj)
+
                     ann_objs.append(ann_obj)
                 return ann_objs
                 # create new annotation    
@@ -808,6 +813,7 @@ class Tier(DataObject):
             ann_info.set('ANNOTATION_ID', self.doc.new_annotation_id())
             self.__xml_node.append(ann_node)
             ann_obj = self._add_annotation_xml(ann_node)
+            ann_obj.resolve(self.doc)
             self.doc._register_ann(ann_obj)
             return ann_obj
         else:
@@ -1639,9 +1645,9 @@ class Doc(DataObject):
         rows = []
         for tier in self.tiers():
             for anno in tier.annotations:
-                _from_ts = f"{anno.from_ts.sec:.3f}" if anno.from_ts else ''
-                _to_ts = f"{anno.to_ts.sec:.3f}" if anno.to_ts else ''
-                _duration = f"{anno.duration:.3f}" if anno.duration else ''
+                _from_ts = f"{anno.from_ts.sec:.3f}" if anno.from_ts is not None else ''
+                _to_ts = f"{anno.to_ts.sec:.3f}" if anno.to_ts is not None else ''
+                _duration = f"{anno.duration:.3f}" if anno.duration is not None else ''
                 rows.append((tier.ID, tier.participant, _from_ts, _to_ts, _duration, anno.value))
         return rows
 
@@ -1674,6 +1680,10 @@ class Doc(DataObject):
                                    short_empty_elements=short_empty_elements,
                                    *args, **kwargs)
         chio.write_file(path, _content, encoding=encoding)
+
+    def clone(self, *args, **kwargs):
+        """ Clone this ELAN object by using the save() action """
+        return Doc.parse_string(self.to_xml_str())
 
     def cut(self, section, outfile, media_file=None):
         """ Cut the source media with timestamps defined in section object 
