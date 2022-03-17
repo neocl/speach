@@ -6,6 +6,15 @@ Speach Changelog
 Speach 0.1a15
 -------------
 
+- 2022-03-16
+
+  - Use chirptext >= 0.2a6.post1
+  - Infer timestamps and duratio of ref_annotations from linked annotations
+  - Fixed Symbolic Association linking bug
+  - Use explicit None checking for timestamps and duration info
+  - Add ``elan.Doc.clone()`` function
+  - Other bug fixes
+
 - 2022-03-15
 
   - Use ``chirptext`` >= 0.2a6 for Python 3.10 and Python 3.11 support
