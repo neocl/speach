@@ -1,10 +1,10 @@
-# ![SpeachLogo](https://github.com/neocl/speach/blob/main/graphics/speach_logo_64.png?raw=true) Speach 🐍🍑
+# ![SpeachLogo](https://github.com/neocl/speach/blob/main/graphics/speach_logo_64.png?raw=true) Speach
 
 [![ReadTheDocs Badge](https://readthedocs.org/projects/speach/badge/?version=latest&style=plastic)](https://speach.readthedocs.io/)
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/neocl/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/neocl/speach/alerts/)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/neocl/speach.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/neocl/speach/context:python)
 
-Speach (formerly [texttaglib](https://github.com/letuananh/texttaglib/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TTLIG, ISF, etc.)
+Speach (🐍🍑, formerly [texttaglib](https://github.com/letuananh/texttaglib/)), is a Python 3 library for managing, annotating, and converting natural language corpuses using popular formats (CoNLL, ELAN, Praat, CSV, JSON, SQLite, VTT, Audacity, TTL, TTLIG, ISF, etc.)
 
 Main functions are:
 
