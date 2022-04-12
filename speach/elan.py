@@ -1685,7 +1685,7 @@ class Doc(DataObject):
         """ Clone this ELAN object by using the save() action """
         return Doc.parse_string(self.to_xml_str())
 
-    def cut(self, section, outfile, media_file=None):
+    def cut(self, section, outfile, media_file=None, use_concat=False, *args, **kwargs):
         """ Cut the source media with timestamps defined in section object 
 
         For example, the following code cut all annotations in tier "Tier 1" into appopriate audio files
@@ -1707,7 +1707,7 @@ class Doc(DataObject):
         # verify that media_file exists
         if not os.path.isfile(media_file):
             raise FileNotFoundError(f"Source media file ({media_file}) could not be found")
-        cut(media_file, outfile, from_ts=section.from_ts, to_ts=section.to_ts)
+        cut(media_file, outfile, from_ts=section.from_ts, to_ts=section.to_ts, use_concat=use_concat, *args, **kwargs)
 
     def _parse_root(self):
         """ [Internal] Parse XML structure to build ELAN structure
