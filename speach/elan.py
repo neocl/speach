@@ -1238,6 +1238,7 @@ class Doc(DataObject):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.properties = OrderedDict()
+        self.media_descriptors = [] # JMG added this
         self.time_order = OrderedDict()
         self.__tiers = []
         self.__tier_map = OrderedDict()  # internal - map tierIDs to tier objects
@@ -1557,6 +1558,8 @@ class Doc(DataObject):
         # extract extra properties
         for prop_node in node.findall('PROPERTY'):
             self.properties[prop_node.get('NAME')] = prop_node.text
+        for media_node in node.findall('MEDIA_DESCRIPTOR'):
+            self.media_descriptors.append(media_node.attrib)
 
     def _add_tier_xml(self, tier_node) -> Tier:
         """ [Internal function] Parse a TIER XML node, create an ELANTier object and link it to this ELAN Doc
